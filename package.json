@@ -24,14 +24,14 @@
     "test:pipeline": "tsx scripts/selftest.ts",
     "new:plugin": "tsx scripts/new-plugin.ts",
     "changeset": "changeset",
-    "version-packages": "changeset version && tsx scripts/sync-versions.ts && pnpm install --lockfile-only",
-    "ci": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm build && pnpm test && pnpm check:versions && pnpm check:template-markers && pnpm validate && pnpm build:release && pnpm test:packaging && pnpm test:pipeline"
+    "version-packages": "changeset version && tsx scripts/sync-versions.ts && pnpm install --lockfile-only && prettier --write --log-level warn .claude-plugin plugins",
+    "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm build && pnpm test && pnpm check:versions && pnpm check:template-markers && pnpm validate && pnpm build:release && pnpm test:packaging && pnpm test:pipeline"
   },
   "devDependencies": {
     "@changesets/changelog-github": "1.0.1",
     "@changesets/cli": "3.0.3",
     "@eslint/js": "10.0.1",
-    "@types/node": "24.19.2",
+    "@types/node": "22.20.5",
     "@vitest/coverage-v8": "5.0.5",
     "esbuild": "0.28.2",
     "eslint": "10.13.0",
