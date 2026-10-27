@@ -1,0 +1,32 @@
+name: Bug report
+description: A plugin or the repository tooling does not behave as documented
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Security vulnerabilities must not be reported here.** Use the private vulnerability reporting described in SECURITY.md. Redact account IDs, ARNs, credentials, and log contents.
+  - type: input
+    id: plugin
+    attributes:
+      label: Plugin and version
+      description: From `claude plugin list`, for example `context@claude-code-aws 0.1.0`.
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Claude Code version (`claude --version`), Node.js version, and operating system.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true

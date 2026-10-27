@@ -1,0 +1,59 @@
+name: AWS sandbox integration
+
+# Manual, approval-gated tests against the isolated sandbox AWS account. Authentication uses
+# GitHub OIDC and a READ-ONLY role; no long-lived AWS keys exist in this repository.
+# Setup: docs/security-model.md#sandbox-account-for-integration-tests
+on:
+  workflow_dispatch:
+    inputs:
+      plugin:
+        description: Plugin directory name under plugins/ whose test/integration suite should run
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    # Required reviewers on this environment approve every run. AWS_SANDBOX_ROLE_ARN and
+    # AWS_SANDBOX_REGION are environment variables, not repository content.
+    environment: aws-sandbox
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Validate input
+        env:
+          PLUGIN: ${{ inputs.plugin }}
+        run: printf '%s' "$PLUGIN" | grep -Eq '^[a-z0-9]+(-[a-z0-9]+)*$'
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_SANDBOX_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_SANDBOX_REGION }}
+          role-session-name: gha-${{ github.run_id }}
+          role-duration-seconds: 900
+      - name: Verify identity is the sandbox account
+        env:
+          EXPECTED_ACCOUNT: ${{ vars.AWS_SANDBOX_ACCOUNT_ID }}
+        run: |
+          actual=$(aws sts get-caller-identity --query Account --output text)
+          if [ "$actual" != "$EXPECTED_ACCOUNT" ]; then
+            echo "Refusing to run: credentials are not for the configured sandbox account." >&2
+            exit 1
+          fi
+      - name: Run integration tests
+        env:
+          PLUGIN: ${{ inputs.plugin }}
+          CCA_AWS_INTEGRATION: "1"
+        run: |
+          if [ ! -d "plugins/${PLUGIN}/test/integration" ]; then
+            echo "plugins/${PLUGIN} has no test/integration suite." >&2
+            exit 1
+          fi
+          pnpm exec vitest run "plugins/${PLUGIN}/test/integration"

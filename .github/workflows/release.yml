@@ -1,0 +1,120 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build, test, and show the release commit and tags without pushing anything
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  CLAUDE_CODE_VERSION: 2.1.309
+  DISABLE_AUTOUPDATER: "1"
+  CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+
+jobs:
+  version-pr:
+    name: Version PR
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      has-changesets: ${{ steps.changesets.outputs.has-changesets }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+      - id: changesets
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          version-script: pnpm version-packages
+          commit-message: "chore: version plugins"
+          pr-title: "chore: version plugins"
+          create-github-releases: false
+          push-git-tags: false
+        env:
+          # Pull requests opened with GITHUB_TOKEN do not trigger CI. Set RELEASE_PR_TOKEN (a
+          # fine-grained token with contents and pull-requests write) so the Version PR gets checks.
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PR_TOKEN || github.token }}
+
+  publish:
+    name: Publish release branch and tags
+    needs: version-pr
+    # Runs after the Version PR merges (no pending changesets), or on manual dispatch.
+    if: >-
+      always() &&
+      (github.event_name == 'workflow_dispatch' ||
+       (needs.version-pr.result == 'success' && needs.version-pr.outputs.has-changesets == 'false'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      published: ${{ steps.publish.outputs.published }}
+      plugins: ${{ steps.publish.outputs.plugins }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+        with:
+          claude-code-version: ${{ env.CLAUDE_CODE_VERSION }}
+      - run: pnpm build
+      - run: pnpm test
+      - run: pnpm check:versions
+      - run: pnpm check:template-markers
+      - run: pnpm validate
+      - run: pnpm build:release
+      - run: pnpm test:packaging
+      - id: publish
+        name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            pnpm exec tsx scripts/publish-release.ts --dry-run
+          else
+            pnpm exec tsx scripts/publish-release.ts
+          fi
+
+  smoke:
+    name: Install from the public marketplace
+    needs: publish
+    if: needs.publish.outputs.published == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+        with:
+          claude-code-version: ${{ env.CLAUDE_CODE_VERSION }}
+      - name: Install released plugins over HTTPS
+        env:
+          PLUGINS: ${{ needs.publish.outputs.plugins }}
+        run: |
+          # PLUGINS is a space-separated list of validated kebab-case names.
+          # shellcheck disable=SC2086
+          pnpm exec tsx scripts/smoke-public.ts $PLUGINS
+      - name: Open an issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh issue create --title "Post-release smoke test failed" \
+            --body "Installing from the public marketplace failed after a release. Run: ${RUN_URL}. Fix forward with a patch release; tags are never moved."

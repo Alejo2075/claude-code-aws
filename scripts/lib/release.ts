@@ -105,3 +105,15 @@ export function buildReleaseTree(options: ReleaseOptions): ReleaseTree {
   writeFileSync(join(options.outDir, "README.md"), RELEASE_README);
   return { outDir: options.outDir, plugins: listPlugins(join(options.outDir, "plugins")) };
 }
+
+/** Extracts the `## <version>` section of a Changesets-generated CHANGELOG.md. */
+export function changelogSection(changelog: string, version: string): string {
+  const lines = changelog.split(/\r?\n/);
+  const start = lines.findIndex((line) => line.trim() === `## ${version}`);
+  if (start === -1) return "";
+  const end = lines.findIndex((line, index) => index > start && line.startsWith("## "));
+  return lines
+    .slice(start + 1, end === -1 ? undefined : end)
+    .join("\n")
+    .trim();
+}

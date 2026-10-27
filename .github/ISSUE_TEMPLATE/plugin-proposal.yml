@@ -1,0 +1,57 @@
+name: Plugin or workflow proposal
+description: Propose a new plugin, skill, agent, or hook (stage 1 of the plugin development loop)
+labels: [proposal]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Read [CLAUDE.md](https://github.com/Alejo2075/claude-code-aws/blob/main/CLAUDE.md) and [docs/plugin-authoring.md](https://github.com/Alejo2075/claude-code-aws/blob/main/docs/plugin-authoring.md) first. Never include credentials, account IDs, private logs, or real customer infrastructure.
+  - type: textarea
+    id: workflow
+    attributes:
+      label: User workflow
+      description: Who does what today, and where it hurts.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Expected outcome
+      description: What the user gets when the workflow succeeds, and how it is verified.
+    validations:
+      required: true
+  - type: textarea
+    id: components
+    attributes:
+      label: Proposed components
+      description: Skills, agents, hooks, MCP servers, or executables, and why each is needed.
+  - type: dropdown
+    id: side-effects
+    attributes:
+      label: Most severe side effect
+      options:
+        - read
+        - local-write
+        - cloud-mutate
+        - cloud-destroy
+    validations:
+      required: true
+  - type: textarea
+    id: permissions
+    attributes:
+      label: AWS permissions
+      description: IAM actions and resources needed, as narrowly as possible.
+  - type: textarea
+    id: failures
+    attributes:
+      label: Failure cases
+      description: Wrong account or region, expired credentials, missing permissions, unavailable data, unsafe requests.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Why existing tools are insufficient
+      description: Official AWS MCP servers, AWS CLI or SDK, CDK, or existing Claude Code plugins.
+    validations:
+      required: true

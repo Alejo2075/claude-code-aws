@@ -1,0 +1,85 @@
+name: Evals
+
+# Behavior evaluations make real model calls billed to the configured key, so they never run on
+# pull requests. They run on demand and nightly, only for plugins that have an evals/ directory.
+on:
+  workflow_dispatch:
+    inputs:
+      plugin:
+        description: Plugin directory name under plugins/ (empty runs every plugin with evals)
+        type: string
+        default: ""
+      max_cost_usd:
+        description: Spend ceiling per plugin, in USD (list-price estimate)
+        type: string
+        default: "5"
+  schedule:
+    - cron: "41 4 * * *"
+
+permissions:
+  contents: read
+
+env:
+  CLAUDE_CODE_VERSION: 2.1.309
+  # Pin models so score changes reflect plugin changes, not model rollouts.
+  EVAL_MODEL: claude-sonnet-5-5
+  EVAL_JUDGE_MODEL: claude-haiku-5-5
+  DISABLE_AUTOUPDATER: "1"
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      plugins: ${{ steps.find.outputs.plugins }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: find
+        env:
+          ONLY: ${{ inputs.plugin }}
+        run: |
+          if [ -n "$ONLY" ] && ! printf '%s' "$ONLY" | grep -Eq '^[a-z0-9]+(-[a-z0-9]+)*$'; then
+            echo "invalid plugin name" >&2; exit 1
+          fi
+          list=$(for d in plugins/*/evals; do [ -d "$d" ] && basename "$(dirname "$d")"; done | { [ -n "$ONLY" ] && grep -x "$ONLY" || cat; })
+          echo "plugins=$(printf '%s\n' $list | jq -R . | jq -cs 'map(select(length > 0))')" >> "$GITHUB_OUTPUT"
+
+  eval:
+    needs: discover
+    if: needs.discover.outputs.plugins != '[]'
+    runs-on: ubuntu-latest
+    environment: evals
+    strategy:
+      fail-fast: false
+      matrix:
+        plugin: ${{ fromJson(needs.discover.outputs.plugins) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+        with:
+          claude-code-version: ${{ env.CLAUDE_CODE_VERSION }}
+      - run: sudo apt-get install -y --no-install-recommends bubblewrap socat
+      - run: pnpm build
+      - name: Run evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PLUGIN: ${{ matrix.plugin }}
+          MAX_COST: ${{ inputs.max_cost_usd || '5' }}
+        run: |
+          claude plugin eval "plugins/${PLUGIN}" \
+            --trust-plugin \
+            --json "results-${PLUGIN}.json" \
+            --threshold 0.8 \
+            --model "$EVAL_MODEL" \
+            --judge-model "$EVAL_JUDGE_MODEL" \
+            --no-publish \
+            --max-cost-usd "$MAX_COST"
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: eval-results-${{ matrix.plugin }}
+          path: results-*.json
+          retention-days: 30
