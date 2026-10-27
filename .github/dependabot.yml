@@ -9,6 +9,13 @@ updates:
         dependency-type: development
       aws-sdk:
         patterns: ["@aws-sdk/*", "@smithy/*"]
+    ignore:
+      # Types track the oldest supported runtime (Node 22); raise deliberately with engines.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # typescript-eslint supports TypeScript < 6.1; upgrade together when it does.
+      - dependency-name: typescript
+        versions: [">=6.1.0"]
     open-pull-requests-limit: 5
   - package-ecosystem: github-actions
     directories: ["/", "/.github/actions/*"]
