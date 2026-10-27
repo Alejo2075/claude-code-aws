@@ -66,6 +66,7 @@ jobs:
       - run: pnpm build:release
       - run: pnpm test:packaging
       - run: pnpm test:pipeline
+      - run: pnpm test:release-flow
 
   min-claude-code:
     name: Minimum Claude Code version
@@ -83,3 +84,4 @@ jobs:
       - run: pnpm build:release
       - run: pnpm test:packaging
       - run: pnpm test:pipeline
+      - run: pnpm test:release-flow

@@ -411,4 +411,4 @@ At that point the repository is ready for ROADMAP Milestone 1 through the [plugi
 
 - A non-dry-run release from a branch other than `main` is refused by the workflow guard. The guard was not exercised.
 - Real-session hook behavior on Linux and Windows. CI covers installation and hook execution through the harness only.
-- The first real publish, smoke test, and GitHub Release creation. These happen with the first real plugin release.
+- On GitHub itself: the first push to `release` with `GITHUB_TOKEN`, GitHub Release creation, and the public HTTPS smoke test. These run with the first real plugin release. The publish logic itself is verified end to end against a local git remote by `pnpm test:release-flow` (2 plugins, 2 releases, user install and update), on every PR and on all three operating systems.
