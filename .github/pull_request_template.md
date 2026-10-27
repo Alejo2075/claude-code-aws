@@ -9,7 +9,7 @@
 ## Definition of done
 
 - [ ] Demonstrable improvement to an AWS development workflow, or tooling or documentation only
-- [ ] `pnpm ci` passes locally (format, lint, typecheck, build, tests, validate, release tree, packaging, pipeline)
+- [ ] `pnpm verify` passes locally (format, lint, typecheck, build, tests, validate, release tree, packaging, pipeline)
 - [ ] Works when installed from the marketplace (packaging test covers this plugin), not only from source
 - [ ] Least-privilege permissions documented; no secrets printed, persisted, or committed
 - [ ] Error paths and partial or unavailable data handled safely, with negative tests

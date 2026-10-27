@@ -24,8 +24,8 @@
     "test:pipeline": "tsx scripts/selftest.ts",
     "new:plugin": "tsx scripts/new-plugin.ts",
     "changeset": "changeset",
-    "version-packages": "changeset version && tsx scripts/sync-versions.ts && pnpm install --lockfile-only",
-    "ci": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm build && pnpm test && pnpm check:versions && pnpm check:template-markers && pnpm validate && pnpm build:release && pnpm test:packaging && pnpm test:pipeline"
+    "version-packages": "changeset version && tsx scripts/sync-versions.ts && pnpm install --lockfile-only && prettier --write --log-level warn .claude-plugin plugins",
+    "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm build && pnpm test && pnpm check:versions && pnpm check:template-markers && pnpm validate && pnpm build:release && pnpm test:packaging && pnpm test:pipeline"
   },
   "devDependencies": {
     "@changesets/changelog-github": "1.0.1",

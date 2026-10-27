@@ -175,5 +175,9 @@ try {
   setOutput("plugins", pending.map((plugin) => plugin.name).join(" "));
 } finally {
   run("git", ["worktree", "remove", "--force", worktree], { cwd: REPO_ROOT });
-  if (dryRun) for (const tag of createdTags) run("git", ["tag", "-d", tag], { cwd: REPO_ROOT });
+  if (dryRun) {
+    // Leave no local trace: the next run recreates the branch from origin/release.
+    for (const tag of createdTags) run("git", ["tag", "-d", tag], { cwd: REPO_ROOT });
+    run("git", ["branch", "-D", BRANCH], { cwd: REPO_ROOT });
+  }
 }

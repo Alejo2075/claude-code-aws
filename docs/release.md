@@ -43,7 +43,7 @@ Pull requests opened with the default `GITHUB_TOKEN` do not trigger other workfl
 
 - **Recommended:** create a fine-grained personal access token scoped to this repository with **Contents: read and write** and **Pull requests: read and write**. Save it as the repository secret `RELEASE_PR_TOKEN`. The workflow uses it automatically.
 - Or close and reopen the Version PR yourself, which triggers CI under your identity.
-- As a last resort, the repository admin can bypass the required checks when merging. The `main` ruleset allows admin bypass only for pull request merges. Run `pnpm ci` locally on the PR branch before doing this.
+- As a last resort, the repository admin can bypass the required checks when merging. The `main` ruleset allows admin bypass only for pull request merges. Run `pnpm verify` locally on the PR branch before doing this.
 
 ## Dry run
 

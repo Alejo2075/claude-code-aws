@@ -4,28 +4,31 @@ This plan prepares the repository so that plugins can be developed, tested, rele
 
 **Scope.** This plan builds the toolchain, conventions, test harnesses, CI, and distribution pipeline. It deliberately does **not** select, name, or implement any plugin. The first plugin is chosen afterwards and enters through the [plugin development loop](#7-plugin-development-loop).
 
+**Status (2026-10-26): steps 1–8 are implemented and verified.** See [Implementation status](#10-implementation-status) for what was built, deviations from this plan, and the remaining manual steps. Next: choose the first plugins with [choosing-first-plugins.md](choosing-first-plugins.md).
+
 ## 1. Decisions
 
 ### Made
 
-| Topic                  | Decision                                                                                                                | Consequence                                                                                       |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Hosting                | Public GitHub repository under the maintainer's personal account (`Alejo2075`)                                          | Users add the marketplace with `/plugin marketplace add Alejo2075/<repo>`                         |
-| Built artifacts        | `main` holds sources only; CI builds and publishes installable plugins to a generated `release` branch                  | No `dist/` in `main`; install content is reproducible from CI                                     |
-| Runtime                | Node.js ≥ 20 required on the user's machine; each executable is a single bundled JS file with no runtime `node_modules` | Hooks, CLIs, and MCP servers fail safely with a clear message when Node is missing                |
-| Platforms              | macOS, Linux, and Windows supported and tested in CI from the start                                                     | Exec-form hooks, no shell scripts in runtime paths, path handling tested on all three             |
-| Versioning             | Independent semver per plugin, managed with Changesets; release tags follow `<plugin>--v<version>`                      | Matches the tag convention Claude Code uses for dependency version ranges and `claude plugin tag` |
-| Documentation language | English                                                                                                                 | Consistent with existing repository documents                                                     |
-| Real AWS testing       | An isolated sandbox AWS account exists                                                                                  | A manual, approval-gated CI workflow with OIDC and a read-only role; never part of default CI     |
+| Topic                  | Decision                                                                                                                                                            | Consequence                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Hosting                | Public GitHub repository under the maintainer's personal account (`Alejo2075`)                                                                                      | Users add the marketplace with `/plugin marketplace add Alejo2075/<repo>`                         |
+| Built artifacts        | `main` holds sources only; CI builds and publishes installable plugins to a generated `release` branch                                                              | No `dist/` in `main`; install content is reproducible from CI                                     |
+| Runtime                | Node.js ≥ 22 required on the user's machine (Node 20 reached end of life in April 2026); each executable is a single bundled JS file with no runtime `node_modules` | Hooks, CLIs, and MCP servers fail safely with a clear message when Node is missing                |
+| Platforms              | macOS, Linux, and Windows supported and tested in CI from the start                                                                                                 | Exec-form hooks, no shell scripts in runtime paths, path handling tested on all three             |
+| Versioning             | Independent semver per plugin, managed with Changesets; release tags follow `<plugin>--v<version>`                                                                  | Matches the tag convention Claude Code uses for dependency version ranges and `claude plugin tag` |
+| Documentation language | English                                                                                                                                                             | Consistent with existing repository documents                                                     |
+| Real AWS testing       | An isolated sandbox AWS account exists                                                                                                                              | A manual, approval-gated CI workflow with OIDC and a read-only role; never part of default CI     |
 
-### Pending (decide before the step that needs them)
+### Resolved during implementation
 
-| Decision                                           | Needed by | Notes                                                                                                                                                                                                                                                                                                         |
-| -------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Repository name and marketplace `name`             | Step 2.1  | Must pass `claude plugin validate --strict`. Plugin names starting with `claude-` or `anthropic-` are errors; a whole-word `claude` is a warning, which fails `--strict`. Marketplace names that read as official are refused. Validate the candidate in the spike (step 2.2) before creating the repository. |
-| First plugin and its scope                         | Step 7    | Out of scope for this plan. ROADMAP Milestone 1 suggests the context and guard slice.                                                                                                                                                                                                                         |
-| Minimum supported Claude Code version              | Step 2.2  | Proposal: the oldest version that passes the packaged-install test in step 4.4. Record it in each plugin's README.                                                                                                                                                                                            |
-| Maintainer contact for `owner` and `author` fields | Step 3.1  | `owner.name` is required; the email is optional.                                                                                                                                                                                                                                                              |
+| Decision                              | Outcome                                                                                                                                                                   |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository and marketplace name       | Repository `Alejo2075/claude-code-aws`, marketplace `claude-code-aws`. Both pass `claude plugin validate --strict`.                                                       |
+| Minimum supported Claude Code version | **2.1.295**, the release that introduced hook `onFailure`, which fail-closed guards rely on. CI tests 2.1.295 and the pinned 2.1.309, and runs the latest release weekly. |
+| Maintainer contact                    | Alejandro Santana, alejsant75@gmail.com, in `owner` and `author`                                                                                                          |
+| Minimum Node.js                       | 22 (bundles target `node22`; CI runs Node 22 and 24)                                                                                                                      |
+| First plugin and its scope            | Still open. See [choosing-first-plugins.md](choosing-first-plugins.md).                                                                                                   |
 
 ## 2. Verified platform constraints
 
@@ -125,9 +128,9 @@ Excluded from the release tree: `src/`, `test/`, `evals/`, `package.json` (to av
 
 ### 4.1 Workspace
 
-- pnpm workspaces. `packageManager: "pnpm@9.15.0"` pinned through Corepack. The development Node version is pinned in `.nvmrc` to the active LTS. `engines.node: ">=20"`.
+- pnpm workspaces. `packageManager: "pnpm@10.34.8"` (honored by Corepack and by `pnpm/action-setup`). The development Node version is pinned in `.nvmrc` to the active LTS (24). `engines.node: ">=22.12.0"` for tooling; plugin bundles need Node 22+.
 - TypeScript in `strict` mode with `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`, `module: NodeNext`, and project references only if build time requires them.
-- **esbuild** bundles each entry point into a single ESM `.mjs` file for `platform: node` and `target: node20`. Bundles have no external runtime dependencies. A license banner is included and `metafile` output is kept for size checks.
+- **esbuild** bundles each entry point into a single ESM `.mjs` file for `platform: node` and `target: node22`. Bundles have no external runtime dependencies. A license banner is included and `metafile` output is kept for size checks.
 - **Vitest** for unit and contract tests. Coverage is reported, and thresholds are set per plugin once code exists.
 - **ESLint** (typescript-eslint, strict type-checked) and **Prettier**.
 - **Changesets** for per-plugin versions and changelogs.
@@ -320,7 +323,7 @@ Commit: `chore: add plugin template and test harnesses`.
 
 `ci.yml` runs on every PR and push to `main`:
 
-- **Matrix:** `ubuntu-latest`, `macos-latest`, and `windows-latest` × Node 20 and the current LTS.
+- **Matrix:** `ubuntu-latest`, `macos-latest`, and `windows-latest` × Node 22 and 24, plus a job on the minimum Claude Code version.
 - **Steps:** install (frozen lockfile), format check, lint, typecheck, test, build, `check:versions`, `validate`, `build:release`, `test:packaging` (template self-test), and changeset presence check.
 - **Security:** actions pinned by SHA, `permissions: contents: read` by default, CodeQL for TypeScript, gitleaks or the built-in secret scanning, `pnpm audit --prod` as a non-blocking report, and Dependabot for npm and Actions.
 - **No secrets:** no AWS credentials and no Anthropic key in this workflow.
@@ -346,7 +349,7 @@ Commit: `ci: add opt-in eval and sandbox AWS workflows`.
 ### Step 8 — User documentation and readiness review
 
 1. `docs/install.md`:
-   - prerequisites (Claude Code minimum version, Node ≥ 20, git, optional AWS CLI)
+   - prerequisites (Claude Code minimum version, Node ≥ 22, git, optional AWS CLI)
    - add marketplace, install, update (`/plugin marketplace update`, enabling auto-update), pin a version, disable, and uninstall
    - `CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1`
    - troubleshooting
@@ -376,3 +379,36 @@ At that point the repository is ready for ROADMAP Milestone 1 through the [plugi
 | Sandbox credentials misuse                                 | OIDC only, environment approval, read-only role, trust policy scoped to repository and environment, and no long-lived keys.                      |
 | Name rejected by validator or reserved-name rules          | Validate candidate names in the spike before creating the repository.                                                                            |
 | Bundled AWS SDK size and update lag                        | Modular clients, size budget from esbuild metafile, and Dependabot on SDK packages.                                                              |
+
+## 10. Implementation status
+
+| Step                           | State                            | Where                                                                                                                                                                                                                                                                                       |
+| ------------------------------ | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Repository and governance   | Done                             | Public repository, rulesets (see [release.md](release.md#repository-protections)), secret scanning with push protection, Dependabot alerts and updates, private vulnerability reporting, issue and PR templates, CODEOWNERS                                                                 |
+| 2. Spike                       | Done                             | Findings in [plugin-authoring.md](plugin-authoring.md#verified-platform-behavior), including real-session hook checks and missing-Node behavior                                                                                                                                             |
+| 3. Workspace and tooling       | Done                             | `package.json`, `tsconfig*.json`, `eslint.config.js`, `vitest.config.ts`, `.changeset/`, `scripts/`                                                                                                                                                                                         |
+| 4. Template and harnesses      | Done                             | `templates/plugin/`, `packages/testkit/`, `scripts/lib/{release,packaging,scaffold}.ts`, `scripts/selftest.ts`                                                                                                                                                                              |
+| 5. CI                          | Done                             | `.github/workflows/ci.yml`, plus `codeql.yml`. Green on macOS, Linux, and Windows × Node 22 and 24, and on Claude Code 2.1.295.                                                                                                                                                             |
+| 6. Release pipeline            | Done                             | `.github/workflows/release.yml`, `scripts/publish-release.ts`, `scripts/smoke-public.ts`                                                                                                                                                                                                    |
+| 7. Evals and sandbox workflows | Done (inactive until configured) | `evals.yml` (`evals` environment, needs `ANTHROPIC_API_KEY`); `aws-sandbox.yml` (`aws-sandbox` environment with required reviewer; needs the OIDC role)                                                                                                                                     |
+| 8. Docs and readiness review   | Done                             | [install.md](install.md), [security-model.md](security-model.md), [release.md](release.md). In the readiness review, a throwaway plugin went through changeset, `version-packages`, full `pnpm verify`, a local publish dry run, and a GitHub release dry run. Its branch was then deleted. |
+
+### Deviations from the plan
+
+- **Node 22 instead of 20.** Node 20 is end of life, and current tooling (Vitest 5, Changesets 3) requires Node 22.
+- **Release branch push restriction.** Repository rulesets on personal accounts cannot exempt GitHub Actions. The `release` branch and the `*--v*` tags are therefore protected against force-push, deletion, and moving, but not against a direct push by the owner. [release.md](release.md#repository-protections) describes the deploy-key option that closes this gap.
+- **Tags are not GPG-signed.** They are annotated tags created by `claude plugin tag` in CI and protected by ruleset.
+- **`gitleaks` not added.** GitHub secret scanning with push protection is enabled instead.
+
+### Remaining manual steps (owner)
+
+1. Optional: add the `RELEASE_PR_TOKEN` secret so Version PRs trigger CI ([release.md](release.md#ci-on-the-version-pr)).
+2. Before plugins have evals: add `ANTHROPIC_API_KEY` to the `evals` environment.
+3. Before integration tests: create the sandbox OIDC role and set the `aws-sandbox` environment variables ([security-model.md](security-model.md#sandbox-account-for-integration-tests)).
+4. Optional hardening: a deploy key as the only bypass actor for `release` and the tag rulesets.
+
+### Not verified
+
+- A non-dry-run release from a branch other than `main` is refused by the workflow guard. The guard was not exercised.
+- Real-session hook behavior on Linux and Windows. CI covers installation and hook execution through the harness only.
+- The first real publish, smoke test, and GitHub Release creation. These happen with the first real plugin release.

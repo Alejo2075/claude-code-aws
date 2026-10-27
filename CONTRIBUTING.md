@@ -1,9 +1,25 @@
 # Contributing
 
-The project is in its foundation stage. Read [CLAUDE.md](CLAUDE.md) and [docs/ROADMAP.md](docs/ROADMAP.md) before proposing a feature.
+Read [CLAUDE.md](CLAUDE.md), [docs/ROADMAP.md](docs/ROADMAP.md), and [docs/plugin-authoring.md](docs/plugin-authoring.md) before proposing a feature.
 
-Open an issue describing the user workflow, expected outcome, AWS permissions, failure cases, and why an existing Claude Code or AWS tool is insufficient. Keep pull requests focused on one working slice. Include tests for deterministic behavior and document installation, side effects, limitations, and compatibility. Never include credentials, account-specific data, private logs, or real customer infrastructure in fixtures.
+## Propose
 
-Use conventional commit messages such as `feat(context): verify AWS identity`. Run the checks defined by the package scripts once the implementation exists. Do not run cloud-mutating tests against a contributor account; the default test suite must use fixtures and mocks.
+Open an issue with the **Plugin or workflow proposal** template. Describe the user workflow, the expected outcome, the AWS permissions involved, the side effects, the failure cases, and why an existing Claude Code or AWS tool is insufficient.
 
-Maintainers will review security boundaries, plugin independence, evidence quality, and compatibility before merging. Public contributions are accepted under the repository license.
+## Develop
+
+Requirements: Node.js 22+ (24 recommended, see `.nvmrc`), pnpm through Corepack or a pnpm that honors `packageManager`, git, and Claude Code 2.1.295+.
+
+```sh
+pnpm install
+pnpm new:plugin <name> "<one-line description>"   # new plugins only
+pnpm verify                                       # what CI runs
+```
+
+Keep pull requests focused on one working slice. Include deterministic tests, including negative cases. Document installation, side effects, permissions, limitations, and compatibility in the plugin README. Add a changeset (`pnpm changeset`) when you change what a released plugin ships.
+
+Never include credentials, account IDs, ARNs, private logs, or real customer infrastructure in code, fixtures, issues, or pull requests. Do not run cloud-mutating tests against a contributor account. The default test suite uses fixtures and mocks only.
+
+## Commits and review
+
+Use conventional commit messages, such as `feat(context): verify AWS identity`. Pull requests are squash-merged after the required checks pass. Maintainers review security boundaries, plugin independence, evidence quality, and compatibility before merging. Public contributions are accepted under the repository license.
