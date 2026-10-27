@@ -47,6 +47,8 @@ Pull requests opened with the default `GITHUB_TOKEN` do not trigger other workfl
 
 ## Dry run
 
+`pnpm test:release-flow` runs the real publish logic against a local bare remote on every PR, so a regression in publishing fails CI before it can reach a release. The workflow dry run below also exercises GitHub-side configuration.
+
 Actions → **Release** → _Run workflow_, with `dry_run` checked (the default). It builds and tests, then shows the release commit and the tags it would create, without pushing anything. Locally:
 
 ```sh
