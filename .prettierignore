@@ -1,0 +1,9 @@
+node_modules/
+dist/
+out/
+coverage/
+pnpm-lock.yaml
+.changeset/*.md
+**/CHANGELOG.md
+CLAUDE.md
+templates/plugin/README.md

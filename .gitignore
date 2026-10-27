@@ -2,6 +2,7 @@
 node_modules/
 dist/
 build/
+out/
 coverage/
 .env
 .env.*
@@ -9,3 +10,6 @@ coverage/
 *.log
 .DS_Store
 *.tsbuildinfo
+# claude plugin eval output
+.eval-results/
+evals/**/results/

@@ -1,0 +1,10 @@
+{
+  "name": "claude-code-aws",
+  "description": "Independently installable Claude Code plugins for AWS development. Plugins are listed only after they pass tests and the installed-from-cache check.",
+  "owner": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "plugins": []
+}

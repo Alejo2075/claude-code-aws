@@ -1,0 +1,7 @@
+packages:
+  - plugins/*
+  - packages/*
+
+# Plugins ship bundled JavaScript; nothing in the workspace needs install scripts.
+onlyBuiltDependencies:
+  - esbuild

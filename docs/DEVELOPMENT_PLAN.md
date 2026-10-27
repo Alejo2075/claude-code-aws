@@ -8,47 +8,47 @@ This plan prepares the repository so that plugins can be developed, tested, rele
 
 ### Made
 
-| Topic | Decision | Consequence |
-| --- | --- | --- |
-| Hosting | Public GitHub repository under the maintainer's personal account (`Alejo2075`) | Users add the marketplace with `/plugin marketplace add Alejo2075/<repo>` |
-| Built artifacts | `main` holds sources only; CI builds and publishes installable plugins to a generated `release` branch | No `dist/` in `main`; install content is reproducible from CI |
-| Runtime | Node.js ≥ 20 required on the user's machine; each executable is a single bundled JS file with no runtime `node_modules` | Hooks, CLIs, and MCP servers fail safely with a clear message when Node is missing |
-| Platforms | macOS, Linux, and Windows supported and tested in CI from the start | Exec-form hooks, no shell scripts in runtime paths, path handling tested on all three |
-| Versioning | Independent semver per plugin, managed with Changesets; release tags follow `<plugin>--v<version>` | Matches the tag convention Claude Code uses for dependency version ranges and `claude plugin tag` |
-| Documentation language | English | Consistent with existing repository documents |
-| Real AWS testing | An isolated sandbox AWS account exists | A manual, approval-gated CI workflow with OIDC and a read-only role; never part of default CI |
+| Topic                  | Decision                                                                                                                | Consequence                                                                                       |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Hosting                | Public GitHub repository under the maintainer's personal account (`Alejo2075`)                                          | Users add the marketplace with `/plugin marketplace add Alejo2075/<repo>`                         |
+| Built artifacts        | `main` holds sources only; CI builds and publishes installable plugins to a generated `release` branch                  | No `dist/` in `main`; install content is reproducible from CI                                     |
+| Runtime                | Node.js ≥ 20 required on the user's machine; each executable is a single bundled JS file with no runtime `node_modules` | Hooks, CLIs, and MCP servers fail safely with a clear message when Node is missing                |
+| Platforms              | macOS, Linux, and Windows supported and tested in CI from the start                                                     | Exec-form hooks, no shell scripts in runtime paths, path handling tested on all three             |
+| Versioning             | Independent semver per plugin, managed with Changesets; release tags follow `<plugin>--v<version>`                      | Matches the tag convention Claude Code uses for dependency version ranges and `claude plugin tag` |
+| Documentation language | English                                                                                                                 | Consistent with existing repository documents                                                     |
+| Real AWS testing       | An isolated sandbox AWS account exists                                                                                  | A manual, approval-gated CI workflow with OIDC and a read-only role; never part of default CI     |
 
 ### Pending (decide before the step that needs them)
 
-| Decision | Needed by | Notes |
-| --- | --- | --- |
-| Repository name and marketplace `name` | Step 2.1 | Must pass `claude plugin validate --strict`. Plugin names starting with `claude-` or `anthropic-` are errors; a whole-word `claude` is a warning, which fails `--strict`. Marketplace names that read as official are refused. Validate the candidate in the spike (step 2.2) before creating the repository. |
-| First plugin and its scope | Step 7 | Out of scope for this plan. ROADMAP Milestone 1 suggests the context and guard slice. |
-| Minimum supported Claude Code version | Step 2.2 | Proposal: the oldest version that passes the packaged-install test in step 4.4. Record it in each plugin's README. |
-| Maintainer contact for `owner` and `author` fields | Step 3.1 | `owner.name` is required; the email is optional. |
+| Decision                                           | Needed by | Notes                                                                                                                                                                                                                                                                                                         |
+| -------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository name and marketplace `name`             | Step 2.1  | Must pass `claude plugin validate --strict`. Plugin names starting with `claude-` or `anthropic-` are errors; a whole-word `claude` is a warning, which fails `--strict`. Marketplace names that read as official are refused. Validate the candidate in the spike (step 2.2) before creating the repository. |
+| First plugin and its scope                         | Step 7    | Out of scope for this plan. ROADMAP Milestone 1 suggests the context and guard slice.                                                                                                                                                                                                                         |
+| Minimum supported Claude Code version              | Step 2.2  | Proposal: the oldest version that passes the packaged-install test in step 4.4. Record it in each plugin's README.                                                                                                                                                                                            |
+| Maintainer contact for `owner` and `author` fields | Step 3.1  | `owner.name` is required; the email is optional.                                                                                                                                                                                                                                                              |
 
 ## 2. Verified platform constraints
 
 These facts come from current Claude Code documentation, checked on 2026-10-26 against locally installed Claude Code 2.1.309. Re-verify them in the spike, because they drive the architecture.
 
-| Constraint | Source | Design impact |
-| --- | --- | --- |
-| A marketplace is `.claude-plugin/marketplace.json` with required `name`, `owner`, and `plugins`. | [Marketplace reference](https://code.claude.com/docs/en/plugins/marketplace-reference.md) | One catalog at the repository root on `main`. |
-| Plugin sources can be a relative path, `github`, `url`, `git-subdir`, `npm`, `archive`, or `command`. Git sources accept `ref` and `sha`. | Marketplace reference | Catalog entries use `git-subdir` pointing at release tags (section 5). |
-| Installed plugins are copied into a cache. `${CLAUDE_PLUGIN_ROOT}` changes on update. `${CLAUDE_PLUGIN_DATA}` persists across updates and is deleted on uninstall. | [Manifest reference](https://code.claude.com/docs/en/plugins/manifest-reference.md) | No `../` paths. All state goes in `${CLAUDE_PLUGIN_DATA}`, never the plugin root. |
-| A component path must start with `./` and stay inside the plugin root. Symlinks that point outside the marketplace are skipped. | Manifest reference | Shared code is bundled into each plugin at build time, never linked. |
-| Users receive a new copy only when the computed `version` changes. | [Host a marketplace](https://code.claude.com/docs/en/plugins/host-marketplace.md) | Every release bumps `plugin.json` `version`. CI checks that the bump happened. |
-| Background auto-update is off by default and is enabled by the user or an admin. | Host a marketplace | The user docs explain `/plugin marketplace update` and how to enable auto-update. |
-| `version` must not be set in both `plugin.json` and the marketplace entry. | Host a marketplace | `version` lives only in `plugin.json`. |
-| Hooks support exec form (`command` plus `args`). On Windows, the default shell is PowerShell when Git Bash is absent. | Manifest reference, [Hooks](https://code.claude.com/docs/en/hooks) | All hooks use `"command": "node"` with `args: ["${CLAUDE_PLUGIN_ROOT}/dist/<entry>.js"]`. No `.sh` files. |
-| Files in `bin/` are put on `PATH`, but claude.ai organization sync rejects plugins with a top-level `bin/`. | Manifest reference, Host a marketplace | Default to `scripts/` or `dist/` referenced by `${CLAUDE_PLUGIN_ROOT}`. Use `bin/` only with a documented reason. |
-| Plugin `settings` only applies `agent` and `subagentStatusLine`. A plugin cannot set the main session status line. | Manifest reference | A context indicator needs a documented user `statusLine` snippet, a mod, or a text command. Never assume a plugin can install one. |
-| `userConfig` options with `sensitive: true` are stored in the OS credential store. | Manifest reference | Plugins never ask for AWS secrets. `userConfig` holds only non-secret choices such as a profile name or policy file path. |
-| `claude plugin validate [--strict] [--json]` returns exit 0, 1, or 2. | [CLI reference](https://code.claude.com/docs/en/plugins/cli-reference.md) | CI gate. |
-| `claude plugin tag` creates `<name>--v<version>` after checking that versions agree. | CLI reference | Used by the release job. |
-| `claude plugin eval` runs real model calls against a plugin, with graders, a no-plugin baseline, mocks, `--max-cost-usd`, and `--json`. CI needs `ANTHROPIC_API_KEY`. Shell tools run under an OS sandbox, which native Windows lacks. | [Plugin evals](https://code.claude.com/docs/en/plugin-evals.md) | Evals run on demand or nightly on Linux, with a cost ceiling. They are never a per-PR gate on Windows. |
-| `claude plugin test` runs `*.test.ts` tests for mods. | CLI reference | Used only if a mod is built (Phase 4). |
-| `/plugin marketplace add owner/repo#ref` pins a ref. `CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1` helps users without a GitHub SSH key. | Host a marketplace | Documented in the install guide. |
+| Constraint                                                                                                                                                                                                                             | Source                                                                                    | Design impact                                                                                                                      |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| A marketplace is `.claude-plugin/marketplace.json` with required `name`, `owner`, and `plugins`.                                                                                                                                       | [Marketplace reference](https://code.claude.com/docs/en/plugins/marketplace-reference.md) | One catalog at the repository root on `main`.                                                                                      |
+| Plugin sources can be a relative path, `github`, `url`, `git-subdir`, `npm`, `archive`, or `command`. Git sources accept `ref` and `sha`.                                                                                              | Marketplace reference                                                                     | Catalog entries use `git-subdir` pointing at release tags (section 5).                                                             |
+| Installed plugins are copied into a cache. `${CLAUDE_PLUGIN_ROOT}` changes on update. `${CLAUDE_PLUGIN_DATA}` persists across updates and is deleted on uninstall.                                                                     | [Manifest reference](https://code.claude.com/docs/en/plugins/manifest-reference.md)       | No `../` paths. All state goes in `${CLAUDE_PLUGIN_DATA}`, never the plugin root.                                                  |
+| A component path must start with `./` and stay inside the plugin root. Symlinks that point outside the marketplace are skipped.                                                                                                        | Manifest reference                                                                        | Shared code is bundled into each plugin at build time, never linked.                                                               |
+| Users receive a new copy only when the computed `version` changes.                                                                                                                                                                     | [Host a marketplace](https://code.claude.com/docs/en/plugins/host-marketplace.md)         | Every release bumps `plugin.json` `version`. CI checks that the bump happened.                                                     |
+| Background auto-update is off by default and is enabled by the user or an admin.                                                                                                                                                       | Host a marketplace                                                                        | The user docs explain `/plugin marketplace update` and how to enable auto-update.                                                  |
+| `version` must not be set in both `plugin.json` and the marketplace entry.                                                                                                                                                             | Host a marketplace                                                                        | `version` lives only in `plugin.json`.                                                                                             |
+| Hooks support exec form (`command` plus `args`). On Windows, the default shell is PowerShell when Git Bash is absent.                                                                                                                  | Manifest reference, [Hooks](https://code.claude.com/docs/en/hooks)                        | All hooks use `"command": "node"` with `args: ["${CLAUDE_PLUGIN_ROOT}/dist/<entry>.js"]`. No `.sh` files.                          |
+| Files in `bin/` are put on `PATH`, but claude.ai organization sync rejects plugins with a top-level `bin/`.                                                                                                                            | Manifest reference, Host a marketplace                                                    | Default to `scripts/` or `dist/` referenced by `${CLAUDE_PLUGIN_ROOT}`. Use `bin/` only with a documented reason.                  |
+| Plugin `settings` only applies `agent` and `subagentStatusLine`. A plugin cannot set the main session status line.                                                                                                                     | Manifest reference                                                                        | A context indicator needs a documented user `statusLine` snippet, a mod, or a text command. Never assume a plugin can install one. |
+| `userConfig` options with `sensitive: true` are stored in the OS credential store.                                                                                                                                                     | Manifest reference                                                                        | Plugins never ask for AWS secrets. `userConfig` holds only non-secret choices such as a profile name or policy file path.          |
+| `claude plugin validate [--strict] [--json]` returns exit 0, 1, or 2.                                                                                                                                                                  | [CLI reference](https://code.claude.com/docs/en/plugins/cli-reference.md)                 | CI gate.                                                                                                                           |
+| `claude plugin tag` creates `<name>--v<version>` after checking that versions agree.                                                                                                                                                   | CLI reference                                                                             | Used by the release job.                                                                                                           |
+| `claude plugin eval` runs real model calls against a plugin, with graders, a no-plugin baseline, mocks, `--max-cost-usd`, and `--json`. CI needs `ANTHROPIC_API_KEY`. Shell tools run under an OS sandbox, which native Windows lacks. | [Plugin evals](https://code.claude.com/docs/en/plugin-evals.md)                           | Evals run on demand or nightly on Linux, with a cost ceiling. They are never a per-PR gate on Windows.                             |
+| `claude plugin test` runs `*.test.ts` tests for mods.                                                                                                                                                                                  | CLI reference                                                                             | Used only if a mod is built (Phase 4).                                                                                             |
+| `/plugin marketplace add owner/repo#ref` pins a ref. `CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1` helps users without a GitHub SSH key.                                                                                                         | Host a marketplace                                                                        | Documented in the install guide.                                                                                                   |
 
 ## 3. Repository layout
 
@@ -135,16 +135,16 @@ Excluded from the release tree: `src/`, `test/`, `evals/`, `package.json` (to av
 
 ### 4.2 Root scripts (contract for every plugin)
 
-| Script | Does |
-| --- | --- |
-| `pnpm build` | Bundles every plugin into `plugins/<name>/dist/` |
-| `pnpm typecheck` / `pnpm lint` / `pnpm format:check` | Static checks |
-| `pnpm test` | Unit and hook-contract tests for all packages |
-| `pnpm validate` | `claude plugin validate` on the catalog and each plugin (`--strict` once plugins exist) |
-| `pnpm check:versions` | `plugin.json` `version` equals `package.json` `version`; no `version` in catalog entries; catalog `ref` equals `<name>--v<version>` |
-| `pnpm build:release` | Assembles the release tree (section 3.3) in `out/release/` and validates it |
-| `pnpm test:packaging` | Installs the release tree into an isolated Claude Code config and checks it (section 4.4) |
-| `pnpm new:plugin <name>` | Copies `templates/plugin/`, sets the names, and registers the workspace |
+| Script                                               | Does                                                                                                                                |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm build`                                         | Bundles every plugin into `plugins/<name>/dist/`                                                                                    |
+| `pnpm typecheck` / `pnpm lint` / `pnpm format:check` | Static checks                                                                                                                       |
+| `pnpm test`                                          | Unit and hook-contract tests for all packages                                                                                       |
+| `pnpm validate`                                      | `claude plugin validate` on the catalog and each plugin (`--strict` once plugins exist)                                             |
+| `pnpm check:versions`                                | `plugin.json` `version` equals `package.json` `version`; no `version` in catalog entries; catalog `ref` equals `<name>--v<version>` |
+| `pnpm build:release`                                 | Assembles the release tree (section 3.3) in `out/release/` and validates it                                                         |
+| `pnpm test:packaging`                                | Installs the release tree into an isolated Claude Code config and checks it (section 4.4)                                           |
+| `pnpm new:plugin <name>`                             | Copies `templates/plugin/`, sets the names, and registers the workspace                                                             |
 
 ### 4.3 Hook contract test harness
 
@@ -248,18 +248,18 @@ These go in `docs/plugin-authoring.md` and are enforced by the template, lint ru
 
 This is how each future plugin, starting with the first one, moves from idea to installed:
 
-| Stage | Output | Gate |
-| --- | --- | --- |
-| 1. Proposal | GitHub issue from the plugin proposal template: user workflow, outcome, AWS permissions, side effects, failure cases, why existing tools are insufficient | Maintainer accepts |
-| 2. Contract | `plugins/<name>/README.md` draft with inputs, outputs, side effects, permissions, limitations, and supported platforms | Reviewed in the first PR |
-| 3. Scaffold | `pnpm new:plugin <name>` | `pnpm validate` passes |
-| 4. Implement | Deterministic logic in `src/`. Skills, agents, and hooks wired to it. | Typecheck and lint |
-| 5. Test | Unit tests, hook contract tests, negative tests (wrong account, wrong region, expired credentials, missing permissions, unavailable data, unsafe mutation), and fixtures | `pnpm test` on all three operating systems |
-| 6. Package | Release tree and packaged-install test | `pnpm test:packaging` |
-| 7. Evaluate | `evals/` cases with baseline | `evals.yml` passes the threshold under the cost ceiling |
-| 8. Sandbox (optional) | Read-only sandbox run | `aws-sandbox.yml` with approval |
-| 9. Release | Changeset, then Version PR, then release | Release workflow and post-release smoke test pass |
-| 10. Catalog | The entry appears in `marketplace.json` through the Version PR | Only after stages 1–9 pass (CLAUDE.md: no placeholders) |
+| Stage                 | Output                                                                                                                                                                   | Gate                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| 1. Proposal           | GitHub issue from the plugin proposal template: user workflow, outcome, AWS permissions, side effects, failure cases, why existing tools are insufficient                | Maintainer accepts                                      |
+| 2. Contract           | `plugins/<name>/README.md` draft with inputs, outputs, side effects, permissions, limitations, and supported platforms                                                   | Reviewed in the first PR                                |
+| 3. Scaffold           | `pnpm new:plugin <name>`                                                                                                                                                 | `pnpm validate` passes                                  |
+| 4. Implement          | Deterministic logic in `src/`. Skills, agents, and hooks wired to it.                                                                                                    | Typecheck and lint                                      |
+| 5. Test               | Unit tests, hook contract tests, negative tests (wrong account, wrong region, expired credentials, missing permissions, unavailable data, unsafe mutation), and fixtures | `pnpm test` on all three operating systems              |
+| 6. Package            | Release tree and packaged-install test                                                                                                                                   | `pnpm test:packaging`                                   |
+| 7. Evaluate           | `evals/` cases with baseline                                                                                                                                             | `evals.yml` passes the threshold under the cost ceiling |
+| 8. Sandbox (optional) | Read-only sandbox run                                                                                                                                                    | `aws-sandbox.yml` with approval                         |
+| 9. Release            | Changeset, then Version PR, then release                                                                                                                                 | Release workflow and post-release smoke test pass       |
+| 10. Catalog           | The entry appears in `marketplace.json` through the Version PR                                                                                                           | Only after stages 1–9 pass (CLAUDE.md: no placeholders) |
 
 ### Definition of Ready (before stage 4)
 
@@ -365,14 +365,14 @@ At that point the repository is ready for ROADMAP Milestone 1 through the [plugi
 
 ## 9. Risks and mitigations
 
-| Risk | Mitigation |
-| --- | --- |
-| Claude Code plugin contracts change | Pin a tested Claude Code version in CI. Add a scheduled job against the latest version. Spike findings are recorded with version numbers. |
-| Users without Node or with an old Node version | Version guard in every entry point. Hooks fail safely; a policy hook fails toward `ask`, never silent allow. The README states the prerequisite. |
-| Windows path and shell differences | Exec-form hooks, LF line endings, Windows in the CI matrix, and path fixtures with spaces and drive letters. |
-| Users stay on old versions (auto-update is off by default) | The install guide explains updates. Release notes highlight security fixes. Consider a skill that reports the installed version. |
-| Release tag points at a broken tree | Packaging test before tagging, post-release smoke test, and immutable tags fixed forward by patch release. |
-| Eval cost or flakiness | Opt-in workflow, cost ceiling, pinned models, free graders by default, mock replay, and evals that never block PRs. |
-| Sandbox credentials misuse | OIDC only, environment approval, read-only role, trust policy scoped to repository and environment, and no long-lived keys. |
-| Name rejected by validator or reserved-name rules | Validate candidate names in the spike before creating the repository. |
-| Bundled AWS SDK size and update lag | Modular clients, size budget from esbuild metafile, and Dependabot on SDK packages. |
+| Risk                                                       | Mitigation                                                                                                                                       |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Claude Code plugin contracts change                        | Pin a tested Claude Code version in CI. Add a scheduled job against the latest version. Spike findings are recorded with version numbers.        |
+| Users without Node or with an old Node version             | Version guard in every entry point. Hooks fail safely; a policy hook fails toward `ask`, never silent allow. The README states the prerequisite. |
+| Windows path and shell differences                         | Exec-form hooks, LF line endings, Windows in the CI matrix, and path fixtures with spaces and drive letters.                                     |
+| Users stay on old versions (auto-update is off by default) | The install guide explains updates. Release notes highlight security fixes. Consider a skill that reports the installed version.                 |
+| Release tag points at a broken tree                        | Packaging test before tagging, post-release smoke test, and immutable tags fixed forward by patch release.                                       |
+| Eval cost or flakiness                                     | Opt-in workflow, cost ceiling, pinned models, free graders by default, mock replay, and evals that never block PRs.                              |
+| Sandbox credentials misuse                                 | OIDC only, environment approval, read-only role, trust policy scoped to repository and environment, and no long-lived keys.                      |
+| Name rejected by validator or reserved-name rules          | Validate candidate names in the spike before creating the repository.                                                                            |
+| Bundled AWS SDK size and update lag                        | Modular clients, size budget from esbuild metafile, and Dependabot on SDK packages.                                                              |
