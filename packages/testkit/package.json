@@ -1,0 +1,14 @@
+{
+  "name": "@claude-code-aws/testkit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Development-only test helpers: run plugin hooks the way Claude Code does and detect leaked secrets. Never bundled into plugins.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

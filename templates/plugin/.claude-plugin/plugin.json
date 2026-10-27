@@ -1,0 +1,14 @@
+{
+  "name": "__PLUGIN_NAME__",
+  "version": "0.0.0",
+  "description": "__PLUGIN_DESCRIPTION__",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/__PLUGIN_NAME__#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws"]
+}
