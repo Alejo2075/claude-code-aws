@@ -2,10 +2,10 @@
 
 ## Available plugins
 
-| Plugin                                            | What it does                                                                                                               |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| [`aws-context`](../plugins/aws-context/README.md) | Verifies the active AWS account, principal, region, and environment with STS and stores a snapshot. Read-only.             |
-| [`aws-ui`](../plugins/aws-ui/README.md)           | Shows that context in a band above the prompt, with an opt-in status line. Never calls AWS. Works best with `aws-context`. |
+| Plugin                                            | What it does                                                                                                                              |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| [`aws-context`](../plugins/aws-context/README.md) | Verifies the active AWS account, principal, region, and environment with STS and stores a snapshot. Read-only.                            |
+| [`aws-ui`](../plugins/aws-ui/README.md)           | Shows the user, region, and environment in the prompt footer, with an opt-in status line. Never calls AWS. Works best with `aws-context`. |
 
 Install only what you need; neither requires the other.
 
