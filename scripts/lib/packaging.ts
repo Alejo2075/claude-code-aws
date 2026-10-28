@@ -157,12 +157,15 @@ export async function testPackaging(releaseDir: string): Promise<PackagingReport
         const hooksFile = JSON.parse(
           readFileSync(join(installPath, "hooks", "hooks.json"), "utf8"),
         ) as {
-          hooks: Record<string, unknown>;
+          hooks?: Record<string, unknown>;
+          modules?: string[];
         };
-        const events = Object.keys(hooksFile.hooks);
+        const events = Object.keys(hooksFile.hooks ?? {});
         const projectDir = mkdtempSync(join(work, "project-"));
         for (const event of events) {
           try {
+            // Hooks run with an isolated home and no instance metadata (see the testkit), so
+            // packaging never reads the developer's AWS profiles or calls AWS.
             const results = await runPluginHooks(sampleInput(event, projectDir), {
               pluginRoot: installPath,
               projectDir,
@@ -179,6 +182,18 @@ export async function testPackaging(releaseDir: string): Promise<PackagingReport
           } catch (error) {
             check(`${event} hooks run from cache`, false, String(error));
           }
+        }
+        // A mod: its hooks module must exist in the cache and pass validation from there.
+        const modules = hooksFile.modules ?? [];
+        if (modules.length > 0) {
+          const present = modules.every((path) => existsSync(join(installPath, "hooks", path)));
+          check("mod hooks module is present in the cache", present, modules.join(", "));
+          const validated = runClaude(["plugin", "validate", installPath], { env });
+          check(
+            "mod validates from the cache",
+            validated.status === 0,
+            validated.stdout + validated.stderr,
+          );
         }
       }
 

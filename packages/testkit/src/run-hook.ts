@@ -22,7 +22,12 @@ export interface RunOptions {
   /** Defaults to a fresh temporary directory, like a first-run plugin data directory. */
   pluginDataDir?: string;
   projectDir?: string;
-  /** Extra environment variables. The parent environment is not inherited except PATH-like basics. */
+  /**
+   * Extra environment variables. The parent environment is not inherited except PATH-like basics.
+   * In particular the real home directory is not: HOME and USERPROFILE point to a fresh temporary
+   * directory and instance metadata is disabled, so a hook under test cannot pick up the
+   * developer's AWS profiles, SSO cache, or credentials.
+   */
   env?: Record<string, string>;
   timeoutMs?: number;
 }
@@ -52,8 +57,6 @@ const INHERITED_ENV = [
   "TEMP",
   "TMP",
   "TMPDIR",
-  "HOME",
-  "USERPROFILE",
 ];
 
 function baseEnv(
@@ -66,8 +69,12 @@ function baseEnv(
     const value = process.env[key];
     if (value !== undefined) env[key] = value;
   }
+  const isolatedHome = mkdtempSync(join(tmpdir(), "hook-home-"));
   return {
     ...env,
+    HOME: isolatedHome,
+    USERPROFILE: isolatedHome,
+    AWS_EC2_METADATA_DISABLED: "true",
     CLAUDE_PLUGIN_ROOT: options.pluginRoot,
     CLAUDE_PLUGIN_DATA: pluginDataDir,
     CLAUDE_PROJECT_DIR: projectDir,

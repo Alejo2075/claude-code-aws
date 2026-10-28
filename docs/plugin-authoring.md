@@ -76,6 +76,8 @@ A mod is a plugin whose `hooks/hooks.json` has `"modules": ["<path>"]`. It runs 
 | Behavior      | `claude plugin eval` (`evals.yml`)                            | On demand and nightly. Uses real model calls with a cost ceiling.                                                                                                                                                                                             |
 | AWS sandbox   | `aws-sandbox.yml`                                             | Manual, approval-gated, read-only OIDC role.                                                                                                                                                                                                                  |
 
+Hooks run by the testkit never see the developer's real home directory: `HOME` and `USERPROFILE` point to a fresh temporary directory, instance metadata is disabled, and AWS variables are not inherited, so a hook under test cannot read real AWS profiles or credentials. A test that needs AWS-shaped input sets it explicitly through `env`, with fixtures or a loopback fake (see `plugins/aws-context/test/integration.test.ts`).
+
 Negative tests are mandatory for anything touching AWS: wrong account, wrong region, expired credentials, missing permissions, unavailable data, and attempted unsafe mutations. Use sanitized fixtures under `plugins/<name>/test/fixtures/` or `tests/fixtures/`. They must never contain real account IDs, ARNs, or credentials. `findSecretLikeStrings` from the testkit catches common credential shapes.
 
 Example hook-contract test:
