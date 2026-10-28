@@ -1,0 +1,14 @@
+{
+  "name": "aws-context",
+  "version": "0.1.0",
+  "description": "Verified AWS account, principal, region, and environment for the current project, with a status skill and a session-start check. Read-only: it never changes AWS resources.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-context#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "identity", "sts", "context"]
+}

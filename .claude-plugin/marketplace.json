@@ -1,0 +1,37 @@
+{
+  "name": "claude-code-aws",
+  "description": "Independently installable Claude Code plugins for AWS development. Plugins are listed only after they pass tests and the installed-from-cache check.",
+  "owner": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "plugins": [
+    {
+      "name": "aws-context",
+      "description": "Verified AWS account, principal, region, and environment for the current project, with a status skill and a session-start check. Read-only: it never changes AWS resources.",
+      "source": "./plugins/aws-context",
+      "keywords": [
+        "aws",
+        "identity",
+        "sts",
+        "context"
+      ],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-context#readme"
+    },
+    {
+      "name": "aws-ui",
+      "description": "Shows the verified AWS account, region, and environment in a compact band above the prompt, read from the aws-context snapshot, with an opt-in status-line fallback. Never calls AWS.",
+      "source": "./plugins/aws-ui",
+      "keywords": [
+        "aws",
+        "context",
+        "status-line",
+        "mod"
+      ],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-ui#readme"
+    }
+  ]
+}
