@@ -27,7 +27,7 @@
         "source": "git-subdir",
         "url": "Alejo2075/claude-code-aws",
         "path": "plugins/aws-ui",
-        "ref": "aws-ui--v0.2.0"
+        "ref": "aws-ui--v0.2.1"
       },
       "keywords": ["aws", "context", "status-line", "mod"],
       "license": "MIT",

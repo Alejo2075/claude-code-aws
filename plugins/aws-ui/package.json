@@ -1,6 +1,6 @@
 {
   "name": "aws-ui",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "description": "Shows the AWS user, region, and environment as labels in the prompt footer, read from the aws-context snapshot, with a warning only when something is wrong. Never calls AWS.",
   "license": "MIT",
