@@ -52,3 +52,7 @@ export function sessionStartInput(
 ): CommonHookInput {
   return { ...commonInput("SessionStart", cwd), source };
 }
+
+export function userPromptSubmitInput(cwd: string, prompt = "hello"): CommonHookInput {
+  return { ...commonInput("UserPromptSubmit", cwd), prompt };
+}

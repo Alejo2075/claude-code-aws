@@ -54,6 +54,8 @@ export async function runCli(argv: readonly string[], projectDir: string): Promi
         ttlMinutes: stored.config.ttlMinutes,
         maskAccountId: stored.config.maskAccountId,
         showProfile: stored.config.showProfile,
+        showUser: stored.config.showUser,
+        autoRefresh: stored.config.autoRefresh,
         userAccounts: stored.config.user?.accounts ?? {},
         projectAccounts: stored.config.project?.accounts ?? {},
         warnings: stored.config.warnings,

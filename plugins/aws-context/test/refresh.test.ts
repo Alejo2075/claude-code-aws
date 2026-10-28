@@ -155,6 +155,16 @@ describe("refreshContext: failures", () => {
       });
     });
 
+    it("is dropped without a named profile, because the credentials may be another account's", async () => {
+      const good = await refreshContext(deps({ env: envOf({}) }));
+      const bad = await refreshContext(
+        deps({ prior: good, env: envOf({}), ...failing(failure("ExpiredToken")) }),
+      );
+      expect(good.accountId).toBe(ACCOUNT);
+      expect(bad.accountId).toBeNull();
+      expect(bad.principalArn).toBeNull();
+    });
+
     it("is dropped when the profile changed", async () => {
       const good = await refreshContext(deps());
       const bad = await refreshContext(

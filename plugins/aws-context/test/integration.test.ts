@@ -8,6 +8,7 @@ import {
   readFileSync,
   rmSync,
   statSync,
+  utimesSync,
   writeFileSync,
 } from "node:fs";
 import { createServer, type Server } from "node:http";
@@ -16,7 +17,12 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { findSecretLikeStrings, runPluginHooks, sessionStartInput } from "@claude-code-aws/testkit";
+import {
+  findSecretLikeStrings,
+  runPluginHooks,
+  sessionStartInput,
+  userPromptSubmitInput,
+} from "@claude-code-aws/testkit";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { runProcess } from "../../../packages/testkit/src/run-hook.js";
@@ -168,10 +174,20 @@ describe.runIf(built)("aws-context CLI (bundled)", () => {
     expect(report.environmentBasis).toBe("default");
   });
 
+  /** A named profile with static keys in an isolated credentials file. */
+  function profileEnv(): Record<string, string> {
+    const credentialsFile = join(home, "credentials");
+    writeFileSync(
+      credentialsFile,
+      `[dev]\naws_access_key_id = ${SECRET_KEY_ID}\naws_secret_access_key = ${SECRET_KEY}\nregion = us-east-1\n`,
+    );
+    return awsEnv({ AWS_PROFILE: "dev", AWS_SHARED_CREDENTIALS_FILE: credentialsFile });
+  }
+
   it("reports expired credentials as expired and keeps the last known account non-current", async () => {
-    await cliRun(["refresh"], awsEnv(credentials));
+    await cliRun(["refresh"], profileEnv());
     mode = "expired";
-    const result = await cliRun(["refresh", "--json"], awsEnv(credentials));
+    const result = await cliRun(["refresh", "--json"], profileEnv());
     const report = parse(result.stdout);
     expect(result.exitCode).toBe(0);
     expect(report).toMatchObject({
@@ -187,6 +203,17 @@ describe.runIf(built)("aws-context CLI (bundled)", () => {
           .map((file) => readFileSync(file, "utf8"))
           .join("\n"),
     );
+  });
+
+  it("does not carry a last known account across environment credentials", async () => {
+    await cliRun(["refresh"], awsEnv(credentials));
+    mode = "expired";
+    const report = parse((await cliRun(["refresh", "--json"], awsEnv(credentials))).stdout);
+    expect(report).toMatchObject({
+      state: "expired",
+      isCurrent: false,
+      snapshot: { accountId: null, principalArn: null },
+    });
   });
 
   it("reports an unreachable endpoint as offline", async () => {
@@ -303,3 +330,97 @@ function mkdirConfig(content: object): void {
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "config.json"), JSON.stringify({ version: 1, ...content }));
 }
+
+describe.runIf(built)("UserPromptSubmit refresh hook (bundled)", () => {
+  function profileEnv(): Record<string, string> {
+    const credentialsFile = join(home, "credentials");
+    writeFileSync(
+      credentialsFile,
+      `[dev]\naws_access_key_id = ${SECRET_KEY_ID}\naws_secret_access_key = ${SECRET_KEY}\nregion = us-east-1\n`,
+    );
+    return awsEnv({ AWS_PROFILE: "dev", AWS_SHARED_CREDENTIALS_FILE: credentialsFile });
+  }
+
+  async function prompt(timeoutMs = 20_000) {
+    const [result] = await runPluginHooks(userPromptSubmitInput(project), {
+      pluginRoot,
+      projectDir: project,
+      env: profileEnv(),
+      timeoutMs,
+    });
+    return result;
+  }
+
+  /** Writes a verified snapshot and backdates the file, as if the last check was `minutes` ago. */
+  async function seed(minutes: number): Promise<string> {
+    await cliRun(["refresh"], profileEnv());
+    const file = storedFiles()[0] ?? "";
+    const shift = minutes * 60_000;
+    const stored = JSON.parse(readFileSync(file, "utf8")) as Record<string, string>;
+    for (const key of ["verifiedAt", "staleAfter"] as const) {
+      stored[key] = new Date(Date.parse(stored[key] ?? "") - shift).toISOString();
+    }
+    writeFileSync(file, JSON.stringify(stored));
+    const old = new Date(Date.now() - shift);
+    utimesSync(file, old, old);
+    return file;
+  }
+
+  it("re-verifies an old check and prints nothing for the model", async () => {
+    const file = await seed(30);
+    const before = statSync(file).mtimeMs;
+    const result = await prompt();
+    expect(result?.exitCode).toBe(0);
+    expect(result?.stdout).toBe("");
+    expect(statSync(file).mtimeMs).toBeGreaterThan(before + 60_000);
+    const status = parse((await cliRun(["status", "--json"], awsEnv())).stdout);
+    expect(status).toMatchObject({ state: "verified", isCurrent: true });
+  });
+
+  it("leaves a current check alone", async () => {
+    const file = await seed(1);
+    const before = statSync(file).mtimeMs;
+    const result = await prompt();
+    expect(result?.exitCode).toBe(0);
+    expect(statSync(file).mtimeMs).toBe(before);
+  });
+
+  it("does nothing when autoRefresh is off", async () => {
+    const file = await seed(30);
+    writeFileSync(
+      join(home, ".claude", "aws-context", "config.json"),
+      JSON.stringify({ version: 1, autoRefresh: false }),
+    );
+    const before = statSync(file).mtimeMs;
+    const result = await prompt();
+    expect(result?.exitCode).toBe(0);
+    expect(statSync(file).mtimeMs).toBe(before);
+  });
+
+  it("does nothing when there is no stored check", async () => {
+    const result = await prompt();
+    expect(result?.exitCode).toBe(0);
+    expect(storedFiles()).toEqual([]);
+  });
+
+  it("retries a failed check once per window, not on every prompt", async () => {
+    const file = await seed(30);
+    mode = "expired";
+    await prompt();
+    const afterFirst = statSync(file).mtimeMs;
+    expect(parse((await cliRun(["status", "--json"], awsEnv())).stdout).state).toBe("expired");
+    mode = "ok";
+    await prompt();
+    expect(statSync(file).mtimeMs).toBe(afterFirst);
+  });
+
+  it("ends within its budget when STS never answers", async () => {
+    await seed(30);
+    mode = "hang";
+    const started = Date.now();
+    const result = await prompt(12_000);
+    expect(result?.timedOut).toBe(false);
+    expect(result?.exitCode).toBe(0);
+    expect(Date.now() - started).toBeLessThan(10_000);
+  });
+});

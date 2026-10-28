@@ -100,6 +100,26 @@ describe.runIf(built)("status-line script (bundled)", () => {
     expect(line).toBe("carol · eu-west-1 · production · AWS check stale");
   });
 
+  it("hides the user name when the user's own aws-context config says so", async () => {
+    await storeSnapshot();
+    const dir = join(home, ".claude", "aws-context");
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(
+      join(dir, "config.json"),
+      JSON.stringify({ version: 1, ui: { showUser: false } }),
+    );
+    expect((await run(session())).stdout.trim()).toBe("eu-west-1 · production");
+  });
+
+  it("ignores showUser from the project file", async () => {
+    await storeSnapshot();
+    writeFileSync(
+      join(project, ".aws-context.json"),
+      JSON.stringify({ version: 1, ui: { showUser: false } }),
+    );
+    expect((await run(session())).stdout.trim()).toBe("carol · eu-west-1 · production");
+  });
+
   it("does not show another workspace's snapshot", async () => {
     await storeSnapshot();
     const other = mkdtempSync(join(tmpdir(), "aws-ui-other-"));
@@ -176,6 +196,21 @@ describe.runIf(built)("status-line setup", () => {
     expect(result.stdout).toContain("~/my-line.sh");
     expect(result.stdout).not.toContain(secret);
     expect(readFileSync(settingsPath(), "utf8")).toBe(before);
+  });
+
+  it("warns when the stable copy is not the installed version", async () => {
+    const dir = join(home, ".claude", "aws-ui");
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "statusline.mjs"), "// an older copy\n");
+    const result = await run({}, ["setup"]);
+    expect(result.stdout).toContain("is not the installed version");
+    expect(readFileSync(join(dir, "statusline.mjs"), "utf8")).toBe("// an older copy\n");
+  });
+
+  it("does not warn when there is no copy, or when it is current", async () => {
+    expect((await run({}, ["setup"])).stdout).not.toContain("is not the installed version");
+    await run({}, ["setup", "--copy"]);
+    expect((await run({}, ["setup"])).stdout).not.toContain("is not the installed version");
   });
 
   it("survives malformed settings", async () => {

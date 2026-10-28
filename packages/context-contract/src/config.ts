@@ -12,6 +12,8 @@ export interface ConfigLayer {
   ttlMinutes?: number;
   maskAccountId?: boolean;
   showProfile?: boolean;
+  showUser?: boolean;
+  autoRefresh?: boolean;
 }
 
 export interface ParsedConfig {
@@ -31,14 +33,18 @@ export interface EffectiveConfig {
   ttlMinutes: number;
   maskAccountId: boolean;
   showProfile: boolean;
+  /** Show the user name in the footer and status line. */
+  showUser: boolean;
+  /** Re-verify in the background when the stored check is old (at most once per time-to-live). */
+  autoRefresh: boolean;
   user: ConfigLayer | undefined;
   project: ConfigLayer | undefined;
   warnings: string[];
 }
 
 const ACCOUNT_ID = /^\d{12}$/;
-const TOP_LEVEL_KEYS = ["version", "ttlMinutes", "accounts", "ui"];
-const UI_KEYS = ["maskAccountId", "showProfile"];
+const TOP_LEVEL_KEYS = ["version", "ttlMinutes", "autoRefresh", "accounts", "ui"];
+const UI_KEYS = ["maskAccountId", "showProfile", "showUser"];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -77,7 +83,7 @@ export function parseConfig(text: string, source: ConfigSource): ParsedConfig {
   // Preferences are personal: a repository file must not lengthen the "verified" window or
   // unmask account ids, so only the user file may set them.
   const personalOnly = source === "project";
-  for (const key of ["ttlMinutes", "ui"]) {
+  for (const key of ["ttlMinutes", "autoRefresh", "ui"]) {
     if (personalOnly && value[key] !== undefined) {
       warn(`${key} is only honored in the user file; ignored`);
     }
@@ -91,6 +97,10 @@ export function parseConfig(text: string, source: ConfigSource): ParsedConfig {
       warn("ttlMinutes must be an integer from 1 to 60; using the default");
     }
   }
+
+  const auto = personalOnly ? undefined : value["autoRefresh"];
+  if (typeof auto === "boolean") layer.autoRefresh = auto;
+  else if (auto !== undefined) warn("autoRefresh must be a boolean; using the default");
 
   const accounts = value["accounts"];
   if (accounts !== undefined) {
@@ -122,6 +132,8 @@ export function parseConfig(text: string, source: ConfigSource): ParsedConfig {
       else if (ui["maskAccountId"] !== undefined) warn("ui.maskAccountId must be a boolean");
       if (typeof ui["showProfile"] === "boolean") layer.showProfile = ui["showProfile"];
       else if (ui["showProfile"] !== undefined) warn("ui.showProfile must be a boolean");
+      if (typeof ui["showUser"] === "boolean") layer.showUser = ui["showUser"];
+      else if (ui["showUser"] !== undefined) warn("ui.showUser must be a boolean");
     }
   }
   return { layer, warnings };
@@ -138,6 +150,8 @@ export function mergeConfig(
     // Masking defaults to on.
     maskAccountId: userLayer?.maskAccountId ?? true,
     showProfile: userLayer?.showProfile ?? true,
+    showUser: userLayer?.showUser ?? true,
+    autoRefresh: userLayer?.autoRefresh ?? true,
     user: userLayer,
     project: projectLayer,
     warnings: [...(user?.warnings ?? []), ...(project?.warnings ?? [])],

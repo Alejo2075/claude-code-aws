@@ -1,4 +1,5 @@
 import type { DisplayState, Interpretation } from "./interpret.js";
+import { cellWidth, clipCodePoints } from "./text.js";
 
 export interface BarOptions {
   /** Mask the account id as `1234…9012`. Defaults to true. */
@@ -10,8 +11,6 @@ export interface BarOptions {
   /** Use only ASCII (`|` separators, `...` mask) for terminals without Unicode. */
   ascii?: boolean;
 }
-
-export type Tone = "ok" | "alert" | "warn" | "danger" | "muted";
 
 interface Segment {
   text: string;
@@ -41,22 +40,6 @@ function stateLabel(interpretation: Interpretation): string {
   }
   if (interpretation.state === "stale") return "stale (refresh to verify)";
   return STATE_LABEL[interpretation.state];
-}
-
-export function toneOf(interpretation: Interpretation): Tone {
-  switch (interpretation.state) {
-    case "verified":
-      return interpretation.snapshot?.environment === "production" ? "alert" : "ok";
-    case "stale":
-    case "unverified":
-    case "offline":
-      return "warn";
-    case "expired":
-    case "error":
-      return "danger";
-    case "not-configured":
-      return "muted";
-  }
 }
 
 /**
@@ -132,7 +115,8 @@ export function principalName(arn: string | null): string | null {
     .filter((char) => char.charCodeAt(0) >= 0x20 && char.charCodeAt(0) !== 0x7f)
     .join("");
   if (clean === "") return null;
-  return clean.length > MAX_NAME ? `${clean.slice(0, MAX_NAME - 1)}…` : clean;
+  const chars = Array.from(clean);
+  return chars.length > MAX_NAME ? `${chars.slice(0, MAX_NAME - 1).join("")}…` : clean;
 }
 
 const WARNING: Partial<Record<DisplayState, string>> = {
@@ -157,6 +141,8 @@ export interface FooterOptions {
    * warning is always kept. Unset means no limit.
    */
   room?: number;
+  /** Show the user name. Defaults to true; a user who shares their screen may turn it off. */
+  showUser?: boolean;
 }
 
 const SHORT_USER = 12;
@@ -178,9 +164,11 @@ export function footerLabels(
     return { identity: null, warning: null };
   }
   const warning = WARNING[interpretation.state] ?? null;
-  const user = principalName(snapshot.principalArn);
+  const user = options.showUser === false ? null : principalName(snapshot.principalArn);
   const shortUser =
-    user !== null && user.length > SHORT_USER ? `${user.slice(0, SHORT_USER - 1)}…` : user;
+    user !== null && Array.from(user).length > SHORT_USER
+      ? `${clipCodePoints(user, SHORT_USER - 1)}…`
+      : user;
   const region = snapshot.region;
   const environment = snapshot.environment === "unknown" ? null : snapshot.environment;
 
@@ -201,13 +189,17 @@ export function footerLabels(
     .map((parts) => parts.filter((part): part is string => part !== null))
     .filter((parts) => parts.length > 0)
     .map((parts) => parts.join(LABEL_SEPARATOR));
-  const identity = candidates.find((candidate) => candidate.length <= budget) ?? null;
+  const identity = candidates.find((candidate) => cellWidth(candidate) <= budget) ?? null;
   return { identity, warning };
 }
 
 /** One line for a status line, bounded by `width`; empty when there is nothing to say. */
-export function formatFooterLine(interpretation: Interpretation, width = 100): string {
-  const { identity, warning } = footerLabels(interpretation);
+export function formatFooterLine(
+  interpretation: Interpretation,
+  width = 100,
+  options: Pick<FooterOptions, "showUser"> = {},
+): string {
+  const { identity, warning } = footerLabels(interpretation, options);
   const line = [identity, warning].filter((part): part is string => part !== null).join(" · ");
   return line.length <= width ? line : `${line.slice(0, Math.max(1, width - 1))}…`;
 }

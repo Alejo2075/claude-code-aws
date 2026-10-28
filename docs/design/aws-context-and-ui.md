@@ -127,11 +127,19 @@ Exit codes: `0` success (including degraded states, which are reported in output
 
 ### 4.7 Skill `status`
 
-Frontmatter: `allowed-tools` limited to `Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/cli.mjs *)`, so the skill needs no prompt for its own CLI. Arguments: `status` (default), `refresh`, `config`. The skill tells Claude to run the CLI, summarize its JSON, and **not** to read `~/.aws` or infer identity from any other source. It states the side effects: `refresh` makes one read-only STS call and writes the cache file. If asked to switch profile it explains how the user does that themselves and offers to run `refresh` afterwards. There is no `switch` verb.
+Frontmatter: `allowed-tools` limited to the CLI's `status`, `refresh`, and `config show` verbs (not `purge`, which deletes stored snapshots and is for the user to run), so the skill needs no prompt for its own CLI. Arguments: `status` (default), `refresh`, `config`. The skill tells Claude to run the CLI, summarize its JSON, and **not** to read `~/.aws` or infer identity from any other source. It states the side effects: `refresh` makes one read-only STS call and writes the cache file. If asked to switch profile it explains how the user does that themselves and offers to run `refresh` afterwards. There is no `switch` verb.
 
 ### 4.8 `SessionStart` hook
 
-Runs on `startup|resume`, runs `refresh` with a 5 s verification budget, writes the snapshot, and returns `additionalContext` of one short block: masked account, region, environment, verification state, profile, and a reminder that the cache is not authorization. Any failure ends in a degraded snapshot and still exits 0. The hook performs the only implicit network call in the plugin.
+Runs on `startup|resume`, runs `refresh` with a 5 s verification budget, writes the snapshot, and returns `additionalContext` of one short block: masked account, region, environment, verification state, profile, and a reminder that the cache is not authorization. Any failure ends in a degraded snapshot and still exits 0. The hook performs the only implicit network call at session start.
+
+### 4.9 `UserPromptSubmit` background refresh
+
+A footer that reads `AWS check stale` in every long session stops carrying information. A second command hook, `UserPromptSubmit` with `async: true`, calls `refreshIfDue`: when the stored check is not `verified` and the snapshot file was last written at least one time-to-live ago, it re-verifies with the same 5 s budget. Failed checks rewrite the file too, so an expired SSO session or a lost connection is retried once per window, never on every prompt. The hook prints nothing, because on this event printed text would reach the model. It runs in the background so the prompt never waits, and because Claude Code does not enforce a timeout on background hooks it ends itself after 9 s. It does nothing when there is no snapshot (session start creates it) and when the user's file sets `autoRefresh: false`. The decision rule is `isRefreshDue` in the contract, and the file's modification time stands in for the last attempt so the schema does not change.
+
+A failed check keeps the previous identity as last known only when a named profile was selected and unchanged. With environment credentials nothing is carried over: they may belong to another account, and storing anything that could tell them apart would mean persisting credential-derived data.
+
+Both the footer and the status line honor `ui.showUser` from the user file, and measure room in terms of terminal columns (`cellWidth`), not UTF-16 units.
 
 ## 5. Environment classification
 

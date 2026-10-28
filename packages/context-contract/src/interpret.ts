@@ -55,3 +55,20 @@ export function interpret(
   }
   return make("verified");
 }
+
+/**
+ * Whether a background re-check is due. Only a snapshot that exists and is not currently verified
+ * qualifies, and only once a full time-to-live has passed since the file was last written. A
+ * failed check also rewrites the file, so an expired session or a lost connection is retried once
+ * per window instead of on every prompt. `lastWriteMs` is the snapshot file's modification time.
+ */
+export function isRefreshDue(
+  interpretation: Interpretation,
+  lastWriteMs: number,
+  now: Date | number,
+  ttlMinutes: number,
+): boolean {
+  if (interpretation.snapshot === null || interpretation.state === "verified") return false;
+  const nowMs = typeof now === "number" ? now : now.getTime();
+  return nowMs - lastWriteMs >= ttlMinutes * 60_000;
+}
