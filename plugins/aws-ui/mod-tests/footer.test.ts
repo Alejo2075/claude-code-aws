@@ -11,6 +11,9 @@ const STALE_AFTER = "2026-01-01T12:05:00.000Z";
 const AT_MINUTE_1 = Date.parse("2026-01-01T12:01:00.000Z");
 const SSO_ARN = "arn:aws:sts::123456789012:assumed-role/AWSReservedSSO_Dev_abc/carol@example.com";
 
+// The gap this module puts before its own labels, so they never touch a neighbor's.
+const GAP = "\u00a0\u00a0\u00a0";
+
 const FOOTER = {
   plugin: "aws-ui",
   surface: "terminal",
@@ -60,9 +63,10 @@ function world(on: any, files: Map<string, string>, existing: string[] = []) {
     const text = files.get(posix(e.path));
     return text === undefined ? { deny: "ENOENT" } : { value: text };
   });
-  on("ui.render", ($: unknown, e: { props: { modes: readonly string[] } }) => {
-    seen.modes = e.props.modes;
-    return { type: "Text", props: {}, children: [e.props.modes.join(" & ")] };
+  on("ui.render", ($: unknown, e: { component: string; props: { modes?: readonly string[] } }) => {
+    if (e.component !== "SessionMode") return { type: "Text", props: {}, children: ["hint"] };
+    seen.modes = e.props.modes ?? [];
+    return { type: "Text", props: {}, children: [(e.props.modes ?? []).join(" & ")] };
   });
   return { seen, existing };
 }
@@ -76,13 +80,13 @@ async function footer($: any, w: { seen: { modes: readonly string[] }; existing:
 test("shows user, region and environment, and no warning when verified", async ($, on) => {
   mock.clock(on, { now: AT_MINUTE_1 });
   const w = world(on, new Map([[SNAPSHOT, snapshot()]]));
-  expect(await footer($, w)).toEqual(["carol@example.com · us-east-1 · production"]);
+  expect(await footer($, w)).toEqual([`${GAP}carol@example.com · us-east-1 · production`]);
 });
 
 test("leaves out what is not available", async ($, on) => {
   mock.clock(on, { now: AT_MINUTE_1 });
   const w = world(on, new Map([[SNAPSHOT, snapshot({ region: null, environment: "unknown" })]]));
-  expect(await footer($, w)).toEqual(["carol@example.com"]);
+  expect(await footer($, w)).toEqual([`${GAP}carol@example.com`]);
 });
 
 test("never shows the account id or the profile", async ($, on) => {
@@ -102,7 +106,7 @@ test("shows nothing at all when aws-context has stored nothing", async ($, on) =
 test("adds to the labels Claude Code already shows instead of replacing them", async ($, on) => {
   mock.clock(on, { now: AT_MINUTE_1 });
   const w = world(on, new Map([[SNAPSHOT, snapshot()]]), ["focus"]);
-  expect(await footer($, w)).toEqual(["focus", "carol@example.com · us-east-1 · production"]);
+  expect(await footer($, w)).toEqual(["focus", `${GAP}carol@example.com · us-east-1 · production`]);
 });
 
 test("leaves the footer untouched when there is nothing to add", async ($, on) => {
@@ -117,7 +121,10 @@ test("warns, and keeps the last known identity, once the window passes", async (
   await $.session.start({ surface: "terminal", isInteractive: true, cwd: "/work/project" });
   await clock.advance(6 * 60_000);
   await $.ui.mount({ ...FOOTER, props: { modes: [] } });
-  expect(w.seen.modes).toEqual(["carol@example.com · us-east-1 · production", "AWS check stale"]);
+  expect(w.seen.modes).toEqual([
+    `${GAP}carol@example.com · us-east-1 · production`,
+    "AWS check stale",
+  ]);
 });
 
 test("warns about an expired session", async ($, on) => {
@@ -127,7 +134,7 @@ test("warns about an expired session", async ($, on) => {
     new Map([[SNAPSHOT, snapshot({ verification: "expired", diagnosticCode: "SSO_EXPIRED" })]]),
   );
   expect(await footer($, w)).toEqual([
-    "carol@example.com · us-east-1 · production",
+    `${GAP}carol@example.com · us-east-1 · production`,
     "AWS session expired",
   ]);
 });
@@ -151,5 +158,54 @@ test("picks up a refresh written while the session runs", async ($, on) => {
   files.set(SNAPSHOT, snapshot());
   await clock.advance(5_000);
   await $.ui.mount({ ...FOOTER, props: { modes: [] } });
-  expect(w.seen.modes).toEqual(["carol@example.com · us-east-1 · production"]);
+  expect(w.seen.modes).toEqual([`${GAP}carol@example.com · us-east-1 · production`]);
+});
+
+test("puts a gap before its labels so they never touch a neighbor's", async ($, on) => {
+  mock.clock(on, { now: AT_MINUTE_1 });
+  const w = world(on, new Map([[SNAPSHOT, snapshot()]]), ["focus"]);
+  const modes = await footer($, w);
+  expect(modes[1]?.startsWith(GAP)).toBe(true);
+  // Non-breaking, so a neighbor that trims or collapses spaces cannot close the gap.
+  expect(GAP).not.toContain(" ");
+});
+
+test("shrinks to the room left instead of pushing a neighbor to a second line", async ($, on) => {
+  mock.clock(on, { now: AT_MINUTE_1 });
+  const w = world(on, new Map([[SNAPSHOT, snapshot()]]));
+  await $.session.start({ surface: "terminal", isInteractive: true, cwd: "/work/project" });
+  await $.ui.mount({ ...FOOTER, viewport: { columns: 70, rows: 40 }, props: { modes: [] } });
+  expect(w.seen.modes).toEqual([`${GAP}carol@examp… · production`]);
+});
+
+test("gives up everything but the warning on a very narrow row", async ($, on) => {
+  mock.clock(on, { now: AT_MINUTE_1 });
+  const w = world(
+    on,
+    new Map([[SNAPSHOT, snapshot({ verification: "expired", diagnosticCode: "SSO_EXPIRED" })]]),
+  );
+  await $.session.start({ surface: "terminal", isInteractive: true, cwd: "/work/project" });
+  await $.ui.mount({ ...FOOTER, viewport: { columns: 50, rows: 40 }, props: { modes: [] } });
+  expect(w.seen.modes).toEqual([`${GAP}AWS session expired`]);
+});
+
+test("leaves room for labels other mods already added and for the hint", async ($, on) => {
+  mock.clock(on, { now: AT_MINUTE_1 });
+  const w = world(on, new Map([[SNAPSHOT, snapshot()]]));
+  await $.session.start({ surface: "terminal", isInteractive: true, cwd: "/work/project" });
+  await $.ui.mount({
+    plugin: "aws-ui",
+    surface: "terminal",
+    component: "PromptHint",
+    requestId: "hint",
+    viewport: { columns: 120, rows: 40 },
+    props: { isDraft: false, isWorking: false, hint: "? for shortcuts · ctrl+t to hide tasks" },
+  });
+  await $.ui.mount({ ...FOOTER, props: { modes: ["narrator on"] } });
+  // 120 columns would fit the full label; the hint and the other label leave less.
+  const mine = w.seen.modes[1] ?? "";
+  expect(mine.startsWith(GAP)).toBe(true);
+  expect(mine.length - GAP.length).toBeLessThan(
+    "carol@example.com · us-east-1 · production".length,
+  );
 });

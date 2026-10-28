@@ -17,6 +17,16 @@ The labels sit at the right of the prompt footer, where Claude Code shows its ow
 - The account ID and the profile are not shown; `/aws-context:status` has them.
 - The footer never talks to AWS. It reads one small local file.
 
+### Sharing the footer with other plugins
+
+The footer is one row shared with Claude Code's own mode label, its hint, and whatever other mods draw, such as a usage meter. This plugin is built not to collide with them, and it needs no coordination with any of them:
+
+- **A gap of its own.** Its labels start with three non-breaking spaces, so they are visibly apart from whatever comes before, whichever plugin that is. Non-breaking spaces cannot be trimmed or collapsed by a neighbor.
+- **It takes only what is left.** It measures the terminal width, the hint line, and the labels already present, caps itself at 64 columns, and keeps 16 free for other mods' drawings. If that is not enough it drops the region first, then shortens the user, then keeps only the environment. A warning is always kept.
+- **It never rewrites or removes another mod's labels.** It only appends its own, and it only observes the hint line.
+
+The figures for the footer's padding and mode label are estimates of Claude Code's layout, not a documented contract. On a very narrow terminal another plugin may still wrap.
+
 The user is taken from the principal ARN: the user name of an IAM user, or the session name of an assumed role. With IAM Identity Center that is your user name, often an email address, so it will be visible if you share your screen.
 
 ## Install
@@ -42,7 +52,7 @@ Run `/reload-plugins` if you installed from your shell while a session was open.
 | Command   | `dist/statusline.mjs`              | Reads one local file, prints one line                                     | Opt-in, from your `settings.json` |
 | Skill     | `/aws-ui:statusline [setup\|copy]` | `setup`: read. `copy`: writes one file under your Claude config directory | Manual only                       |
 
-What the mod can do is limited and checkable: `claude plugin validate plugins/aws-ui` lists every mods API call it makes. They are `$.fs.stat`, `$.fs.read`, `$.env.get` (three variables that locate your config directory), `$.session.root`, `$.clock`, and `$.ui.invalidate`. It does not draw anything itself and has no `$.http`, `$.process`, `$.model`, `$.fs.write`, or `$.store`. A test enforces this.
+What the mod can do is limited and checkable: `claude plugin validate plugins/aws-ui` lists every mods API call it makes. They are `$.fs.stat`, `$.fs.read`, `$.env.get` (three variables that locate your config directory), `$.session.root`, `$.clock`, and `$.ui.invalidate`. It observes `PromptHint` (without changing it) to know how much room is left. It does not draw anything itself and has no `$.http`, `$.process`, `$.model`, `$.fs.write`, or `$.store`. A test enforces this.
 
 ## Where it shows
 

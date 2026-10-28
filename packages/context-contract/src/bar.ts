@@ -150,26 +150,59 @@ export interface FooterLabels {
   warning: string | null;
 }
 
+export interface FooterOptions {
+  /**
+   * Columns available for the whole block (identity and warning). When set, the identity gives up
+   * its region, then shortens the user, then drops to the environment alone, until it fits; the
+   * warning is always kept. Unset means no limit.
+   */
+  room?: number;
+}
+
+const SHORT_USER = 12;
+const LABEL_SEPARATOR = " · ";
+const BLOCK_SEPARATOR = " & ";
+
 /**
  * The compact form for surfaces that already have their own look (the prompt footer, a status
  * line). Shows only what is available and a warning only when there is one: a verified context
  * has no warning, and nothing at all is shown when there is no context. After a failed or old
  * check the identity is the last known one, and the warning next to it says so.
  */
-export function footerLabels(interpretation: Interpretation): FooterLabels {
+export function footerLabels(
+  interpretation: Interpretation,
+  options: FooterOptions = {},
+): FooterLabels {
   const snapshot = interpretation.snapshot;
   if (snapshot === null || interpretation.state === "not-configured") {
     return { identity: null, warning: null };
   }
-  const known = [
-    principalName(snapshot.principalArn),
-    snapshot.region,
-    snapshot.environment === "unknown" ? null : snapshot.environment,
-  ].filter((part): part is string => part !== null);
-  return {
-    identity: known.length === 0 ? null : known.join(" · "),
-    warning: WARNING[interpretation.state] ?? null,
-  };
+  const warning = WARNING[interpretation.state] ?? null;
+  const user = principalName(snapshot.principalArn);
+  const shortUser =
+    user !== null && user.length > SHORT_USER ? `${user.slice(0, SHORT_USER - 1)}…` : user;
+  const region = snapshot.region;
+  const environment = snapshot.environment === "unknown" ? null : snapshot.environment;
+
+  const budget =
+    options.room === undefined
+      ? Number.POSITIVE_INFINITY
+      : options.room - (warning === null ? 0 : warning.length + BLOCK_SEPARATOR.length);
+  // From the fullest form to the barest; the first that fits wins.
+  const candidates = [
+    [user, region, environment],
+    [user, environment],
+    [shortUser, region, environment],
+    [shortUser, environment],
+    [environment],
+    [shortUser],
+    [region],
+  ]
+    .map((parts) => parts.filter((part): part is string => part !== null))
+    .filter((parts) => parts.length > 0)
+    .map((parts) => parts.join(LABEL_SEPARATOR));
+  const identity = candidates.find((candidate) => candidate.length <= budget) ?? null;
+  return { identity, warning };
 }
 
 /** One line for a status line, bounded by `width`; empty when there is nothing to say. */
