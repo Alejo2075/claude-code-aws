@@ -45,6 +45,9 @@ function snapshot(overrides: Record<string, unknown> = {}): string {
   });
 }
 
+/** Claude Code hands the stubs absolute native paths: normalize Windows ones to the map's keys. */
+const posix = (path: string): string => path.replace(/\\/g, "/").replace(/^[A-Za-z]:/, "");
+
 /** Stubs the file system with an in-memory map and the session with a fixed project. */
 function world(
   on: (name: string, stub: (...args: any[]) => unknown) => void,
@@ -56,13 +59,13 @@ function world(
   }));
   on("session.root", () => ({ value: "/work/project" }));
   on("fs.stat", ($: unknown, e: { path: string }) => {
-    const text = files.get(e.path);
+    const text = files.get(posix(e.path));
     return text === undefined
       ? { deny: "ENOENT" }
       : { value: { kind: "file", size: text.length, mtimeMs: text.length, isLink: false } };
   });
   on("fs.read", ($: unknown, e: { path: string }) => {
-    const text = files.get(e.path);
+    const text = files.get(posix(e.path));
     return text === undefined ? { deny: "ENOENT" } : { value: text };
   });
   // What Claude Code itself would draw in the band: nothing to add, but the hook must keep it.

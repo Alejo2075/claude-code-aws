@@ -14,6 +14,7 @@ import {
   serializeSnapshot,
   snapshotPath,
   toneOf,
+  trimTrailingSeparators,
   userConfigPath,
   validateSnapshot,
   workspaceId,
@@ -378,5 +379,23 @@ describe("formatBar", () => {
 
   it("masks short and long ids consistently", () => {
     expect(maskAccount("123456789012")).toBe("1234…9012");
+  });
+});
+
+describe("path trimming", () => {
+  it("trims only the listed separators", () => {
+    expect(trimTrailingSeparators("/a/b///")).toBe("/a/b");
+    expect(trimTrailingSeparators("/a/b\\")).toBe("/a/b\\");
+    expect(trimTrailingSeparators("/a/b\\/", "/\\")).toBe("/a/b");
+    expect(trimTrailingSeparators("///")).toBe("");
+    expect(trimTrailingSeparators("")).toBe("");
+  });
+
+  it("is linear on hostile input", () => {
+    const hostile = `${"/".repeat(200_000)}x`;
+    const started = performance.now();
+    expect(trimTrailingSeparators(hostile)).toBe(hostile);
+    expect(normalizeWorkspacePath(`C:\\${"\\".repeat(200_000)}x`).length).toBeGreaterThan(0);
+    expect(performance.now() - started).toBeLessThan(500);
   });
 });

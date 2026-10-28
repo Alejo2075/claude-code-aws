@@ -1,7 +1,6 @@
 // Opt-in status-line command. Claude Code runs it with session JSON on stdin; it prints one line
 // built from the snapshot aws-context stored. It never calls AWS, never fails the status line, and
 // prints the "not configured" line on any problem.
-import { readFileSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import {
@@ -17,6 +16,7 @@ import {
   workspaceId,
   type EnvReader,
 } from "@claude-code-aws/context-contract";
+import { readTextBounded } from "@claude-code-aws/context-contract/node";
 
 import { setup } from "../lib/statusline-setup.js";
 
@@ -25,11 +25,8 @@ const WIDTH = 100;
 
 function readText(path: string | null, limit: number): string | null {
   if (path === null) return null;
-  try {
-    return statSync(path).size > limit ? null : readFileSync(path, "utf8");
-  } catch {
-    return null;
-  }
+  const read = readTextBounded(path, limit);
+  return read.kind === "ok" ? read.text : null;
 }
 
 async function readStdin(): Promise<string> {

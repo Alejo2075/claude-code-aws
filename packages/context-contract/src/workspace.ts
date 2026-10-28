@@ -1,3 +1,5 @@
+import { trimTrailingSeparators } from "./text.js";
+
 const WINDOWS_PATH = /^(?:[A-Za-z]:[\\/]|\\\\)/;
 
 /**
@@ -7,9 +9,9 @@ const WINDOWS_PATH = /^(?:[A-Za-z]:[\\/]|\\\\)/;
  */
 export function normalizeWorkspacePath(path: string): string {
   if (WINDOWS_PATH.test(path)) {
-    return path.replaceAll("\\", "/").replace(/\/+$/, "").toLowerCase();
+    return trimTrailingSeparators(path.replaceAll("\\", "/")).toLowerCase();
   }
-  const trimmed = path.replace(/\/+$/, "");
+  const trimmed = trimTrailingSeparators(path);
   return trimmed === "" ? "/" : trimmed;
 }
 

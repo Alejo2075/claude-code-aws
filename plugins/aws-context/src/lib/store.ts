@@ -4,7 +4,6 @@ import {
   existsSync,
   mkdirSync,
   readdirSync,
-  readFileSync,
   renameSync,
   rmSync,
   statSync,
@@ -18,19 +17,17 @@ import {
   parseSnapshot,
   serializeSnapshot,
 } from "@claude-code-aws/context-contract";
+import { readTextBounded } from "@claude-code-aws/context-contract/node";
 
 export const RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 const SNAPSHOT_FILE = /^[0-9a-f]{16}\.json$/;
 
 /** Reads a snapshot. Missing, oversized, corrupt, or old-schema files all yield null. */
 export function readSnapshotFile(path: string): AwsContextSnapshotV1 | null {
-  try {
-    if (statSync(path).size > MAX_SNAPSHOT_BYTES) return null;
-    const parsed = parseSnapshot(readFileSync(path, "utf8"));
-    return parsed.ok ? parsed.snapshot : null;
-  } catch {
-    return null;
-  }
+  const read = readTextBounded(path, MAX_SNAPSHOT_BYTES);
+  if (read.kind !== "ok") return null;
+  const parsed = parseSnapshot(read.text);
+  return parsed.ok ? parsed.snapshot : null;
 }
 
 /** Atomic write (temp file in the same directory, then rename), private to the user where supported. */

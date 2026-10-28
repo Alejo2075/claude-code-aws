@@ -2,13 +2,13 @@
  * Locations are computed from environment variables alone, so a mod (which has no Node APIs) and a
  * Node CLI derive the same path. Separators are always "/", which Node accepts on Windows too.
  */
+import { trimTrailingSeparators } from "./text.js";
+
 export type EnvReader = (name: string) => string | undefined;
 
 const SNAPSHOT_VERSION_DIR = "v1";
 
-function stripTrailingSeparators(path: string): string {
-  return path.replace(/[\\/]+$/, "");
-}
+const stripTrailingSeparators = (path: string): string => trimTrailingSeparators(path, "/\\");
 
 function nonEmpty(value: string | undefined): string | undefined {
   return value !== undefined && value.trim() !== "" ? value : undefined;

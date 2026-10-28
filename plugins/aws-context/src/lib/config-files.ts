@@ -1,5 +1,3 @@
-import { readFileSync, statSync } from "node:fs";
-
 import {
   type ConfigSource,
   type EffectiveConfig,
@@ -11,20 +9,15 @@ import {
   projectConfigPath,
   userConfigPath,
 } from "@claude-code-aws/context-contract";
+import { readTextBounded } from "@claude-code-aws/context-contract/node";
 
 function readLayer(path: string | null, source: ConfigSource): ParsedConfig | undefined {
   if (path === null) return undefined;
-  let text: string;
-  try {
-    if (statSync(path).size > MAX_CONFIG_BYTES) {
-      return parseConfig(" ".repeat(MAX_CONFIG_BYTES + 1), source);
-    }
-    text = readFileSync(path, "utf8");
-  } catch {
-    // No file is the normal case, not a warning.
-    return undefined;
-  }
-  return parseConfig(text, source);
+  const read = readTextBounded(path, MAX_CONFIG_BYTES);
+  // No file is the normal case, not a warning. An unreadable or oversized one is reported.
+  if (read.kind === "missing") return undefined;
+  if (read.kind === "ok") return parseConfig(read.text, source);
+  return parseConfig(" ".repeat(MAX_CONFIG_BYTES + 1), source);
 }
 
 /** Loads the user and project configuration files. Never throws; bad files become warnings. */

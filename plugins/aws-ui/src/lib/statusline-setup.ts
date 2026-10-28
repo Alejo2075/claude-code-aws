@@ -1,7 +1,8 @@
-import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
+import { copyFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 
 import { claudeConfigDir, type EnvReader } from "@claude-code-aws/context-contract";
+import { readTextBounded } from "@claude-code-aws/context-contract/node";
 
 /** The stable copy lives in this plugin's own folder under the Claude config directory. */
 export function stableScriptPath(env: EnvReader): string | null {
@@ -21,11 +22,10 @@ export function detectStatusLine(env: EnvReader): ExistingStatusLine {
   const base = claudeConfigDir(env);
   if (base === null) return { isConfigured: false, command: null };
   const path = `${base}/settings.json`;
+  const read = readTextBounded(path, 1_000_000);
+  if (read.kind !== "ok") return { isConfigured: false, command: null };
   try {
-    if (!existsSync(path) || statSync(path).size > 1_000_000) {
-      return { isConfigured: false, command: null };
-    }
-    const settings: unknown = JSON.parse(readFileSync(path, "utf8"));
+    const settings: unknown = JSON.parse(read.text);
     const line =
       typeof settings === "object" && settings !== null
         ? (settings as Record<string, unknown>)["statusLine"]
