@@ -1,6 +1,6 @@
 {
   "name": "aws-context",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Verified AWS account, principal, region, and environment for the current project, with a status skill and a session-start check. Read-only: it never changes AWS resources.",
   "author": {
     "name": "Alejandro Santana",

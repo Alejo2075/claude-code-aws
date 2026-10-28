@@ -29183,6 +29183,13 @@ var require_dist_cjs16 = __commonJS({
   }
 });
 
+// ../../packages/context-contract/src/text.ts
+function trimTrailingSeparators(path, separators = "/") {
+  let end2 = path.length;
+  while (end2 > 0 && separators.includes(path.charAt(end2 - 1))) end2 -= 1;
+  return path.slice(0, end2);
+}
+
 // ../../packages/context-contract/src/bar.ts
 var STATE_LABEL = {
   "not-configured": "not configured",
@@ -29241,8 +29248,8 @@ function formatBar(interpretation, options = {}) {
 var MAX_CONFIG_BYTES = 64 * 1024;
 var DEFAULT_TTL_MINUTES = 5;
 var ACCOUNT_ID = /^\d{12}$/;
-var TOP_LEVEL_KEYS = ["version", "ttlMinutes", "accounts", "ui"];
-var UI_KEYS = ["maskAccountId", "showProfile"];
+var TOP_LEVEL_KEYS = ["version", "ttlMinutes", "autoRefresh", "accounts", "ui"];
+var UI_KEYS = ["maskAccountId", "showProfile", "showUser"];
 function isRecord(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -29275,7 +29282,7 @@ function parseConfig(text, source) {
     if (!TOP_LEVEL_KEYS.includes(key)) warn("ignored an unknown top-level key");
   }
   const personalOnly = source === "project";
-  for (const key of ["ttlMinutes", "ui"]) {
+  for (const key of ["ttlMinutes", "autoRefresh", "ui"]) {
     if (personalOnly && value[key] !== void 0) {
       warn(`${key} is only honored in the user file; ignored`);
     }
@@ -29288,6 +29295,9 @@ function parseConfig(text, source) {
       warn("ttlMinutes must be an integer from 1 to 60; using the default");
     }
   }
+  const auto = personalOnly ? void 0 : value["autoRefresh"];
+  if (typeof auto === "boolean") layer.autoRefresh = auto;
+  else if (auto !== void 0) warn("autoRefresh must be a boolean; using the default");
   const accounts = value["accounts"];
   if (accounts !== void 0) {
     if (!isRecord(accounts)) {
@@ -29317,6 +29327,8 @@ function parseConfig(text, source) {
       else if (ui["maskAccountId"] !== void 0) warn("ui.maskAccountId must be a boolean");
       if (typeof ui["showProfile"] === "boolean") layer.showProfile = ui["showProfile"];
       else if (ui["showProfile"] !== void 0) warn("ui.showProfile must be a boolean");
+      if (typeof ui["showUser"] === "boolean") layer.showUser = ui["showUser"];
+      else if (ui["showUser"] !== void 0) warn("ui.showUser must be a boolean");
     }
   }
   return { layer, warnings };
@@ -29329,6 +29341,8 @@ function mergeConfig(user, project) {
     // Masking defaults to on.
     maskAccountId: userLayer?.maskAccountId ?? true,
     showProfile: userLayer?.showProfile ?? true,
+    showUser: userLayer?.showUser ?? true,
+    autoRefresh: userLayer?.autoRefresh ?? true,
     user: userLayer,
     project: projectLayer,
     warnings: [...user?.warnings ?? [], ...project?.warnings ?? []]
@@ -29375,13 +29389,6 @@ function interpret(snapshot, now) {
     return make("stale");
   }
   return make("verified");
-}
-
-// ../../packages/context-contract/src/text.ts
-function trimTrailingSeparators(path, separators = "/") {
-  let end2 = path.length;
-  while (end2 > 0 && separators.includes(path.charAt(end2 - 1))) end2 -= 1;
-  return path.slice(0, end2);
 }
 
 // ../../packages/context-contract/src/paths.ts
@@ -29706,7 +29713,7 @@ async function refreshContext(deps) {
   } catch (error2) {
     const { verification, code } = classifyError(error2);
     const prior = deps.prior;
-    const carries = prior !== null && prior.workspaceId === id && prior.profile === profile && prior.accountId !== null;
+    const carries = prior !== null && profile !== null && prior.workspaceId === id && prior.profile === profile && prior.accountId !== null;
     const accountId = carries ? prior.accountId : null;
     return {
       schemaVersion: 1,
@@ -29907,6 +29914,8 @@ function renderConfigText(config) {
     `ttlMinutes:    ${config.ttlMinutes}`,
     `maskAccountId: ${config.maskAccountId}`,
     `showProfile:   ${config.showProfile}`,
+    `showUser:      ${config.showUser}`,
+    `autoRefresh:   ${config.autoRefresh}`,
     "",
     "Accounts (user file):"
   ];
@@ -29963,6 +29972,8 @@ async function runCli(argv, projectDir) {
         ttlMinutes: stored.config.ttlMinutes,
         maskAccountId: stored.config.maskAccountId,
         showProfile: stored.config.showProfile,
+        showUser: stored.config.showUser,
+        autoRefresh: stored.config.autoRefresh,
         userAccounts: stored.config.user?.accounts ?? {},
         projectAccounts: stored.config.project?.accounts ?? {},
         warnings: stored.config.warnings
