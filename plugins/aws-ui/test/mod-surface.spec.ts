@@ -22,9 +22,9 @@ describe.runIf(bundled && hasClaude)("aws-ui mod surface", () => {
   const line = (text: string, label: string): string =>
     text.split("\n").find((entry) => entry.includes(`register.js ${label}`)) ?? "";
 
-  it("handles only the two events it needs", () => {
+  it("handles only the events it needs", () => {
     expect(line(output(), "hooks:")).toMatch(
-      /hooks: session\.start, ui\.render\{component=SessionMode\}$/,
+      /hooks: session\.start, ui\.render\{component=SessionMode\}, ui\.render\{component=PromptHint\}$/,
     );
   });
 

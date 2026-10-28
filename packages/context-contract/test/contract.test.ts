@@ -503,3 +503,52 @@ describe("footerLabels", () => {
     expect(formatFooterLine(interpret(null, fresh))).toBe("");
   });
 });
+
+describe("footerLabels with limited room", () => {
+  const fresh = at("2026-01-01T12:01:00.000Z");
+  const arn =
+    "arn:aws:sts::123456789012:assumed-role/AWSReservedSSO_Dev_abc/carolina.fernandez@example.com";
+  const identity = (room: number, overrides = {}) =>
+    footerLabels(
+      interpret(snapshot({ principalArn: arn, environment: "production", ...overrides }), fresh),
+      { room },
+    ).identity;
+
+  it("keeps everything when it fits", () => {
+    expect(identity(100)).toBe("carolina.fernandez@example.com · us-east-1 · production");
+  });
+
+  it("gives up the region first", () => {
+    expect(identity(45)).toBe("carolina.fernandez@example.com · production");
+  });
+
+  it("then shortens the user", () => {
+    expect(identity(38)).toBe("carolina.fe… · us-east-1 · production");
+    expect(identity(26)).toBe("carolina.fe… · production");
+  });
+
+  it("then keeps only the environment, then gives up", () => {
+    expect(identity(12)).toBe("production");
+    expect(identity(5)).toBeNull();
+    expect(identity(0)).toBeNull();
+  });
+
+  it("keeps the warning and reserves its room", () => {
+    const expired = { verification: "expired", diagnosticCode: "SSO_EXPIRED" } as const;
+    const result = footerLabels(
+      interpret(snapshot({ principalArn: arn, environment: "production", ...expired }), fresh),
+      { room: 40 },
+    );
+    expect(result.warning).toBe("AWS session expired");
+    expect(
+      (result.identity ?? "").length + " & ".length + "AWS session expired".length,
+    ).toBeLessThanOrEqual(40);
+  });
+
+  it("never exceeds the room it was given", () => {
+    for (let room = 0; room < 90; room += 3) {
+      const found = identity(room);
+      if (found !== null) expect(found.length).toBeLessThanOrEqual(room);
+    }
+  });
+});

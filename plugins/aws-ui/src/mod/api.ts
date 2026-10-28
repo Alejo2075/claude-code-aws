@@ -19,5 +19,13 @@ export interface ModApi {
 export interface ModeEvent {
   surface: string;
   component: "SessionMode";
+  viewport?: { columns: number };
   props: { modes: readonly string[] };
+}
+
+/** The `PromptHint` render site: the dim hint line under the prompt. Only observed. */
+export interface HintEvent {
+  surface: string;
+  component: "PromptHint";
+  props: { hint: string };
 }

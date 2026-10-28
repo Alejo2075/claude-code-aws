@@ -188,6 +188,8 @@ Content rules (`footerLabels` in the contract):
 - Warning label, only when the state is not `verified`: `AWS check stale`, `AWS session expired`, `AWS offline`, `AWS unverified`, `AWS check failed`. The identity beside a warning is the last known one.
 - No label at all when there is no context. The account ID and profile are never shown here.
 
+Coexistence. The footer row is shared with the engine's mode label, the hint, and other mods (for example a usage meter that draws `meter · <what is beneath>`, which counts our `modes` strings in its width). So the module: prefixes its first label with three non-breaking spaces (a gap no neighbor can trim); computes its room as `columns - 4 (padding) - 2 (gap) - 20 (longest mode label) - hint width - existing labels - 3 - 16 (reserved for others)`, capped at 64; and lets `footerLabels({ room })` give up the region, then shorten the user, then keep only the environment. The warning is always kept. It observes `PromptHint` to learn the hint width and never rewrites it. These layout figures are estimates, not a documented contract.
+
 Surfaces: the footer labels are raised on the terminal and Desktop. Elsewhere use the status line.
 
 ### 6.3 Status-line fallback
