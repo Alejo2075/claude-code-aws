@@ -6,5 +6,32 @@
     "email": "alejsant75@gmail.com",
     "url": "https://github.com/Alejo2075"
   },
-  "plugins": []
+  "plugins": [
+    {
+      "name": "aws-context",
+      "description": "Verified AWS account, principal, region, and environment for the current project, with a status skill and a session-start check. Read-only: it never changes AWS resources.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-context",
+        "ref": "aws-context--v0.1.0"
+      },
+      "keywords": ["aws", "identity", "sts", "context"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-context#readme"
+    },
+    {
+      "name": "aws-ui",
+      "description": "Shows the verified AWS account, region, and environment in a compact band above the prompt, read from the aws-context snapshot, with an opt-in status-line fallback. Never calls AWS.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-ui",
+        "ref": "aws-ui--v0.1.0"
+      },
+      "keywords": ["aws", "context", "status-line", "mod"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-ui#readme"
+    }
+  ]
 }
