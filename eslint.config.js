@@ -6,7 +6,15 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["**/node_modules/**", "**/dist/**", "out/**", "coverage/**", "templates/**"],
+    ignores: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "out/**",
+      "coverage/**",
+      "templates/**",
+      // Run by `claude plugin test`, which supplies the `claude-code/testing` module.
+      "plugins/*/mod-tests/**",
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,

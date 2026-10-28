@@ -40,6 +40,17 @@ Inside the session, `/reload-plugins` picks up rebuilt files.
 
 The release tree contains only the allowlist in [`scripts/lib/release.ts`](../scripts/lib/release.ts). Anything a plugin needs at runtime must live in an allowlisted path. Do not add a top-level `bin/`: claude.ai organization sync rejects plugins that have one. Use bundles under `dist/`, referenced through `${CLAUDE_PLUGIN_ROOT}`.
 
+## Plugins with a mod
+
+A mod is a plugin whose `hooks/hooks.json` has `"modules": ["<path>"]`. It runs inside Claude Code, so the rules differ from a command hook ([mods overview](https://code.claude.com/docs/en/plugins/mods)). [`aws-ui`](../plugins/aws-ui) is the worked example.
+
+- **Source and build.** Write the module as `src/mod/register.ts`. `pnpm build` bundles it to `dist/register.js` (platform-neutral ESM, **not minified**) and `hooks/hooks.json` points to `../dist/register.js`. `claude plugin validate` reads `$.namespace.method` calls statically, so keep `$` unaliased, write event names as string literals, and pass `$` only to top-level functions of the same file.
+- **No Node APIs.** A mod has no `fs`, `process`, or network of its own; it uses `$.fs`, `$.env`, `$.http`, and so on. Bundle shared packages (the contract package is pure and works in both places).
+- **Least surface.** `claude plugin validate` prints the events a mod handles and every call it makes. Add a test that fails when a call it should never make appears (see `plugins/aws-ui/test/mod-surface.spec.ts`).
+- **Tests.** `claude plugin test` (run by `pnpm test:mods`, which calls each plugin's `test:mod` script) loads the module with a stubbed Claude Code. Put those files in `mod-tests/` as `*.test.ts`. It runs **every** `*.test.ts` in the plugin directory, so name vitest files in such a plugin `*.spec.ts` (the root vitest config picks up both).
+- **Fallbacks.** Mods do not draw in `claude -p`, the Agent SDK, cloud sessions, or WSL sessions of the Desktop app, and each render site is raised only on some surfaces. Provide a text command or an opt-in status line, and document which surfaces are verified.
+- **Never edit the user's settings.** A plugin cannot set the main status line. Print a snippet and let the user apply it.
+
 ## Conventions
 
 1. **Self-contained.** Never import another plugin. Code shared by two or more plugins moves to `packages/<name>` and is bundled into each plugin at build time. Declare `dependencies` in `plugin.json` only when one plugin's workflow really requires another plugin to be enabled.
