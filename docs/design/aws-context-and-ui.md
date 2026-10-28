@@ -176,26 +176,23 @@ plugins/aws-ui/
 
 ### 6.2 The mod
 
+It adds labels to the prompt footer instead of drawing its own band. The `SessionMode` render site is the dim list of mode labels at the right of the footer (`focus`, `memory paused`); a hook adds a label by rewriting `modes`. This takes no extra row, is not shared with surveys like the band above the prompt, and is drawn in Claude Code's own colors and type, so the mod defines no styles. (Chosen after the first release drew a band above the prompt, which the maintainer found intrusive.)
+
 - `session.start`: read the snapshot once, start `$.clock.every(5000, …)`.
-- Poll: `$.fs.stat` the snapshot and the user config file; re-read and re-validate only when size or mtime changed; keep the result in module variables (no `$.state`, so no extra type declarations are needed). The path comes from three `$.env.get` reads (`CLAUDE_CONFIG_DIR`, `USERPROFILE`, `HOME`) and the workspace id from `$.session.root()`. No network, no process spawn, no `$.model` call; a test reads `claude plugin validate` output and fails if any such call appears.
-- `ui.render` awaits `next(e)` first and keeps what other mods drew in the band, and yields to a survey (`hasSurvey`).
-- `ui.render` with `{ component: 'AbovePrompt' }`: returns one `Text` row built by `formatBar(interpret(snapshot, now))`. It reads `$.state` only. When nothing was ever read it draws `AWS · not configured`, so the plugin works with no `aws-context`.
-- Layout: width from `e.viewport` when present; truncate by dropping, in order, profile, then region, keeping state and masked account last. No color escape sequences are required; state is always spelled out in words. Optional color is applied only through the element's own props.
-- No command, no tool, no pane, no permission interception.
-- `/aws-ui:details` is **not** implemented in v0.1: the full account and ARN are available through `/aws-context:status`. The spec allows details "only if the current mod API supports it".
+- Poll: `$.fs.stat` the snapshot; re-read and re-validate only when size or mtime changed; keep the result in module variables. The path comes from three `$.env.get` reads (`CLAUDE_CONFIG_DIR`, `USERPROFILE`, `HOME`) and the workspace id from `$.session.root()`. No network, no process spawn, no `$.model` call, and no drawing calls; a test reads `claude plugin validate` output and fails if any appear. When the interpreted state changes (for example verified to stale as time passes) it invalidates `ui.render`.
+- `ui.render` with `{ component: 'SessionMode' }`: `footerLabels(interpret(snapshot, now))` gives up to two labels. If both are null it returns `next(e)` unchanged; otherwise it appends them to the labels already present.
 
-Example lines:
+Content rules (`footerLabels` in the contract):
 
-```text
-AWS · 1234…9012 · us-east-1 · production · verified
-AWS · 1234…9012 · us-east-1 · unknown · stale (refresh to verify)
-AWS · last known 1234…9012 · expired (SSO session)
-AWS · not configured
-```
+- Identity label: `user · region · environment`, each part only if known. The user is `principalName(arn)`: the IAM user name, or the session name of an assumed role (the person's user name under IAM Identity Center), or `root`. Control characters are dropped and the length is bounded. The environment is shown only when classified (`production` or `non-production`).
+- Warning label, only when the state is not `verified`: `AWS check stale`, `AWS session expired`, `AWS offline`, `AWS unverified`, `AWS check failed`. The identity beside a warning is the last known one.
+- No label at all when there is no context. The account ID and profile are never shown here.
+
+Surfaces: the footer labels are raised on the terminal and Desktop. Elsewhere use the status line.
 
 ### 6.3 Status-line fallback
 
-`dist/statusline.mjs` reads the Claude Code status-line JSON from stdin, takes `workspace.project_dir` (else `workspace.current_dir`, `cwd`), reads the snapshot with `node:fs`, prints one line from the same `formatBar`, and exits 0 on every error with the `not configured` line. It never runs STS.
+`dist/statusline.mjs` reads the Claude Code status-line JSON from stdin, takes `workspace.project_dir` (else `workspace.current_dir`, `cwd`), reads the snapshot with `node:fs`, prints one line from the same `footerLabels` (`formatFooterLine`), and exits 0 on every error with the `not configured` line. It never runs STS.
 
 Setup is documented and never automatic. The plugin cache path changes with every plugin version, so a snippet that points at it breaks on update. The skill `/aws-ui:statusline` (manual only) runs `statusline.mjs setup`, which:
 

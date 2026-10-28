@@ -24,7 +24,7 @@ describe.runIf(bundled && hasClaude)("aws-ui mod surface", () => {
 
   it("handles only the two events it needs", () => {
     expect(line(output(), "hooks:")).toMatch(
-      /hooks: session\.start, ui\.render\{component=AbovePrompt\}$/,
+      /hooks: session\.start, ui\.render\{component=SessionMode\}$/,
     );
   });
 
@@ -43,6 +43,10 @@ describe.runIf(bundled && hasClaude)("aws-ui mod surface", () => {
       "$.session.messages",
       "$.fs.write",
       "$.settings",
+      "$.ui.resolve",
+      "$.ui.open",
+      "$.ui.status",
+      "$.ui.toast",
       "$.store",
       "$.env.set",
     ]) {

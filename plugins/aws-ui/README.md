@@ -1,21 +1,23 @@
 # aws-ui
 
-Shows the verified AWS account, region, and environment in a compact band above the prompt, read from the `aws-context` snapshot, with an opt-in status-line fallback. Never calls AWS.
+Shows the AWS user, region, and environment in the prompt footer, read from the `aws-context` snapshot, with a warning only when something is wrong. Never calls AWS.
 
 ```text
-AWS · 1234…9012 · us-east-1 · production · verified
+… carol@example.com · us-east-1 · production
+… carol@example.com · us-east-1 · production & AWS session expired
 ```
 
 ## What it does
 
-You see which AWS target you are working against while you work, without asking for it. The line is built from the snapshot that [`aws-context`](../aws-context) stores after it verifies your identity with STS.
+The labels sit at the right of the prompt footer, where Claude Code shows its own mode labels such as `focus`. They take no extra row and use Claude Code's colors and type, because Claude Code draws them.
 
-- The band **never** talks to AWS. It reads one small local file and redraws.
-- A stale or failed check is never shown as current: the account is labeled `last known` and the state is spelled out (`stale`, `expired`, `offline`, `unverified`, `error`).
-- The account is masked (`1234…9012`) unless you turn masking off in your own configuration.
-- With no `aws-context` installed, or nothing stored yet, it shows `AWS · not configured` and nothing breaks.
+- **User, region, environment** are shown only when known. `environment` appears only if you classified the account in `aws-context`; it is never guessed.
+- **A warning appears only when the context is not current**: `AWS check stale`, `AWS session expired`, `AWS offline`, `AWS unverified`, or `AWS check failed`. The user shown next to a warning is the last known one.
+- **Nothing at all** is shown when `aws-context` has stored nothing. A verified context has no warning.
+- The account ID and the profile are not shown; `/aws-context:status` has them.
+- The footer never talks to AWS. It reads one small local file.
 
-The band is informational. It does not intercept prompts, change permissions, or replace any dialog.
+The user is taken from the principal ARN: the user name of an IAM user, or the session name of an assumed role. With IAM Identity Center that is your user name, often an email address, so it will be visible if you share your screen.
 
 ## Install
 
@@ -36,23 +38,15 @@ Run `/reload-plugins` if you installed from your shell while a session was open.
 
 | Component | Name                               | Side effects                                                              | Invocation                        |
 | --------- | ---------------------------------- | ------------------------------------------------------------------------- | --------------------------------- |
-| Mod       | Band above the prompt              | Reads two local files, draws. No network, no process, no write            | Automatic                         |
-| Command   | `dist/statusline.mjs`              | Reads two local files, prints one line                                    | Opt-in, from your `settings.json` |
+| Mod       | Labels in the prompt footer        | Reads one local file, adds labels. No network, no process, no write       | Automatic                         |
+| Command   | `dist/statusline.mjs`              | Reads one local file, prints one line                                     | Opt-in, from your `settings.json` |
 | Skill     | `/aws-ui:statusline [setup\|copy]` | `setup`: read. `copy`: writes one file under your Claude config directory | Manual only                       |
 
-What the mod can do is limited and checkable: `claude plugin validate plugins/aws-ui` lists every mods API call it makes. They are `$.fs.stat`, `$.fs.read`, `$.env.get` (three variables that locate your config directory), `$.session.root`, `$.clock`, and the drawing calls. There is no `$.http`, `$.process`, `$.model`, `$.fs.write`, or `$.store`. A test enforces this.
+What the mod can do is limited and checkable: `claude plugin validate plugins/aws-ui` lists every mods API call it makes. They are `$.fs.stat`, `$.fs.read`, `$.env.get` (three variables that locate your config directory), `$.session.root`, `$.clock`, and `$.ui.invalidate`. It does not draw anything itself and has no `$.http`, `$.process`, `$.model`, `$.fs.write`, or `$.store`. A test enforces this.
 
 ## Where it shows
 
-| Where                                                          |            Band             |      Status-line command      |
-| -------------------------------------------------------------- | :-------------------------: | :---------------------------: |
-| Claude Code in a terminal                                      |             yes             |              yes              |
-| Desktop app, VS Code extension                                 |         unverified          |          unverified           |
-| `claude -p`, Agent SDK, cloud sessions, WSL in the Desktop app | no (mods do not draw there) | `-p`: no status line is drawn |
-
-The band is drawn only on surfaces where Claude Code raises the `AbovePrompt` site, which its type declarations list as the terminal. Treat other surfaces as unverified until tested there.
-
-You can collapse the band with `Ctrl+X Ctrl+A` or by clicking `[-]`. The mod cannot tell it is collapsed, so anything you must act on is also available from `/aws-context:status`.
+The footer labels (`SessionMode`) are raised on the terminal and in the Desktop app. They are not drawn in `claude -p`, the Agent SDK, cloud sessions, or WSL sessions of the Desktop app, because mods do not draw there. The VS Code extension is unverified. Where the footer is missing, use the status line.
 
 ## Status line (opt-in)
 
@@ -71,6 +65,8 @@ Claude Code supports a single status line per user, and a plugin cannot set it. 
 }
 ```
 
+It prints the same content as the footer: `carol@example.com · us-east-1 · production · AWS check stale`, or an empty line when there is nothing to show.
+
 The script path inside the plugin cache changes when the plugin updates. `/aws-ui:statusline copy` writes one stable copy to `<claude config dir>/aws-ui/statusline.mjs` and prints a snippet that points at it; run it again after updating `aws-ui` to refresh the copy.
 
 If you already have a status line, keep it and call this one from yours, then print both lines:
@@ -78,9 +74,9 @@ If you already have a status line, keep it and call this one from yours, then pr
 ```sh
 #!/bin/sh
 input=$(cat)
-your-existing-command <<EOF
+your-existing-command <<INPUT
 $input
-EOF
+INPUT
 printf '%s' "$input" | node "$HOME/.claude/aws-ui/statusline.mjs"
 ```
 
@@ -88,13 +84,7 @@ On Windows, write the path with forward slashes in `settings.json`: Git Bash tre
 
 ## Configuration
 
-Reads the same optional **user** file as `aws-context`, `<claude config dir>/aws-context/config.json`:
-
-```json
-{ "version": 1, "ui": { "maskAccountId": true, "showProfile": true } }
-```
-
-Only your own file is honored for these preferences. A `.aws-context.json` in a repository cannot unmask the account or change how long a check counts as fresh.
+None. The time a check stays fresh (`ttlMinutes`) and the account-to-environment mapping belong to `aws-context`; see its README.
 
 ## AWS permissions
 
@@ -102,25 +92,25 @@ None. This plugin makes no AWS calls. It needs no credentials and never reads th
 
 ## Data and privacy
 
-- **Reads:** the snapshot `<claude config dir>/aws-context/v1/<workspace id>.json` and the optional user config file. Nothing else, and no credential files.
+- **Reads:** the snapshot `<claude config dir>/aws-context/v1/<workspace id>.json`. Nothing else, and no credential files.
 - **Writes:** nothing, except `/aws-ui:statusline copy`, which writes one script file you asked for.
-- **Shows:** the masked account, region, environment, state, and (if selected) the profile name. The principal ARN is never displayed because it can contain a user name or email.
+- **Shows:** the user name taken from the principal ARN, the region, the environment if classified, and a warning if any. Not the account ID, the profile, or the ARN.
 - **Telemetry:** none.
 
 ## Limitations
 
-- **Freshness is bounded by `aws-context`.** The band does not verify anything. After the time-to-live (default 5 minutes) it shows `stale` until a refresh (`/aws-context:status refresh`) writes a new snapshot. The mod checks the file every 5 seconds.
-- **Which project.** The mod finds the snapshot from the session's project root, and the `aws-context` hook from `CLAUDE_PROJECT_DIR`. They normally match; after a `/cd` into another directory they may not, and the band then shows `not configured` until a refresh for that directory. Unverified in a real session.
+- **Freshness is bounded by `aws-context`.** The footer does not verify anything. After the time-to-live (default 5 minutes) it shows `AWS check stale` until a refresh (`/aws-context:status refresh`) writes a new snapshot. The mod checks the file every 5 seconds.
+- **Which project.** The mod finds the snapshot from the session's project root, and the `aws-context` hook from `CLAUDE_PROJECT_DIR`. They normally match; after a `/cd` into another directory they may not, and the footer then shows nothing until a refresh for that directory. Unverified in a real session.
 - **Not an enforcement point.** Seeing `production` here does not stop any command. IAM, SCPs, and permission boundaries do that.
+- **Labels are plain text.** Claude Code draws them in its own style, so they cannot be colored; the warning is words, not color.
 - **Mods are code that runs inside Claude Code.** Install from sources you trust, and review with `claude plugin validate`. Mods can be turned off with `--safe-mode`, `disableAllHooks`, or by disabling the plugin.
-- **Layout.** The band truncates to its width, dropping the profile, then the region, and keeps the account and state. It was tested with a stubbed Claude Code, not yet in every terminal.
 
 ## Verify it by hand
 
 1. `pnpm build`, then `claude --plugin-dir plugins/aws-context --plugin-dir plugins/aws-ui`.
 2. `/plugin` shows `1 mod active · aws-ui`.
-3. With nothing stored: `AWS · not configured` above the prompt.
-4. `/aws-context:status refresh` with valid credentials: the band shows the masked account and `verified` within a few seconds.
-5. Wait past the time-to-live: it changes to `last known … stale` without any AWS call.
-6. `claude -p "hello" --plugin-dir plugins/aws-ui`: no error, no band (mods do not draw in `-p`).
-7. `/plugin disable aws-ui@claude-code-aws`: the band disappears and Claude Code is otherwise unchanged.
+3. With nothing stored, the footer shows no AWS label.
+4. `/aws-context:status refresh` with valid credentials: within a few seconds the footer shows your user and region.
+5. Wait past the time-to-live: `AWS check stale` appears next to the last known identity, without any AWS call.
+6. `claude -p "hello" --plugin-dir plugins/aws-ui`: no error and no label (mods do not draw in `-p`).
+7. `/plugin disable aws-ui@claude-code-aws`: the label disappears and Claude Code is otherwise unchanged.

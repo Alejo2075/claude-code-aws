@@ -3,13 +3,16 @@ import { describe, expect, it } from "vitest";
 import {
   claudeConfigDir,
   classifyAccount,
+  footerLabels,
   formatBar,
+  formatFooterLine,
   interpret,
   maskAccount,
   mergeConfig,
   normalizeWorkspacePath,
   parseConfig,
   parseSnapshot,
+  principalName,
   projectConfigPath,
   serializeSnapshot,
   snapshotPath,
@@ -397,5 +400,106 @@ describe("path trimming", () => {
     expect(trimTrailingSeparators(hostile)).toBe(hostile);
     expect(normalizeWorkspacePath(`C:\\${"\\".repeat(200_000)}x`).length).toBeGreaterThan(0);
     expect(performance.now() - started).toBeLessThan(500);
+  });
+});
+
+describe("principalName", () => {
+  const arn = (resource: string) =>
+    `arn:aws:${resource.startsWith("user") || resource === "root" ? "iam" : "sts"}::123456789012:${resource}`;
+
+  it.each([
+    ["user/alice", "alice"],
+    ["user/division/team/bob", "bob"],
+    ["assumed-role/AWSReservedSSO_Dev_abc/carol@example.com", "carol@example.com"],
+    ["assumed-role/Developer/session-1", "session-1"],
+    ["assumed-role/OnlyRole", "OnlyRole"],
+    ["federated-user/dave", "dave"],
+    ["root", "root"],
+  ])("reads %s", (resource, expected) => {
+    expect(principalName(arn(resource))).toBe(expected);
+  });
+
+  it.each([
+    null,
+    "",
+    "not-an-arn",
+    "arn:aws:iam::123456789012",
+    "arn:aws:iam::123456789012:",
+    "arn:aws:iam::123456789012:user",
+  ])("returns null for %s", (value) => {
+    expect(principalName(value)).toBeNull();
+  });
+
+  it("drops control characters and bounds the length", () => {
+    expect(principalName(arn("user/a\u0007b"))).toBe("ab");
+    const long = principalName(arn(`user/${"x".repeat(100)}`));
+    expect(long?.length).toBe(40);
+    expect(long?.endsWith("…")).toBe(true);
+  });
+});
+
+describe("footerLabels", () => {
+  const fresh = at("2026-01-01T12:01:00.000Z");
+  const labels = (value: Parameters<typeof interpret>[0], now = fresh) =>
+    footerLabels(interpret(value, now));
+  const sso = "arn:aws:sts::123456789012:assumed-role/AWSReservedSSO_Dev_abc/carol@example.com";
+
+  it("shows user, region and a known environment, and no warning when verified", () => {
+    expect(labels(snapshot({ principalArn: sso, environment: "production" }))).toEqual({
+      identity: "carol@example.com · us-east-1 · production",
+      warning: null,
+    });
+  });
+
+  it("leaves out whatever is not available", () => {
+    expect(labels(snapshot({ principalArn: sso, region: null, environment: "unknown" }))).toEqual({
+      identity: "carol@example.com",
+      warning: null,
+    });
+    expect(labels(snapshot({ principalArn: null, environment: "unknown" })).identity).toBe(
+      "us-east-1",
+    );
+  });
+
+  it("never shows the account id", () => {
+    const { identity } = labels(snapshot({ principalArn: sso }));
+    expect(identity).not.toContain("123456789012");
+  });
+
+  it("shows nothing when there is no context", () => {
+    expect(labels(null)).toEqual({ identity: null, warning: null });
+    const empty = snapshot({
+      profile: null,
+      accountId: null,
+      principalArn: null,
+      environment: "unknown",
+      verification: "error",
+      verifiedAt: null,
+      staleAfter: null,
+      diagnosticCode: "NO_CREDENTIALS",
+    });
+    expect(labels(empty)).toEqual({ identity: null, warning: null });
+  });
+
+  it.each([
+    [{ verification: "expired", diagnosticCode: "SSO_EXPIRED" }, "AWS session expired"],
+    [{ verification: "error", diagnosticCode: "OFFLINE" }, "AWS offline"],
+    [{ verification: "error", diagnosticCode: "UNKNOWN_ERROR" }, "AWS check failed"],
+    [{ verification: "unverified" }, "AWS unverified"],
+  ] as const)("warns for %o", (overrides, warning) => {
+    expect(labels(snapshot({ ...overrides })).warning).toBe(warning);
+  });
+
+  it("warns when an old verification passes its window, keeping the last known identity", () => {
+    expect(labels(snapshot(), at(STALE_AFTER) + 1)).toMatchObject({
+      identity: expect.stringContaining("us-east-1") as string,
+      warning: "AWS check stale",
+    });
+  });
+
+  it("formats a bounded status line", () => {
+    const line = formatFooterLine(interpret(snapshot({ principalArn: sso }), fresh), 20);
+    expect(line.length).toBeLessThanOrEqual(20);
+    expect(formatFooterLine(interpret(null, fresh))).toBe("");
   });
 });

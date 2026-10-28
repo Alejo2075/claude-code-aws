@@ -12,17 +12,12 @@ export interface ModApi {
     now: () => Promise<number>;
     every: (ms: number, fn: () => void) => { cancel: () => void };
   };
-  ui: {
-    invalidate: (event: "ui.render") => void;
-    resolve: (e: RenderEvent) => {
-      Box: (props: Record<string, unknown>) => unknown;
-      Text: (props: Record<string, unknown>) => unknown;
-    };
-  };
+  ui: { invalidate: (event: "ui.render") => void };
 }
 
-export interface RenderEvent {
+/** The `SessionMode` render site: the dim labels at the right of the prompt footer. */
+export interface ModeEvent {
   surface: string;
-  component: string;
-  props: { hasSurvey: boolean; bodyColumns: number };
+  component: "SessionMode";
+  props: { modes: readonly string[] };
 }
