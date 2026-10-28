@@ -29,20 +29,31 @@ var WARNING = {
   unverified: "AWS unverified",
   error: "AWS check failed"
 };
-function footerLabels(interpretation) {
+var SHORT_USER = 12;
+var LABEL_SEPARATOR = " \xB7 ";
+var BLOCK_SEPARATOR = " & ";
+function footerLabels(interpretation, options = {}) {
   const snapshot = interpretation.snapshot;
   if (snapshot === null || interpretation.state === "not-configured") {
     return { identity: null, warning: null };
   }
-  const known = [
-    principalName(snapshot.principalArn),
-    snapshot.region,
-    snapshot.environment === "unknown" ? null : snapshot.environment
-  ].filter((part) => part !== null);
-  return {
-    identity: known.length === 0 ? null : known.join(" \xB7 "),
-    warning: WARNING[interpretation.state] ?? null
-  };
+  const warning = WARNING[interpretation.state] ?? null;
+  const user = principalName(snapshot.principalArn);
+  const shortUser = user !== null && user.length > SHORT_USER ? `${user.slice(0, SHORT_USER - 1)}\u2026` : user;
+  const region = snapshot.region;
+  const environment = snapshot.environment === "unknown" ? null : snapshot.environment;
+  const budget = options.room === void 0 ? Number.POSITIVE_INFINITY : options.room - (warning === null ? 0 : warning.length + BLOCK_SEPARATOR.length);
+  const candidates = [
+    [user, region, environment],
+    [user, environment],
+    [shortUser, region, environment],
+    [shortUser, environment],
+    [environment],
+    [shortUser],
+    [region]
+  ].map((parts) => parts.filter((part) => part !== null)).filter((parts) => parts.length > 0).map((parts) => parts.join(LABEL_SEPARATOR));
+  const identity = candidates.find((candidate) => candidate.length <= budget) ?? null;
+  return { identity, warning };
 }
 function formatFooterLine(interpretation, width = 100) {
   const { identity, warning } = footerLabels(interpretation);

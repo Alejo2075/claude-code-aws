@@ -24,20 +24,31 @@ var WARNING = {
   unverified: "AWS unverified",
   error: "AWS check failed"
 };
-function footerLabels(interpretation) {
+var SHORT_USER = 12;
+var LABEL_SEPARATOR = " \xB7 ";
+var BLOCK_SEPARATOR = " & ";
+function footerLabels(interpretation, options = {}) {
   const snapshot2 = interpretation.snapshot;
   if (snapshot2 === null || interpretation.state === "not-configured") {
     return { identity: null, warning: null };
   }
-  const known = [
-    principalName(snapshot2.principalArn),
-    snapshot2.region,
-    snapshot2.environment === "unknown" ? null : snapshot2.environment
-  ].filter((part) => part !== null);
-  return {
-    identity: known.length === 0 ? null : known.join(" \xB7 "),
-    warning: WARNING[interpretation.state] ?? null
-  };
+  const warning = WARNING[interpretation.state] ?? null;
+  const user = principalName(snapshot2.principalArn);
+  const shortUser = user !== null && user.length > SHORT_USER ? `${user.slice(0, SHORT_USER - 1)}\u2026` : user;
+  const region = snapshot2.region;
+  const environment = snapshot2.environment === "unknown" ? null : snapshot2.environment;
+  const budget = options.room === void 0 ? Number.POSITIVE_INFINITY : options.room - (warning === null ? 0 : warning.length + BLOCK_SEPARATOR.length);
+  const candidates = [
+    [user, region, environment],
+    [user, environment],
+    [shortUser, region, environment],
+    [shortUser, environment],
+    [environment],
+    [shortUser],
+    [region]
+  ].map((parts) => parts.filter((part) => part !== null)).filter((parts) => parts.length > 0).map((parts) => parts.join(LABEL_SEPARATOR));
+  const identity = candidates.find((candidate) => candidate.length <= budget) ?? null;
+  return { identity, warning };
 }
 
 // ../../packages/context-contract/src/config.ts
@@ -246,6 +257,14 @@ async function workspaceId(path) {
 
 // src/mod/register.ts
 var POLL_MS = 5e3;
+var FOOTER_PADDING = 4;
+var FOOTER_GAP = 2;
+var MODE_LABEL = 20;
+var RESERVE = 16;
+var MAX_WIDTH = 64;
+var GAP = "\xA0\xA0\xA0";
+var MODE_SEPARATOR = " & ";
+var hintWidth = 0;
 var snapshot = null;
 var snapshotStamp = "";
 var lastState = "";
@@ -288,6 +307,13 @@ async function refreshFromDisk($) {
     $.ui.invalidate("ui.render");
   }
 }
+function roomFor(e) {
+  const columns = e.viewport?.columns;
+  if (e.surface !== "terminal" || columns === void 0) return MAX_WIDTH;
+  const others = e.props.modes.join(MODE_SEPARATOR).length;
+  const taken = FOOTER_PADDING + FOOTER_GAP + MODE_LABEL + (hintWidth > 0 ? 1 + hintWidth : 0) + (others > 0 ? others + MODE_SEPARATOR.length : 0) + GAP.length + RESERVE;
+  return Math.max(0, Math.min(MAX_WIDTH, columns - taken));
+}
 function register(on) {
   on("session.start", async ($, e, next) => {
     await refreshFromDisk($).catch(() => void 0);
@@ -300,10 +326,24 @@ function register(on) {
     "ui.render",
     { component: "SessionMode" },
     async ($, e, next) => {
-      const { identity, warning } = footerLabels(interpret(snapshot, await $.clock.now()));
+      const { identity, warning } = footerLabels(interpret(snapshot, await $.clock.now()), {
+        room: roomFor(e)
+      });
       const added = [identity, warning].filter((label) => label !== null);
       if (added.length === 0) return next(e);
+      added[0] = `${GAP}${added[0] ?? ""}`;
       return next({ ...e, props: { ...e.props, modes: [...e.props.modes, ...added] } });
+    }
+  );
+  on(
+    "ui.render",
+    { component: "PromptHint" },
+    ($, e, next) => {
+      if (e.surface === "terminal" && e.props.hint.length !== hintWidth) {
+        hintWidth = e.props.hint.length;
+        $.ui.invalidate("ui.render");
+      }
+      return next(e);
     }
   );
 }

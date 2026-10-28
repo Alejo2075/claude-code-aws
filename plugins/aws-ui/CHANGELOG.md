@@ -1,5 +1,11 @@
 # aws-ui
 
+## 0.2.1
+
+### Patch Changes
+
+- [#8](https://github.com/Alejo2075/claude-code-aws/pull/8) [`d8ee300`](https://github.com/Alejo2075/claude-code-aws/commit/d8ee3006f1d87cb74071a1e328c49470966ae85c) Thanks [@Alejo2075](https://github.com/Alejo2075)! - Keep the footer labels apart from other plugins' drawings (such as a usage meter): they now start with their own gap, measure the room left in the row, and shrink (region, then a shortened user, then environment only) instead of pushing a neighbor to a second line.
+
 ## 0.2.0
 
 ### Minor Changes
