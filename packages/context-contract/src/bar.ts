@@ -106,3 +106,75 @@ export function formatBar(interpretation: Interpretation, options: BarOptions = 
   const ellipsis = ascii ? "..." : "…";
   return `${line.slice(0, width - ellipsis.length)}${ellipsis}`;
 }
+
+const MAX_NAME = 40;
+
+/**
+ * Who the principal is, for display: the user name of an IAM user, the session name of an assumed
+ * role (for IAM Identity Center that is the person's user name), or `root`. Null when the ARN has
+ * no usable name. The ARN is untrusted input: control characters are dropped and the result is
+ * bounded.
+ */
+export function principalName(arn: string | null): string | null {
+  if (arn === null) return null;
+  const parts = arn.split(":");
+  if (parts.length < 6 || parts[0] !== "arn") return null;
+  const resource = parts.slice(5).join(":");
+  const segments = resource.split("/").filter((segment) => segment !== "");
+  const kind = segments[0];
+  if (kind === undefined) return null;
+  let name: string | undefined;
+  if (resource === "root") name = "root";
+  else if (kind === "assumed-role") name = segments.length >= 3 ? segments.at(-1) : segments[1];
+  else name = segments.length >= 2 ? segments.at(-1) : undefined;
+  if (name === undefined) return null;
+  const clean = Array.from(name)
+    .filter((char) => char.charCodeAt(0) >= 0x20 && char.charCodeAt(0) !== 0x7f)
+    .join("");
+  if (clean === "") return null;
+  return clean.length > MAX_NAME ? `${clean.slice(0, MAX_NAME - 1)}…` : clean;
+}
+
+const WARNING: Partial<Record<DisplayState, string>> = {
+  stale: "AWS check stale",
+  expired: "AWS session expired",
+  offline: "AWS offline",
+  unverified: "AWS unverified",
+  error: "AWS check failed",
+};
+
+export interface FooterLabels {
+  /** `user · region · environment`, leaving out whatever is not known. Null when nothing is known. */
+  identity: string | null;
+  /** Present only when the context is not current. */
+  warning: string | null;
+}
+
+/**
+ * The compact form for surfaces that already have their own look (the prompt footer, a status
+ * line). Shows only what is available and a warning only when there is one: a verified context
+ * has no warning, and nothing at all is shown when there is no context. After a failed or old
+ * check the identity is the last known one, and the warning next to it says so.
+ */
+export function footerLabels(interpretation: Interpretation): FooterLabels {
+  const snapshot = interpretation.snapshot;
+  if (snapshot === null || interpretation.state === "not-configured") {
+    return { identity: null, warning: null };
+  }
+  const known = [
+    principalName(snapshot.principalArn),
+    snapshot.region,
+    snapshot.environment === "unknown" ? null : snapshot.environment,
+  ].filter((part): part is string => part !== null);
+  return {
+    identity: known.length === 0 ? null : known.join(" · "),
+    warning: WARNING[interpretation.state] ?? null,
+  };
+}
+
+/** One line for a status line, bounded by `width`; empty when there is nothing to say. */
+export function formatFooterLine(interpretation: Interpretation, width = 100): string {
+  const { identity, warning } = footerLabels(interpretation);
+  const line = [identity, warning].filter((part): part is string => part !== null).join(" · ");
+  return line.length <= width ? line : `${line.slice(0, Math.max(1, width - 1))}…`;
+}

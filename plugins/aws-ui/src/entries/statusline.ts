@@ -4,15 +4,11 @@
 import { fileURLToPath } from "node:url";
 
 import {
-  type ConfigLayer,
-  formatBar,
+  formatFooterLine,
   interpret,
-  MAX_CONFIG_BYTES,
   MAX_SNAPSHOT_BYTES,
-  parseConfig,
   parseSnapshot,
   snapshotPath,
-  userConfigPath,
   workspaceId,
   type EnvReader,
 } from "@claude-code-aws/context-contract";
@@ -52,17 +48,10 @@ function projectDirOf(raw: string): string {
 async function render(): Promise<string> {
   const projectDir = projectDirOf(await readStdin());
   const path = snapshotPath(env, await workspaceId(projectDir));
-  const parsed = (text: string | null) => (text === null ? null : parseSnapshot(text));
-  const snapshotResult = parsed(readText(path, MAX_SNAPSHOT_BYTES));
-  const snapshot = snapshotResult?.ok === true ? snapshotResult.snapshot : null;
-  const configText = readText(userConfigPath(env), MAX_CONFIG_BYTES);
-  const preferences: Pick<ConfigLayer, "maskAccountId" | "showProfile"> =
-    configText === null ? {} : parseConfig(configText, "user").layer;
-  return formatBar(interpret(snapshot, Date.now()), {
-    maskAccountId: preferences.maskAccountId ?? true,
-    showProfile: preferences.showProfile ?? true,
-    width: WIDTH,
-  });
+  const text = readText(path, MAX_SNAPSHOT_BYTES);
+  const parsed = text === null ? null : parseSnapshot(text);
+  const snapshot = parsed?.ok === true ? parsed.snapshot : null;
+  return formatFooterLine(interpret(snapshot, Date.now()), WIDTH);
 }
 
 const args = process.argv.slice(2);
@@ -74,5 +63,5 @@ try {
     process.stdout.write(`${await render()}\n`);
   }
 } catch {
-  process.stdout.write(`${formatBar(interpret(null, Date.now()))}\n`);
+  process.stdout.write("\n");
 }

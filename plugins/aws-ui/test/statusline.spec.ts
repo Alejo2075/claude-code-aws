@@ -55,7 +55,7 @@ async function storeSnapshot(overrides: Partial<AwsContextSnapshotV1> = {}): Pro
     profile: null,
     region: "eu-west-1",
     accountId: "123456789012",
-    principalArn: "arn:aws:sts::123456789012:assumed-role/Developer/session",
+    principalArn: "arn:aws:sts::123456789012:assumed-role/Developer/carol",
     environment: "production",
     verification: "verified",
     verifiedAt: new Date(now - 1000).toISOString(),
@@ -76,28 +76,28 @@ async function run(stdin: unknown, args: string[] = []) {
 const session = () => ({ workspace: { project_dir: project, current_dir: project } });
 
 describe.runIf(built)("status-line script (bundled)", () => {
-  it("prints the empty state with no snapshot", async () => {
+  it("prints nothing with no snapshot", async () => {
     const result = await run(session());
     expect(result.exitCode).toBe(0);
-    expect(result.stdout.trim()).toBe("AWS · not configured");
+    expect(result.stdout.trim()).toBe("");
   });
 
-  it("prints a masked, verified line from the stored snapshot", async () => {
+  it("prints user, region and environment, with no warning when verified", async () => {
     await storeSnapshot();
     const result = await run(session());
-    expect(result.stdout.trim()).toBe("AWS · 1234…9012 · eu-west-1 · production · verified");
+    expect(result.stdout.trim()).toBe("carol · eu-west-1 · production");
+    expect(result.stdout).not.toContain("123456789012");
     expect(result.secretFindings).toEqual([]);
   });
 
-  it("labels an old verification as last known and stale", async () => {
+  it("warns, keeping the last known identity, when the verification is old", async () => {
     const old = Date.now() - 3_600_000;
     await storeSnapshot({
       verifiedAt: new Date(old).toISOString(),
       staleAfter: new Date(old + 300_000).toISOString(),
     });
     const line = (await run(session())).stdout.trim();
-    expect(line).toContain("last known 1234…9012");
-    expect(line).toContain("stale");
+    expect(line).toBe("carol · eu-west-1 · production · AWS check stale");
   });
 
   it("does not show another workspace's snapshot", async () => {
@@ -105,7 +105,7 @@ describe.runIf(built)("status-line script (bundled)", () => {
     const other = mkdtempSync(join(tmpdir(), "aws-ui-other-"));
     try {
       const result = await run({ workspace: { project_dir: other } });
-      expect(result.stdout.trim()).toBe("AWS · not configured");
+      expect(result.stdout.trim()).toBe("");
     } finally {
       rmSync(other, { recursive: true, force: true });
     }
@@ -126,24 +126,14 @@ describe.runIf(built)("status-line script (bundled)", () => {
       20_000,
     );
     expect(result.exitCode).toBe(0);
-    expect(result.stdout.trim().startsWith("AWS")).toBe(true);
+    expect(result.stdout.trim()).toBe("");
   });
 
   it("ignores a corrupt snapshot file", async () => {
     await storeSnapshot();
     const path = snapshotPath(read("x"), await workspaceId(project));
     writeFileSync(path ?? "", "{ truncated");
-    expect((await run(session())).stdout.trim()).toBe("AWS · not configured");
-  });
-
-  it("respects the user's masking preference", async () => {
-    await storeSnapshot();
-    mkdirSync(join(home, ".claude", "aws-context"), { recursive: true });
-    writeFileSync(
-      join(home, ".claude", "aws-context", "config.json"),
-      JSON.stringify({ version: 1, ui: { maskAccountId: false } }),
-    );
-    expect((await run(session())).stdout).toContain("123456789012");
+    expect((await run(session())).stdout.trim()).toBe("");
   });
 });
 
@@ -211,7 +201,7 @@ describe.runIf(built)("status-line setup", () => {
       20_000,
     );
     expect(copy.exitCode).toBe(0);
-    expect(copy.stdout.trim()).toBe("AWS · not configured");
+    expect(copy.stdout.trim()).toBe("");
   });
 
   it("writes the snippet path with forward slashes", async () => {

@@ -1,6 +1,6 @@
 ---
 name: statusline
-description: Explain how to show the AWS context in Claude Code's status line (for terminals, headless runs, or sessions where the band above the prompt is unavailable), and set it up on request. Use when the user asks for an AWS status line, or says the aws-ui band does not appear.
+description: Explain how to show the AWS context in Claude Code's status line (for terminals, headless runs, or sessions where the prompt-footer labels are unavailable), and set it up on request. Use when the user asks for an AWS status line, or says the aws-ui footer label does not appear.
 argument-hint: "[setup|copy]"
 disable-model-invocation: true
 allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/statusline.mjs setup*)
