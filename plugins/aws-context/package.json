@@ -1,0 +1,17 @@
+{
+  "name": "aws-context",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Verified AWS account, principal, region, and environment for the current project, with a status skill and a session-start check. Read-only: it never changes AWS resources.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-sts": "3.1158.0",
+    "@claude-code-aws/context-contract": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*"
+  }
+}

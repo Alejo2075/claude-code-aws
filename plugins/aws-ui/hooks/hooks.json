@@ -1,0 +1,4 @@
+{
+  "description": "aws-ui hooks module: a band above the prompt that shows the stored AWS context",
+  "modules": ["../dist/register.js"]
+}

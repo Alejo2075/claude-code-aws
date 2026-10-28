@@ -1,5 +1,5 @@
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -39,7 +39,7 @@ let raw = "";
 process.stdin.on("data", (c) => (raw += c));
 process.stdin.on("end", () => {
   const input = JSON.parse(raw);
-  const out = { root: process.env.CLAUDE_PLUGIN_ROOT, data: process.env.CLAUDE_PLUGIN_DATA, event: input.hook_event_name, cmd: input.tool_input?.command };
+  const out = { root: process.env.CLAUDE_PLUGIN_ROOT, data: process.env.CLAUDE_PLUGIN_DATA, event: input.hook_event_name, cmd: input.tool_input?.command, home: process.env.HOME, profile: process.env.AWS_PROFILE, imds: process.env.AWS_EC2_METADATA_DISABLED };
   if (input.tool_input?.command === "leak") process.stderr.write("${FAKE_KEY_ID}");
   process.stdout.write(JSON.stringify(out));
 });`;
@@ -69,6 +69,31 @@ describe("runPluginHooks", () => {
     expect(result?.exitCode).toBe(0);
     expect(result?.json).toMatchObject({ root, event: "PreToolUse", cmd: "ls" });
     expect(typeof result?.json?.["data"]).toBe("string");
+  });
+
+  it("isolates the hook from the developer's real home and AWS environment", async () => {
+    process.env["AWS_PROFILE"] = "developer-profile";
+    try {
+      const root = fakePlugin(echoHook, preToolUse("Bash"));
+      const [result] = await runPluginHooks(bashPreToolUseInput(root, "ls"), { pluginRoot: root });
+      const home = result?.json?.["home"];
+      expect(typeof home).toBe("string");
+      expect(home).not.toBe(homedir());
+      expect(home).toContain(tmpdir());
+      expect(result?.json?.["imds"]).toBe("true");
+      expect(result?.json?.["profile"]).toBeUndefined();
+    } finally {
+      delete process.env["AWS_PROFILE"];
+    }
+  });
+
+  it("lets a test set its own home and environment explicitly", async () => {
+    const root = fakePlugin(echoHook, preToolUse("Bash"));
+    const [result] = await runPluginHooks(bashPreToolUseInput(root, "ls"), {
+      pluginRoot: root,
+      env: { HOME: "/explicit/home", AWS_PROFILE: "explicit" },
+    });
+    expect(result?.json).toMatchObject({ home: "/explicit/home", profile: "explicit" });
   });
 
   it("skips hooks whose matcher does not match the tool", async () => {
