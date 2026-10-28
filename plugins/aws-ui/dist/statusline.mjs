@@ -4,142 +4,54 @@ import { createRequire as __createRequire } from 'node:module'; const require = 
 import { fileURLToPath } from "node:url";
 
 // ../../packages/context-contract/src/bar.ts
-var STATE_LABEL = {
-  "not-configured": "not configured",
-  verified: "verified",
-  stale: "stale",
-  expired: "expired",
-  offline: "offline",
-  error: "error",
-  unverified: "unverified"
+var MAX_NAME = 40;
+function principalName(arn) {
+  if (arn === null) return null;
+  const parts = arn.split(":");
+  if (parts.length < 6 || parts[0] !== "arn") return null;
+  const resource = parts.slice(5).join(":");
+  const segments = resource.split("/").filter((segment) => segment !== "");
+  const kind = segments[0];
+  if (kind === void 0) return null;
+  let name;
+  if (resource === "root") name = "root";
+  else if (kind === "assumed-role") name = segments.length >= 3 ? segments.at(-1) : segments[1];
+  else name = segments.length >= 2 ? segments.at(-1) : void 0;
+  if (name === void 0) return null;
+  const clean = Array.from(name).filter((char) => char.charCodeAt(0) >= 32 && char.charCodeAt(0) !== 127).join("");
+  if (clean === "") return null;
+  return clean.length > MAX_NAME ? `${clean.slice(0, MAX_NAME - 1)}\u2026` : clean;
+}
+var WARNING = {
+  stale: "AWS check stale",
+  expired: "AWS session expired",
+  offline: "AWS offline",
+  unverified: "AWS unverified",
+  error: "AWS check failed"
 };
-function maskAccount(accountId, ascii = false) {
-  return `${accountId.slice(0, 4)}${ascii ? "..." : "\u2026"}${accountId.slice(-4)}`;
-}
-function stateLabel(interpretation) {
-  const code = interpretation.snapshot?.diagnosticCode;
-  if (interpretation.state === "expired") {
-    if (code === "SSO_EXPIRED") return "expired (SSO session)";
-    if (code === "CREDENTIALS_EXPIRED") return "expired (credentials)";
-  }
-  if (interpretation.state === "stale") return "stale (refresh to verify)";
-  return STATE_LABEL[interpretation.state];
-}
-function formatBar(interpretation, options = {}) {
-  const ascii = options.ascii === true;
-  const separator = ascii ? " | " : " \xB7 ";
-  const width = Math.max(10, options.width ?? 200);
+function footerLabels(interpretation) {
   const snapshot = interpretation.snapshot;
-  const segments = [{ text: "AWS", priority: 1 }];
-  if (interpretation.state === "not-configured" || snapshot === null) {
-    segments.push({ text: STATE_LABEL["not-configured"], priority: 9 });
-  } else {
-    const masked = snapshot.accountId === null ? null : options.maskAccountId === false ? snapshot.accountId : maskAccount(snapshot.accountId, ascii);
-    const account = masked === null ? "account unknown" : interpretation.isCurrent ? masked : `last known ${masked}`;
-    segments.push({ text: account, priority: 8 });
-    segments.push({ text: snapshot.region ?? "region unknown", priority: 5 });
-    if (options.showProfile !== false && snapshot.profile !== null) {
-      segments.push({ text: `profile: ${snapshot.profile}`, priority: 2 });
-    }
-    segments.push({ text: snapshot.environment, priority: 7 });
-    segments.push({ text: stateLabel(interpretation), priority: 9 });
+  if (snapshot === null || interpretation.state === "not-configured") {
+    return { identity: null, warning: null };
   }
-  const render2 = (list) => list.map((segment) => segment.text).join(separator);
-  let kept = segments;
-  while (render2(kept).length > width && kept.length > 1) {
-    const lowest = Math.min(...kept.map((segment) => segment.priority));
-    const index = kept.findIndex((segment) => segment.priority === lowest);
-    kept = kept.filter((_, position) => position !== index);
-  }
-  const line = render2(kept);
-  if (line.length <= width) return line;
-  const ellipsis = ascii ? "..." : "\u2026";
-  return `${line.slice(0, width - ellipsis.length)}${ellipsis}`;
+  const known = [
+    principalName(snapshot.principalArn),
+    snapshot.region,
+    snapshot.environment === "unknown" ? null : snapshot.environment
+  ].filter((part) => part !== null);
+  return {
+    identity: known.length === 0 ? null : known.join(" \xB7 "),
+    warning: WARNING[interpretation.state] ?? null
+  };
+}
+function formatFooterLine(interpretation, width = 100) {
+  const { identity, warning } = footerLabels(interpretation);
+  const line = [identity, warning].filter((part) => part !== null).join(" \xB7 ");
+  return line.length <= width ? line : `${line.slice(0, Math.max(1, width - 1))}\u2026`;
 }
 
 // ../../packages/context-contract/src/config.ts
 var MAX_CONFIG_BYTES = 64 * 1024;
-var ACCOUNT_ID = /^\d{12}$/;
-var TOP_LEVEL_KEYS = ["version", "ttlMinutes", "accounts", "ui"];
-var UI_KEYS = ["maskAccountId", "showProfile"];
-function isRecord(value) {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-function parseConfig(text, source) {
-  const layer = { source, accounts: {} };
-  const warnings = [];
-  const warn = (message) => {
-    warnings.push(`${source} config: ${message}`);
-  };
-  if (text.length > MAX_CONFIG_BYTES) {
-    warn("file is too large and was ignored");
-    return { layer, warnings };
-  }
-  let value;
-  try {
-    value = JSON.parse(text);
-  } catch {
-    warn("is not valid JSON and was ignored");
-    return { layer, warnings };
-  }
-  if (!isRecord(value)) {
-    warn("must be a JSON object and was ignored");
-    return { layer, warnings };
-  }
-  if (value["version"] !== 1) {
-    warn("version must be 1; the file was ignored");
-    return { layer, warnings };
-  }
-  for (const key of Object.keys(value)) {
-    if (!TOP_LEVEL_KEYS.includes(key)) warn("ignored an unknown top-level key");
-  }
-  const personalOnly = source === "project";
-  for (const key of ["ttlMinutes", "ui"]) {
-    if (personalOnly && value[key] !== void 0) {
-      warn(`${key} is only honored in the user file; ignored`);
-    }
-  }
-  const ttl = personalOnly ? void 0 : value["ttlMinutes"];
-  if (ttl !== void 0) {
-    if (typeof ttl === "number" && Number.isInteger(ttl) && ttl >= 1 && ttl <= 60) {
-      layer.ttlMinutes = ttl;
-    } else {
-      warn("ttlMinutes must be an integer from 1 to 60; using the default");
-    }
-  }
-  const accounts = value["accounts"];
-  if (accounts !== void 0) {
-    if (!isRecord(accounts)) {
-      warn("accounts must be an object; ignored");
-    } else {
-      for (const [id, entry] of Object.entries(accounts)) {
-        const environment = isRecord(entry) ? entry["environment"] : void 0;
-        if (!ACCOUNT_ID.test(id)) {
-          warn("ignored an accounts key that is not a 12-digit account id");
-        } else if (environment !== "production" && environment !== "non-production") {
-          warn(`account ${id}: environment must be "production" or "non-production"; ignored`);
-        } else {
-          layer.accounts[id] = environment;
-        }
-      }
-    }
-  }
-  const ui = personalOnly ? void 0 : value["ui"];
-  if (ui !== void 0) {
-    if (!isRecord(ui)) {
-      warn("ui must be an object; ignored");
-    } else {
-      for (const key of Object.keys(ui)) {
-        if (!UI_KEYS.includes(key)) warn("ignored an unknown ui key");
-      }
-      if (typeof ui["maskAccountId"] === "boolean") layer.maskAccountId = ui["maskAccountId"];
-      else if (ui["maskAccountId"] !== void 0) warn("ui.maskAccountId must be a boolean");
-      if (typeof ui["showProfile"] === "boolean") layer.showProfile = ui["showProfile"];
-      else if (ui["showProfile"] !== void 0) warn("ui.showProfile must be a boolean");
-    }
-  }
-  return { layer, warnings };
-}
 
 // ../../packages/context-contract/src/interpret.ts
 var FUTURE_SKEW_MS = 6e4;
@@ -200,10 +112,6 @@ function snapshotPath(env2, workspaceId2) {
   const dir = snapshotDir(env2);
   return dir ? `${dir}/${workspaceId2}.json` : null;
 }
-function userConfigPath(env2) {
-  const root = contextRoot(env2);
-  return root ? `${root}/config.json` : null;
-}
 
 // ../../packages/context-contract/src/types.ts
 var SNAPSHOT_SCHEMA_VERSION = 1;
@@ -238,10 +146,10 @@ var KEYS = [
   "diagnosticCode"
 ];
 var WORKSPACE_ID = /^[0-9a-f]{16}$/;
-var ACCOUNT_ID2 = /^\d{12}$/;
+var ACCOUNT_ID = /^\d{12}$/;
 var REGION = /^[a-z]{2}(?:-[a-z]+)+-\d$/;
 var ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/;
-function isRecord2(value) {
+function isRecord(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 function nullableString(value, test) {
@@ -261,7 +169,7 @@ function oneOf(list, value) {
   return list.find((candidate) => candidate === value);
 }
 function validateSnapshot(value) {
-  if (!isRecord2(value)) return { ok: false, reason: "not an object" };
+  if (!isRecord(value)) return { ok: false, reason: "not an object" };
   for (const key of Object.keys(value)) {
     if (!KEYS.includes(key)) return { ok: false, reason: "unknown key" };
   }
@@ -280,7 +188,7 @@ function validateSnapshot(value) {
     (text) => text.length > 0 && text.length <= 128 && !hasControlCharacter(text)
   );
   const region = nullableString(value["region"], (text) => REGION.test(text));
-  const accountId = nullableString(value["accountId"], (text) => ACCOUNT_ID2.test(text));
+  const accountId = nullableString(value["accountId"], (text) => ACCOUNT_ID.test(text));
   const principalArn = nullableString(
     value["principalArn"],
     (text) => text.startsWith("arn:") && text.length <= 2048 && !hasControlCharacter(text)
@@ -463,16 +371,10 @@ function projectDirOf(raw) {
 async function render() {
   const projectDir = projectDirOf(await readStdin());
   const path = snapshotPath(env, await workspaceId(projectDir));
-  const parsed = (text) => text === null ? null : parseSnapshot(text);
-  const snapshotResult = parsed(readText(path, MAX_SNAPSHOT_BYTES));
-  const snapshot = snapshotResult?.ok === true ? snapshotResult.snapshot : null;
-  const configText = readText(userConfigPath(env), MAX_CONFIG_BYTES);
-  const preferences = configText === null ? {} : parseConfig(configText, "user").layer;
-  return formatBar(interpret(snapshot, Date.now()), {
-    maskAccountId: preferences.maskAccountId ?? true,
-    showProfile: preferences.showProfile ?? true,
-    width: WIDTH
-  });
+  const text = readText(path, MAX_SNAPSHOT_BYTES);
+  const parsed = text === null ? null : parseSnapshot(text);
+  const snapshot = parsed?.ok === true ? parsed.snapshot : null;
+  return formatFooterLine(interpret(snapshot, Date.now()), WIDTH);
 }
 var args = process.argv.slice(2);
 try {
@@ -485,6 +387,5 @@ try {
 `);
   }
 } catch {
-  process.stdout.write(`${formatBar(interpret(null, Date.now()))}
-`);
+  process.stdout.write("\n");
 }

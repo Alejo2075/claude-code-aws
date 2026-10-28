@@ -1,5 +1,11 @@
 # aws-ui
 
+## 0.2.0
+
+### Minor Changes
+
+- [#6](https://github.com/Alejo2075/claude-code-aws/pull/6) [`acbb9de`](https://github.com/Alejo2075/claude-code-aws/commit/acbb9dec179c1fbace6629ace3d5de383223ce57) Thanks [@Alejo2075](https://github.com/Alejo2075)! - Show the AWS user, region, and environment as labels in the prompt footer instead of a band above the prompt, so they take no extra row and use Claude Code's own colors and type. Only known values are shown, and a warning appears only when the context is stale, expired, offline, unverified, or failed. Nothing is shown when there is no context. The status-line command prints the same content. The account ID and profile are no longer shown (use `/aws-context:status`).
+
 ## 0.1.0
 
 ### Minor Changes

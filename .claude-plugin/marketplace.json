@@ -22,7 +22,7 @@
     },
     {
       "name": "aws-ui",
-      "description": "Shows the verified AWS account, region, and environment in a compact band above the prompt, read from the aws-context snapshot, with an opt-in status-line fallback. Never calls AWS.",
+      "description": "Shows the AWS user, region, and environment as labels in the prompt footer, read from the aws-context snapshot, with a warning only when something is wrong. Never calls AWS.",
       "source": "./plugins/aws-ui",
       "keywords": [
         "aws",
