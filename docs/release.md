@@ -37,6 +37,14 @@ How plugins get from `main` to users, and what to do when something goes wrong.
 
 The publish step is idempotent. It releases only catalog plugins whose tag does not exist yet, so re-running it is safe.
 
+### Opening the Version PR
+
+By default GitHub forbids Actions from creating pull requests. The repository setting **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests** is off here, so the Release workflow pushes the `changeset-release/main` branch and then fails with `GitHub Actions is not permitted to create or approve pull requests`. Either set `RELEASE_PR_TOKEN` (below, recommended: it also fixes CI on the Version PR) or open the PR from that branch yourself:
+
+```sh
+gh pr create --base main --head changeset-release/main --title "chore: version packages"
+```
+
 ### CI on the Version PR
 
 Pull requests opened with the default `GITHUB_TOKEN` do not trigger other workflows, so the Version PR's required checks never start. Use one of these options:
