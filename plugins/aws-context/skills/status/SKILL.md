@@ -2,7 +2,7 @@
 name: status
 description: Show or refresh the verified AWS account, principal, region, profile, and environment for the current project. Use when the user asks which AWS account or region they are on, whether their AWS session is still valid, or before AWS work whose result depends on the target account.
 argument-hint: "[status|refresh|config]"
-allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/cli.mjs *)
+allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/cli.mjs status *), Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/cli.mjs refresh *), Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/cli.mjs config show *)
 ---
 
 # AWS context status
@@ -34,7 +34,7 @@ Run the command and read its output. Do not open `~/.aws/*`, do not print enviro
 
 ## Agents and tools
 
-The Bash tool, restricted to this plugin's own command. No agent, no MCP server.
+The Bash tool, restricted to this plugin's own `status`, `refresh`, and `config show` commands (not `purge`, which deletes stored snapshots and is for the user to run). No agent, no MCP server.
 
 ## Output
 

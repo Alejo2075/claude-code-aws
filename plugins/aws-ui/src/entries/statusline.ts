@@ -6,9 +6,12 @@ import { fileURLToPath } from "node:url";
 import {
   formatFooterLine,
   interpret,
+  MAX_CONFIG_BYTES,
   MAX_SNAPSHOT_BYTES,
+  parseConfig,
   parseSnapshot,
   snapshotPath,
+  userConfigPath,
   workspaceId,
   type EnvReader,
 } from "@claude-code-aws/context-contract";
@@ -51,7 +54,11 @@ async function render(): Promise<string> {
   const text = readText(path, MAX_SNAPSHOT_BYTES);
   const parsed = text === null ? null : parseSnapshot(text);
   const snapshot = parsed?.ok === true ? parsed.snapshot : null;
-  return formatFooterLine(interpret(snapshot, Date.now()), WIDTH);
+  // The user's own preference (never a project file's): whether to show the user name.
+  const configText = readText(userConfigPath(env), MAX_CONFIG_BYTES);
+  const showUser =
+    configText === null ? true : (parseConfig(configText, "user").layer.showUser ?? true);
+  return formatFooterLine(interpret(snapshot, Date.now()), WIDTH, { showUser });
 }
 
 const args = process.argv.slice(2);

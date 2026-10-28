@@ -15,17 +15,19 @@ The labels sit at the right of the prompt footer, where Claude Code shows its ow
 - **A warning appears only when the context is not current**: `AWS check stale`, `AWS session expired`, `AWS offline`, `AWS unverified`, or `AWS check failed`. The user shown next to a warning is the last known one.
 - **Nothing at all** is shown when `aws-context` has stored nothing. A verified context has no warning.
 - The account ID and the profile are not shown; `/aws-context:status` has them.
-- The footer never talks to AWS. It reads one small local file.
+- The footer never talks to AWS. It reads one small local file, plus your own `aws-context` config for one preference.
 
 ### Sharing the footer with other plugins
 
 The footer is one row shared with Claude Code's own mode label, its hint, and whatever other mods draw, such as a usage meter. This plugin is built not to collide with them, and it needs no coordination with any of them:
 
 - **A gap of its own.** Its labels start with three non-breaking spaces, so they are visibly apart from whatever comes before, whichever plugin that is. Non-breaking spaces cannot be trimmed or collapsed by a neighbor.
-- **It takes only what is left.** It measures the terminal width, the hint line, and the labels already present, caps itself at 64 columns, and keeps 16 free for other mods' drawings. If that is not enough it drops the region first, then shortens the user, then keeps only the environment. A warning is always kept.
+- **It takes only what is left.** It measures, in terminal columns (wide characters such as CJK or emoji count double), the terminal width, the hint line, and the labels already present, caps itself at 64 columns, and keeps 16 free for other mods' drawings. If that is not enough it drops the region first, then shortens the user, then keeps only the environment. A warning is always kept.
 - **It never rewrites or removes another mod's labels.** It only appends its own, and it only observes the hint line.
 
 The figures for the footer's padding and mode label are estimates of Claude Code's layout, not a documented contract. On a very narrow terminal another plugin may still wrap.
+
+To hide the user name, for example when you share your screen, set `"ui": { "showUser": false }` in your own `aws-context` config (see its README). It is honored only from your user file.
 
 The user is taken from the principal ARN: the user name of an IAM user, or the session name of an assumed role. With IAM Identity Center that is your user name, often an email address, so it will be visible if you share your screen.
 
@@ -48,11 +50,11 @@ Run `/reload-plugins` if you installed from your shell while a session was open.
 
 | Component | Name                               | Side effects                                                              | Invocation                        |
 | --------- | ---------------------------------- | ------------------------------------------------------------------------- | --------------------------------- |
-| Mod       | Labels in the prompt footer        | Reads one local file, adds labels. No network, no process, no write       | Automatic                         |
+| Mod       | Labels in the prompt footer        | Reads two local files, adds labels. No network, no process, no write      | Automatic                         |
 | Command   | `dist/statusline.mjs`              | Reads one local file, prints one line                                     | Opt-in, from your `settings.json` |
 | Skill     | `/aws-ui:statusline [setup\|copy]` | `setup`: read. `copy`: writes one file under your Claude config directory | Manual only                       |
 
-What the mod can do is limited and checkable: `claude plugin validate plugins/aws-ui` lists every mods API call it makes. They are `$.fs.stat`, `$.fs.read`, `$.env.get` (three variables that locate your config directory), `$.session.root`, `$.clock`, and `$.ui.invalidate`. It observes `PromptHint` (without changing it) to know how much room is left. It does not draw anything itself and has no `$.http`, `$.process`, `$.model`, `$.fs.write`, or `$.store`. A test enforces this.
+What the mod can do is limited and checkable: `claude plugin validate plugins/aws-ui` lists every mods API call it makes. They are `$.fs.stat`, `$.fs.read` (the snapshot and your `aws-context` config), `$.env.get` (three variables that locate your config directory), `$.session.root`, `$.clock`, and `$.ui.invalidate`. It observes `PromptHint` (without changing it) to know how much room is left. It does not draw anything itself and has no `$.http`, `$.process`, `$.model`, `$.fs.write`, or `$.store`. A test enforces this.
 
 ## Where it shows
 
@@ -77,7 +79,7 @@ Claude Code supports a single status line per user, and a plugin cannot set it. 
 
 It prints the same content as the footer: `carol@example.com · us-east-1 · production · AWS check stale`, or an empty line when there is nothing to show.
 
-The script path inside the plugin cache changes when the plugin updates. `/aws-ui:statusline copy` writes one stable copy to `<claude config dir>/aws-ui/statusline.mjs` and prints a snippet that points at it; run it again after updating `aws-ui` to refresh the copy.
+The script path inside the plugin cache changes when the plugin updates. `/aws-ui:statusline copy` writes one stable copy to `<claude config dir>/aws-ui/statusline.mjs` and prints a snippet that points at it; run it again after updating `aws-ui` to refresh the copy. `/aws-ui:statusline` tells you when the copy is not the installed version.
 
 If you already have a status line, keep it and call this one from yours, then print both lines:
 
@@ -94,7 +96,7 @@ On Windows, write the path with forward slashes in `settings.json`: Git Bash tre
 
 ## Configuration
 
-None. The time a check stays fresh (`ttlMinutes`) and the account-to-environment mapping belong to `aws-context`; see its README.
+One preference, in your own `aws-context` config file (`<claude config dir>/aws-context/config.json`): `ui.showUser` (default `true`). The time a check stays fresh (`ttlMinutes`), `autoRefresh`, and the account-to-environment mapping belong to `aws-context`; see its README.
 
 ## AWS permissions
 
@@ -102,14 +104,15 @@ None. This plugin makes no AWS calls. It needs no credentials and never reads th
 
 ## Data and privacy
 
-- **Reads:** the snapshot `<claude config dir>/aws-context/v1/<workspace id>.json`. Nothing else, and no credential files.
+- **Reads:** the snapshot `<claude config dir>/aws-context/v1/<workspace id>.json` and your `<claude config dir>/aws-context/config.json`. Nothing else, and no credential files.
 - **Writes:** nothing, except `/aws-ui:statusline copy`, which writes one script file you asked for.
 - **Shows:** the user name taken from the principal ARN, the region, the environment if classified, and a warning if any. Not the account ID, the profile, or the ARN.
 - **Telemetry:** none.
 
 ## Limitations
 
-- **Freshness is bounded by `aws-context`.** The footer does not verify anything. After the time-to-live (default 5 minutes) it shows `AWS check stale` until a refresh (`/aws-context:status refresh`) writes a new snapshot. The mod checks the file every 5 seconds.
+- **Freshness is bounded by `aws-context`.** The footer does not verify anything. After the time-to-live (default 5 minutes) it shows `AWS check stale` until a refresh writes a new snapshot. With `aws-context` installed, its background hook does that before your next prompt (`autoRefresh`, on by default); you can also run `/aws-context:status refresh`. The mod checks the file every 5 seconds.
+- **Whose identity it is.** What the footer shows is the identity of Claude Code's own process. A command that sets its own profile or credentials (`aws --profile prod ...`) can act on a different account, and the footer will not change. It is not a guard on commands.
 - **Which project.** The mod finds the snapshot from the session's project root, and the `aws-context` hook from `CLAUDE_PROJECT_DIR`. They normally match; after a `/cd` into another directory they may not, and the footer then shows nothing until a refresh for that directory. Unverified in a real session.
 - **Not an enforcement point.** Seeing `production` here does not stop any command. IAM, SCPs, and permission boundaries do that.
 - **Labels are plain text.** Claude Code draws them in its own style, so they cannot be colored; the warning is words, not color.

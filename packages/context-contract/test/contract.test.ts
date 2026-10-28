@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  cellWidth,
   claudeConfigDir,
   classifyAccount,
+  clipCodePoints,
   footerLabels,
   formatBar,
   formatFooterLine,
   interpret,
+  isRefreshDue,
   maskAccount,
   mergeConfig,
   normalizeWorkspacePath,
@@ -16,7 +19,6 @@ import {
   projectConfigPath,
   serializeSnapshot,
   snapshotPath,
-  toneOf,
   trimTrailingSeparators,
   userConfigPath,
   validateSnapshot,
@@ -372,14 +374,6 @@ describe("formatBar", () => {
     expect(line).toContain("1234…9012");
   });
 
-  it("has a tone for every state", () => {
-    expect(toneOf(interpret(snapshot({ environment: "production" }), fresh))).toBe("alert");
-    expect(toneOf(interpret(snapshot(), fresh))).toBe("ok");
-    expect(toneOf(interpret(snapshot(), at(STALE_AFTER) + 1))).toBe("warn");
-    expect(toneOf(interpret(snapshot({ verification: "expired" }), fresh))).toBe("danger");
-    expect(toneOf(interpret(null, fresh))).toBe("muted");
-  });
-
   it("masks short and long ids consistently", () => {
     expect(maskAccount("123456789012")).toBe("1234…9012");
   });
@@ -550,5 +544,113 @@ describe("footerLabels with limited room", () => {
       const found = identity(room);
       if (found !== null) expect(found.length).toBeLessThanOrEqual(room);
     }
+  });
+});
+
+describe("cell width", () => {
+  it("counts columns, not UTF-16 units", () => {
+    expect(cellWidth("carol")).toBe(5);
+    expect(cellWidth("日本語")).toBe(6);
+    expect(cellWidth("a😀b")).toBe(4);
+    expect(cellWidth("e\u0301")).toBe(1);
+    expect(cellWidth("a\u200db")).toBe(2);
+    expect(cellWidth("\u00a0")).toBe(1);
+    expect(cellWidth("a\u0007b")).toBe(2);
+  });
+
+  it("clips without splitting a surrogate pair", () => {
+    expect(clipCodePoints("😀😀😀", 2)).toBe("😀😀");
+    expect(clipCodePoints("abc", 0)).toBe("");
+    expect(clipCodePoints("abc", 10)).toBe("abc");
+  });
+
+  it("fits wide user names by columns", () => {
+    const wide = "arn:aws:sts::123456789012:assumed-role/Role/山田太郎山田太郎";
+    const found = footerLabels(interpret(snapshot({ principalArn: wide }), at(VERIFIED_AT)), {
+      room: 14,
+    }).identity;
+    expect(found === null || cellWidth(found) <= 14).toBe(true);
+  });
+
+  it("shortens a name made of astral characters without breaking it", () => {
+    const arn = `arn:aws:sts::123456789012:assumed-role/Role/${"😀".repeat(20)}`;
+    const found = footerLabels(interpret(snapshot({ principalArn: arn }), at(VERIFIED_AT)), {
+      room: 30,
+    }).identity;
+    expect(found).not.toMatch(/[\ud800-\udbff](?![\udc00-\udfff])/);
+    expect(principalName(arn)).not.toMatch(/[\ud800-\udbff](?![\udc00-\udfff])/);
+  });
+});
+
+describe("user preferences for the footer", () => {
+  const fresh = at("2026-01-01T12:01:00.000Z");
+  const arn = "arn:aws:sts::123456789012:assumed-role/Role/carol@example.com";
+
+  it("hides the user when asked", () => {
+    const result = footerLabels(
+      interpret(snapshot({ principalArn: arn, environment: "production" }), fresh),
+      { showUser: false },
+    );
+    expect(result.identity).toBe("us-east-1 · production");
+    expect(
+      formatFooterLine(interpret(snapshot({ principalArn: arn }), fresh), 100, { showUser: false }),
+    ).not.toContain("carol");
+  });
+
+  it("honors ui.showUser and autoRefresh only from the user file", () => {
+    const text = JSON.stringify({ version: 1, autoRefresh: false, ui: { showUser: false } });
+    const user = mergeConfig(parseConfig(text, "user"), undefined);
+    expect(user.showUser).toBe(false);
+    expect(user.autoRefresh).toBe(false);
+    const project = parseConfig(text, "project");
+    expect(mergeConfig(undefined, project).showUser).toBe(true);
+    expect(mergeConfig(undefined, project).autoRefresh).toBe(true);
+    expect(project.warnings.some((w) => w.includes("autoRefresh"))).toBe(true);
+  });
+
+  it("defaults to showing the user and refreshing automatically", () => {
+    const config = mergeConfig(undefined, undefined);
+    expect(config.showUser).toBe(true);
+    expect(config.autoRefresh).toBe(true);
+  });
+
+  it("rejects non-boolean values", () => {
+    const parsed = parseConfig(
+      JSON.stringify({ version: 1, autoRefresh: "no", ui: { showUser: 1 } }),
+      "user",
+    );
+    expect(parsed.layer.autoRefresh).toBeUndefined();
+    expect(parsed.layer.showUser).toBeUndefined();
+    expect(parsed.warnings).toHaveLength(2);
+  });
+});
+
+describe("isRefreshDue", () => {
+  const written = at(VERIFIED_AT);
+  const minutes = (n: number): number => written + n * 60_000;
+  const stale = interpret(snapshot(), minutes(6));
+
+  it("is due once a full window has passed since the last write", () => {
+    expect(isRefreshDue(stale, written, minutes(6), 5)).toBe(true);
+    expect(isRefreshDue(stale, written, minutes(5), 5)).toBe(true);
+    expect(isRefreshDue(stale, written, minutes(4), 5)).toBe(false);
+  });
+
+  it("is never due for a current check or for no snapshot", () => {
+    expect(isRefreshDue(interpret(snapshot(), minutes(1)), written, minutes(60), 5)).toBe(false);
+    expect(isRefreshDue(interpret(null, minutes(6)), written, minutes(60), 5)).toBe(false);
+  });
+
+  it("retries a failed check once per window, not on every prompt", () => {
+    const failed = interpret(
+      snapshot({ verification: "expired", diagnosticCode: "SSO_EXPIRED" }),
+      minutes(1),
+    );
+    expect(isRefreshDue(failed, minutes(1), minutes(2), 5)).toBe(false);
+    expect(isRefreshDue(failed, minutes(1), minutes(7), 5)).toBe(true);
+  });
+
+  it("ignores a file stamped in the future", () => {
+    expect(isRefreshDue(stale, minutes(30), minutes(6), 5)).toBe(false);
   });
 });

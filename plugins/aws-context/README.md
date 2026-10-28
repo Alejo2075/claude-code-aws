@@ -7,6 +7,7 @@ Verified AWS account, principal, region, and environment for the current project
 When you open an AWS project, it answers "which AWS account am I on?" with evidence instead of a guess:
 
 - It asks AWS who you are (`sts:GetCallerIdentity`) through your existing credentials, so a profile name or an environment label is never taken as proof.
+- It keeps the check from going stale in a long session: when the stored check is older than its time-to-live, a background hook re-verifies it before your next prompt (see `autoRefresh`).
 - It keeps a small, validated snapshot per workspace. The optional [`aws-ui`](../aws-ui) plugin and any script can read it without calling AWS.
 - It tells you plainly when something is not verified: expired SSO, no credentials, offline, no region.
 - It classifies an account as `production` or `non-production` only from a mapping **you** configure. Everything else is `unknown`.
@@ -30,11 +31,12 @@ Then run `/aws-context:status refresh`.
 
 ## Components
 
-| Component | Name                                    | Side effects                                                                                       | Invocation                                             |
-| --------- | --------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| Skill     | `/aws-context:status [refresh\|config]` | `status`, `config`: read. `refresh`: one STS call, writes the snapshot                             | Automatic or manual                                    |
-| Hook      | `SessionStart` (`startup`, `resume`)    | One STS call (5 s budget) and a snapshot write; adds a short masked summary to the model's context | Automatic. Fails open: never blocks the session        |
-| Command   | `dist/cli.mjs`                          | See below                                                                                          | Run by the skill and the hook; you can run it yourself |
+| Component | Name                                    | Side effects                                                                                                | Invocation                                                                    |
+| --------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Skill     | `/aws-context:status [refresh\|config]` | `status`, `config`: read. `refresh`: one STS call, writes the snapshot                                      | Automatic or manual                                                           |
+| Hook      | `SessionStart` (`startup`, `resume`)    | One STS call (5 s budget) and a snapshot write; adds a short masked summary to the model's context          | Automatic. Fails open: never blocks the session                               |
+| Hook      | `UserPromptSubmit` (background)         | At most one STS call and snapshot write per time-to-live, only when the stored check is old; prints nothing | Automatic, asynchronous: your prompt never waits. Turn off with `autoRefresh` |
+| Command   | `dist/cli.mjs`                          | See below                                                                                                   | Run by the skill and the hook; you can run it yourself                        |
 
 The command, run as `node <plugin dir>/dist/cli.mjs`:
 
@@ -72,18 +74,23 @@ Optional. Two JSON files with the same format:
 {
   "version": 1,
   "ttlMinutes": 5,
+  "autoRefresh": true,
   "accounts": {
     "123456789012": { "environment": "production" },
     "210987654321": { "environment": "non-production" }
   },
-  "ui": { "maskAccountId": true, "showProfile": true }
+  "ui": { "maskAccountId": true, "showProfile": true, "showUser": true }
 }
 ```
 
 - Keys under `accounts` are 12-digit account IDs. A profile name is never used to decide the environment.
 - **Trust rule.** A project file is repository content and could come from someone else. It can mark an account `production`, but only **your** user file can mark an account `non-production`. A project-file `non-production` claim is ignored and shown as untrusted by `config show`.
 - Invalid values are ignored with a warning; classification then stays `unknown`. It never guesses.
-- `ttlMinutes`: 1 to 60. `ui.*` defaults to masking the account (`1234…9012`) and showing the profile.
+- `ttlMinutes`: 1 to 60.
+- `autoRefresh` (default `true`): re-verify in the background when the stored check is old. A failed check (expired SSO, offline) is retried once per time-to-live, not on every prompt. Set `false` to verify only at session start and on `refresh`.
+- `ui.maskAccountId` (default `true`, shows `1234…9012`) and `ui.showProfile` (default `true`) shape the text of `/aws-context:status`. They do not affect the footer or the status line, which never show the account or the profile.
+- `ui.showUser` (default `true`) hides the user name in the footer and the status line, for when you share your screen. The `/aws-context:status` text still shows the principal.
+- `ttlMinutes`, `autoRefresh`, and `ui.*` are honored only from your user file, never from a project file.
 
 ## AWS permissions
 
@@ -93,7 +100,7 @@ IAM, SCPs, and permission boundaries remain the enforcement boundary. This plugi
 
 ## Data and privacy
 
-- **Calls AWS:** only `sts:GetCallerIdentity`, from `refresh` and from the session-start hook. `status` and `config show` make no network calls. With no credentials found, the SDK's default chain may also try the EC2 instance-metadata address (`169.254.169.254`) for a moment; the 5-second budget bounds it. Set `AWS_EC2_METADATA_DISABLED=true` to skip it.
+- **Calls AWS:** only `sts:GetCallerIdentity`, from `refresh`, the session-start hook, and the background hook (at most once per time-to-live). `status` and `config show` make no network calls. With no credentials found, the SDK's default chain may also try the EC2 instance-metadata address (`169.254.169.254`) for a moment; the 5-second budget bounds it. Set `AWS_EC2_METADATA_DISABLED=true` to skip it.
 - **Stores:** one JSON file per workspace at `<claude config dir>/aws-context/v1/<workspace id>.json`: account ID, principal ARN, region, profile name, environment, timestamps, and a diagnostic code. The workspace id is a hash, not the path. Directory mode `0700`, file mode `0600` where the OS supports it.
 - **Never stores or prints:** access keys, secret keys, session tokens, SSO tokens, environment variables, or SDK error text.
 - **Retention:** snapshots untouched for 7 days are deleted on the next refresh. `purge` deletes them all. Uninstalling the plugin leaves the directory; delete `<claude config dir>/aws-context/` to remove it.
@@ -103,6 +110,9 @@ IAM, SCPs, and permission boundaries remain the enforcement boundary. This plugi
 
 ## Limitations
 
+- **Whose identity it is.** The check describes the identity of Claude Code's own process (its environment and `AWS_PROFILE`). A command that sets its own profile or credentials (`aws --profile prod ...`, `AWS_PROFILE=prod aws ...`, a tool that loads other credentials) can act on a different account, and this plugin will not notice. Treat the footer as "where Claude Code's shell points", not as a guard on every command.
+- **Last known identity.** After a failed check the previous identity is shown, marked as last known, only when a named profile was selected and it is the same profile as before. With environment credentials nothing is carried over, because those credentials may belong to a different account than the last check and the plugin does not store anything that could tell.
+- **Size.** The command and each hook bundle the AWS SDK for STS, about 1.1 MB each. Starting the hook takes about 0.1 s.
 - **Environment variables vs. `AWS_PROFILE`.** The AWS SDK for JavaScript skips environment credentials when `AWS_PROFILE` is set and fails if that profile does not exist. This plugin reports that failure rather than hiding it. The AWS CLI may behave differently, so what the CLI uses and what this plugin verifies can differ in that corner.
 - **Region.** The SDK for JavaScript ignores `AWS_DEFAULT_REGION`; this plugin falls back to it when `AWS_REGION` and the profile give none. With no region at all, the identity is verified through a global endpoint and the region is reported as `unknown`. Partitions other than `aws` (GovCloud, China) need a configured region.
 - **Not live.** It does not watch for changes. Changing a variable in another terminal does not affect a running Claude Code session until you `refresh`.

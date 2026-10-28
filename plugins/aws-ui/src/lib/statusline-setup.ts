@@ -4,6 +4,8 @@ import { join } from "node:path";
 import { claudeConfigDir, type EnvReader } from "@claude-code-aws/context-contract";
 import { readTextBounded } from "@claude-code-aws/context-contract/node";
 
+const SCRIPT_LIMIT = 1_000_000;
+
 /** The stable copy lives in this plugin's own folder under the Claude config directory. */
 export function stableScriptPath(env: EnvReader): string | null {
   const base = claudeConfigDir(env);
@@ -44,6 +46,17 @@ export function snippet(scriptPath: string): string {
   return JSON.stringify({ statusLine: { type: "command", command, refreshInterval: 10 } }, null, 2);
 }
 
+/** A warning when the stable copy exists but differs from the installed script (after an update). */
+export function staleCopyNote(env: EnvReader, currentScript: string): string | null {
+  const stable = stableScriptPath(env);
+  if (stable === null) return null;
+  const copy = readTextBounded(stable, SCRIPT_LIMIT);
+  if (copy.kind !== "ok") return null;
+  const current = readTextBounded(currentScript, SCRIPT_LIMIT);
+  if (current.kind !== "ok" || current.text === copy.text) return null;
+  return `The copy at ${stable} is not the installed version. Run \`setup --copy\` to refresh it.`;
+}
+
 export interface SetupResult {
   text: string;
   copied: boolean;
@@ -80,6 +93,8 @@ export function setup(
       "This path belongs to the installed plugin version and changes when the plugin updates.",
       "Run `setup --copy` to keep a stable copy under your Claude config directory instead.",
     );
+    const note = staleCopyNote(env, currentScript);
+    if (note !== null) lines.push("", note);
   }
 
   lines.push("", "To turn the status line on, add this to ~/.claude/settings.json yourself:", "");

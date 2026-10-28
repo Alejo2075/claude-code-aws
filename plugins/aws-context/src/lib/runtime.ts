@@ -1,7 +1,11 @@
+import { statSync } from "node:fs";
+
 import {
   type AwsContextSnapshotV1,
   type EffectiveConfig,
   type EnvReader,
+  interpret,
+  isRefreshDue,
   snapshotDir,
   snapshotPath,
   workspaceId,
@@ -70,4 +74,35 @@ export async function refreshAndStore(
     }
   }
   return { ...stored, snapshot, writeFailed };
+}
+
+/**
+ * Re-verifies in the background when the stored check is old. Does nothing when the user turned
+ * `autoRefresh` off, when there is no stored snapshot (the session-start hook creates it), when the
+ * check is still current, or when the file was written less than one time-to-live ago, so a failing
+ * check is retried once per window and never on every prompt. Returns whether it refreshed.
+ */
+export async function refreshIfDue(
+  projectDir: string,
+  timeoutMs: number,
+  env: EnvReader = processEnv,
+): Promise<boolean> {
+  const stored = await loadStored(projectDir, env);
+  if (!stored.config.autoRefresh || stored.path === null || stored.snapshot === null) return false;
+  let lastWriteMs: number;
+  try {
+    lastWriteMs = statSync(stored.path).mtimeMs;
+  } catch {
+    return false;
+  }
+  const now = Date.now();
+  const due = isRefreshDue(
+    interpret(stored.snapshot, now),
+    lastWriteMs,
+    now,
+    stored.config.ttlMinutes,
+  );
+  if (!due) return false;
+  await refreshAndStore(projectDir, timeoutMs, env);
+  return true;
 }

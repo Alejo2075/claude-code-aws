@@ -98,6 +98,7 @@ export function renderSessionContext(report: StatusReport): string {
     "AWS context (aws-context plugin, read-only):",
     `- ${report.bar}`,
     `- account ${account}${report.isCurrent ? " (verified with STS)" : " is NOT verified as current"}; region ${snapshot?.region ?? "unknown"}; environment ${snapshot?.environment ?? "unknown"}`,
+    "- This describes the identity of Claude Code's own process. A command that sets its own profile or credentials (--profile, AWS_PROFILE=...) may act on a different account.",
     "- This is information, not authorization. Do not mutate AWS resources on the strength of this cache; IAM and the user's approval remain the boundary.",
     "- Use /aws-context:status for full details or a refresh.",
   ].join("\n");
@@ -108,6 +109,8 @@ export function renderConfigText(config: EffectiveConfig): string {
     `ttlMinutes:    ${config.ttlMinutes}`,
     `maskAccountId: ${config.maskAccountId}`,
     `showProfile:   ${config.showProfile}`,
+    `showUser:      ${config.showUser}`,
+    `autoRefresh:   ${config.autoRefresh}`,
     "",
     "Accounts (user file):",
   ];

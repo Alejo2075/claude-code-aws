@@ -47,13 +47,14 @@ const posix = (path: string): string => path.replace(/\\/g, "/").replace(/^[A-Za
  * renderer (the stub for `ui.render` stands in for it). `existing` stands for labels already there.
  */
 function world(on: any, files: Map<string, string>, existing: string[] = []) {
-  const seen = { modes: [] as readonly string[] };
+  const seen = { modes: [] as readonly string[], stats: [] as string[] };
   on("session.start", () => ({ cwd: "/work/project" }));
   on("env.get", ($: unknown, e: { name: string }) => ({
     value: e.name === "HOME" ? HOME : undefined,
   }));
   on("session.root", () => ({ value: "/work/project" }));
   on("fs.stat", ($: unknown, e: { path: string }) => {
+    seen.stats.push(posix(e.path));
     const text = files.get(posix(e.path));
     return text === undefined
       ? { deny: "ENOENT" }
@@ -208,4 +209,80 @@ test("leaves room for labels other mods already added and for the hint", async (
   expect(mine.length - GAP.length).toBeLessThan(
     "carol@example.com · us-east-1 · production".length,
   );
+});
+
+const USER_CONFIG = `${HOME}/.claude/aws-context/config.json`;
+
+test("hides the user name when the user's own config says so", async ($, on) => {
+  mock.clock(on, { now: AT_MINUTE_1 });
+  const config = JSON.stringify({ version: 1, ui: { showUser: false } });
+  const w = world(
+    on,
+    new Map([
+      [SNAPSHOT, snapshot()],
+      [USER_CONFIG, config],
+    ]),
+  );
+  expect(await footer($, w)).toEqual([`${GAP}us-east-1 · production`]);
+});
+
+test("keeps showing the user name when the config is missing or invalid", async ($, on) => {
+  mock.clock(on, { now: AT_MINUTE_1 });
+  const w = world(
+    on,
+    new Map([
+      [SNAPSHOT, snapshot()],
+      [USER_CONFIG, "{ not json"],
+    ]),
+  );
+  expect(await footer($, w)).toEqual([`${GAP}carol@example.com · us-east-1 · production`]);
+});
+
+test("follows a config change made while the session runs", async ($, on) => {
+  const clock = mock.clock(on, { now: AT_MINUTE_1 });
+  const files = new Map<string, string>([[SNAPSHOT, snapshot()]]);
+  const w = world(on, files);
+  await $.session.start({ surface: "terminal", isInteractive: true, cwd: "/work/project" });
+  files.set(USER_CONFIG, JSON.stringify({ version: 1, ui: { showUser: false } }));
+  await clock.advance(5_000);
+  await $.ui.mount({ ...FOOTER, props: { modes: [] } });
+  expect(w.seen.modes).toEqual([`${GAP}us-east-1 · production`]);
+});
+
+test("a second session start replaces the poll instead of adding another", async ($, on) => {
+  const clock = mock.clock(on, { now: AT_MINUTE_1 });
+  const w = world(on, new Map([[SNAPSHOT, snapshot()]]));
+  await $.session.start({ surface: "terminal", isInteractive: true, cwd: "/work/project" });
+  await $.session.start({ surface: "terminal", isInteractive: true, cwd: "/work/project" });
+  const before = w.seen.stats.filter((path) => path === SNAPSHOT).length;
+  await clock.advance(5_000);
+  expect(w.seen.stats.filter((path) => path === SNAPSHOT).length - before).toBe(1);
+});
+
+async function labelsBesideHint($: any, on: any, hint: string): Promise<readonly string[]> {
+  mock.clock(on, { now: AT_MINUTE_1 });
+  const w = world(on, new Map([[SNAPSHOT, snapshot()]]));
+  await $.session.start({ surface: "terminal", isInteractive: true, cwd: "/work/project" });
+  await $.ui.mount({
+    plugin: "aws-ui",
+    surface: "terminal",
+    component: "PromptHint",
+    requestId: "hint",
+    viewport: { columns: 120, rows: 40 },
+    props: { isDraft: false, isWorking: false, hint },
+  });
+  await $.ui.mount({ ...FOOTER, props: { modes: [] } });
+  return w.seen.modes;
+}
+
+test("an ASCII hint of 20 characters leaves room for the full label", async ($, on) => {
+  expect(await labelsBesideHint($, on, "a".repeat(20))).toEqual([
+    `${GAP}carol@example.com · us-east-1 · production`,
+  ]);
+});
+
+test("a hint of 20 wide characters takes 40 columns and the label shrinks", async ($, on) => {
+  const modes = await labelsBesideHint($, on, "日".repeat(20));
+  expect(modes).not.toEqual([`${GAP}carol@example.com · us-east-1 · production`]);
+  expect(modes).toHaveLength(1);
 });

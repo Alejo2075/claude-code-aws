@@ -46,8 +46,10 @@ function isIdentity(identity: Identity): boolean {
 
 /**
  * Resolves the current AWS context. Never throws: every failure becomes a snapshot that says what
- * is and is not known. A previous identity is carried over only for the same workspace and
- * profile, and only ever with a non-`verified` state.
+ * is and is not known. A previous identity is carried over only for the same workspace and the
+ * same named profile, and only ever with a non-`verified` state. Without a named profile (for
+ * example environment credentials) nothing is carried over: those credentials may belong to a
+ * different account than the last check, and the plugin must not store anything to tell.
  */
 export async function refreshContext(deps: RefreshDeps): Promise<AwsContextSnapshotV1> {
   const id = await workspaceId(deps.projectDir);
@@ -80,6 +82,7 @@ export async function refreshContext(deps: RefreshDeps): Promise<AwsContextSnaps
     const prior = deps.prior;
     const carries =
       prior !== null &&
+      profile !== null &&
       prior.workspaceId === id &&
       prior.profile === profile &&
       prior.accountId !== null;
