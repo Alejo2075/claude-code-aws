@@ -558,6 +558,9 @@ importers:
 
   plugins/aws-security:
     devDependencies:
+      '@claude-code-aws/architecture-graph':
+        specifier: workspace:*
+        version: link:../../packages/architecture-graph
       '@claude-code-aws/aws-client':
         specifier: workspace:*
         version: link:../../packages/aws-client

@@ -10,6 +10,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
+    "@claude-code-aws/architecture-graph": "workspace:*",
     "@claude-code-aws/aws-client": "workspace:*",
     "@claude-code-aws/context-contract": "workspace:*",
     "@claude-code-aws/report-contract": "workspace:*",
