@@ -85,7 +85,10 @@ export function compareStacks(input: CompareInput): { diff: TemplateDiff; notes:
 }
 
 /** Findings for the changes that deserve a decision before deploying. */
-export function diffFindings(changes: readonly TemplateChange[], plugin: string = PLUGIN): Finding[] {
+export function diffFindings(
+  changes: readonly TemplateChange[],
+  plugin: string = PLUGIN,
+): Finding[] {
   const findings: Finding[] = [];
   for (const change of changes) {
     const subject = change.logicalId;
