@@ -1,0 +1,14 @@
+{
+  "name": "aws-testing",
+  "version": "0.0.0",
+  "description": "Run, generate, and report tests for serverless apps: Lambda handlers, CDK assertions, and event fixtures for API Gateway, SQS, SNS, EventBridge, DynamoDB Streams, S3 and Step Functions. Never deploys.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-testing#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "testing", "lambda", "cdk", "fixtures", "serverless"]
+}
