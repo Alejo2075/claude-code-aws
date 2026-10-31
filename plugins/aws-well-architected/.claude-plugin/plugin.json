@@ -1,0 +1,14 @@
+{
+  "name": "aws-well-architected",
+  "version": "0.0.0",
+  "description": "Review a serverless workload across the six Well-Architected pillars with the Serverless Lens in mind: separate verified evidence, self-reported answers, automated inferences, and missing evidence, and produce a prioritized improvement backlog. No scores and no certification.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-well-architected#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "well-architected", "serverless", "review"]
+}
