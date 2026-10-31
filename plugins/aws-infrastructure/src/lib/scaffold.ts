@@ -1,6 +1,6 @@
 // Generates CDK TypeScript for common serverless patterns with secure defaults. Nothing is written
 // unless asked, and an existing file is never overwritten.
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 import { isInside } from "@claude-code-aws/tool-runner";
@@ -272,18 +272,26 @@ export interface WriteOutcome {
   skipped: string[];
 }
 
-/** Writes the files that do not exist yet. Existing files are listed, never overwritten. */
+/**
+ * Writes the files that do not exist yet. Existing files are listed, never overwritten: the file is
+ * created with the exclusive flag, so there is no gap between checking and writing.
+ */
 export function writeScaffold(root: string, files: readonly ScaffoldFile[]): WriteOutcome {
   const outcome: WriteOutcome = { written: [], skipped: [] };
   for (const file of files) {
     const target = resolve(root, file.path);
-    if (!isInside(root, target) || existsSync(target)) {
+    if (!isInside(root, target)) {
       outcome.skipped.push(file.path);
       continue;
     }
     mkdirSync(dirname(target), { recursive: true });
-    writeFileSync(target, file.content, { flag: "wx" });
-    outcome.written.push(file.path);
+    try {
+      writeFileSync(target, file.content, { flag: "wx" });
+      outcome.written.push(file.path);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      outcome.skipped.push(file.path);
+    }
   }
   return outcome;
 }
