@@ -1,0 +1,14 @@
+{
+  "name": "aws-email",
+  "version": "0.0.0",
+  "description": "Inspect SES identities, configuration sets, and receipt rules in synthesized CDK output, validate email templates against sample data, dry-run a recipient list without sending, and judge bounce and complaint rates. No email is sent.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-email#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "ses", "email", "deliverability"]
+}

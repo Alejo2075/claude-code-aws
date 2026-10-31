@@ -224,3 +224,55 @@ This file is updated by the pull request that changes a capability. The per-plug
 | `inspect`: DynamoDB (7 rule ids) and Aurora (4 rule ids)                              | implemented + tested                            |
 | Reading rows or table metrics, Aurora Data API, running migrations                    | not implemented by design / not yet implemented |
 | Live inspection through the AWS SDK                                                   | not yet implemented                             |
+
+## aws-config
+
+| Capability                                                                                  | Status                                                                             |
+| ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `flags`: AppConfig feature flag schema checks                                               | implemented + tested (schema read from the AppConfig type reference on 2026-10-31) |
+| `validate`: JSON Schema subset                                                              | implemented + tested (a subset, stated)                                            |
+| `rollout-plan`: linear matches the documented example; exponential spacing is an assumption | implemented + tested                                                               |
+| `inspect`: 5 rule ids over AppConfig and Parameter Store                                    | implemented + tested                                                               |
+| Deploying configuration, changing flags, reading live values                                | not implemented by design                                                          |
+| Live inspection through the AWS SDK                                                         | not yet implemented                                                                |
+
+## aws-email
+
+| Capability                                                                             | Status                                |
+| -------------------------------------------------------------------------------------- | ------------------------------------- |
+| `inspect`: 6 rule ids over identities, configuration sets, receipt rules               | implemented + tested                  |
+| `template-check`, `dry-run`                                                            | implemented + tested                  |
+| `deliverability`: bounce thresholds read from the SES documentation; DNS syntax checks | implemented + tested (no DNS lookups) |
+| Sending, receiving, verifying identities, reading suppression lists                    | not implemented by design             |
+| Live inspection through the AWS SDK                                                    | not yet implemented                   |
+
+## aws-edge
+
+| Capability                                                           | Status                                                                                               |
+| -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `inspect`: 9 rule ids over declared distributions and edge functions | implemented + tested (Lambda@Edge restrictions read from the CloudFront documentation on 2026-10-31) |
+| `function`: lint against the documented runtime restrictions         | implemented + tested (a lint, not the runtime)                                                       |
+| `cache`, `diagnose`                                                  | implemented + tested                                                                                 |
+| Invalidations, publishing functions, reading real hit ratios         | not implemented by design / not yet implemented                                                      |
+| Live inspection through the AWS SDK                                  | not yet implemented                                                                                  |
+
+## aws-containers
+
+| Capability                                               | Status                                                                     |
+| -------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `inspect` / `taskdef-check`: 14 rule ids                 | implemented + tested                                                       |
+| `size`: Fargate CPU and memory table                     | implemented + tested (table read from the ECS documentation on 2026-10-31) |
+| `review` Dockerfile, `containerize`, `diagnose`, `image` | implemented + tested                                                       |
+| Building or pushing images, reading running tasks        | not implemented by design / not yet implemented                            |
+| Live inspection through the AWS SDK                      | not yet implemented                                                        |
+
+## aws-ai
+
+| Capability                                                                             | Status                                          |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `inspect`: 6 rule ids over declared Bedrock resources and model permissions            | implemented + tested                            |
+| `budget`: estimate from user-supplied prices (hand-checked)                            | implemented + tested                            |
+| `chunk`, `prompt-check`, `rag-review`, `agent-review`, `eval-scaffold`, `availability` | implemented + tested                            |
+| `bedrock-engineer` agent and evals                                                     | implemented + unverified (evals not run)        |
+| Invoking models, reading quotas or model access, AgentCore runtime inspection          | not implemented by design / not yet implemented |
+| Live inspection through the AWS SDK                                                    | not yet implemented                             |

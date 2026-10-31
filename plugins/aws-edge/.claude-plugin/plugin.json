@@ -1,0 +1,14 @@
+{
+  "name": "aws-edge",
+  "version": "0.0.0",
+  "description": "Inspect CloudFront distributions in synthesized CDK output, lint CloudFront Function code against the runtime's restrictions, check Lambda@Edge constraints, review cache policies, and map HTTP error codes to likely causes. No distribution is changed and no invalidation is created.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-edge#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "cloudfront", "cdn", "edge"]
+}
