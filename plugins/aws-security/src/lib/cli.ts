@@ -14,6 +14,7 @@ import { runRules } from "@claude-code-aws/template-analysis";
 import { isInside } from "@claude-code-aws/tool-runner";
 
 import { authMatrix, renderAuth } from "./auth.js";
+import { remediation, STRIDE_NOTE, threatModel } from "./threat.js";
 import { explainDenied } from "./denied.js";
 import { applyExclusions, type Exclusion } from "./exclusions.js";
 import { describeStatement, type PolicyKind, policyTemplate, statementsOf } from "./policy.js";
@@ -28,6 +29,8 @@ export const USAGE = `Usage: aws-security <command> [options]
   iam --policy <file> [--trust|--resource]   The same for one policy document (identity policy by default)
   iam --explain "<AccessDenied message>"     What the message says, and a starting point for a fix
   auth [path]                           Which API routes have an authorizer, JWT settings, CORS
+  threat-model [path]                   Entry points, trust boundaries, and candidate attack paths (hypotheses)
+  remediate [path]                      Proposed fixes for the audit findings (nothing is applied)
 
 Options: --json
 
@@ -244,6 +247,72 @@ function run(argv: readonly string[], deps: CliDeps): CliResult {
         renderReport(result),
       ].join("\n\n");
       return print({ matrices, report: result }, text);
+    }
+
+    case "threat-model": {
+      const loaded = loadStacks(deps.root, first ?? "cdk.out");
+      const model = threatModel(loaded.stacks.map((s) => ({ name: s.name, template: s.template })));
+      const result = report(
+        model.findings,
+        (n) =>
+          `${n} candidate threat(s) from ${model.entryPoints.length} entry point(s) in ${loaded.stacks.length} stack(s). All are hypotheses.`,
+        [...loaded.problems, STRIDE_NOTE],
+        loaded.stacks.length,
+      );
+      const text = [
+        `Trust boundaries: ${model.boundaries.join(", ")}`,
+        "Entry points:",
+        ...model.entryPoints.map(
+          (e) => `  ${e.kind} ${e.id}: ${e.unauthenticatedRoutes} route(s) without authorization`,
+        ),
+        `Candidate attack paths (${model.paths.length}): ${
+          model.paths
+            .slice(0, 15)
+            .map((p) => `${p.entry} -> ${p.via.join(" -> ") || "(direct)"} -> ${p.reaches}`)
+            .join("; ") || "none"
+        }`,
+        "",
+        renderReport(result),
+      ].join("\n");
+      return print(
+        {
+          model: {
+            boundaries: model.boundaries,
+            entryPoints: model.entryPoints,
+            paths: model.paths,
+          },
+          report: result,
+        },
+        text,
+      );
+    }
+
+    case "remediate": {
+      const loaded = loadStacks(deps.root, first ?? "cdk.out");
+      const { findings } = runRules(
+        PLUGIN,
+        SECURITY_RULES,
+        loaded.stacks.map((s) => ({ name: s.name, template: s.template })),
+        { now },
+      );
+      const { kept } = applyExclusions(findings, configured.exclusions, now);
+      const proposals = kept.map((f) => ({
+        ruleId: f.ruleId,
+        severity: f.severity,
+        resource: f.affectedResources?.[0] ?? "*",
+        ...remediation(f.ruleId, f.recommendation),
+      }));
+      const text = [
+        proposals.length === 0
+          ? "No findings, so nothing to remediate."
+          : `${proposals.length} proposal(s). NOTHING WAS CHANGED: apply a fix in code, run the tests, and deploy through /aws-deploy.`,
+        ...proposals.map(
+          (p) =>
+            `[${p.severity}] ${p.ruleId} on ${p.resource}\n    Change: ${p.change}\n    Verify: ${p.verify}`,
+        ),
+        ...loaded.problems,
+      ].join("\n");
+      return print({ proposals }, text);
     }
 
     default:

@@ -2,7 +2,7 @@
   "name": "aws-edge",
   "version": "0.0.0",
   "private": true,
-  "description": "Inspect CloudFront distributions in synthesized CDK output, lint CloudFront Function code against the runtime's restrictions, check Lambda@Edge constraints, review cache policies, and map HTTP error codes to likely causes. No distribution is changed and no invalidation is created.",
+  "description": "Inspect CloudFront distributions in synthesized CDK output, lint CloudFront Function code against the runtime's restrictions, check Lambda@Edge constraints, review cache policies, and map HTTP status codes to likely causes. No distribution is changed and no invalidation is created.",
   "license": "MIT",
   "type": "module",
   "scripts": {

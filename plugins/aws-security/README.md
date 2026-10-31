@@ -84,17 +84,18 @@ Reads template files and, for `--policy`, one file inside the project. Writes no
 
 ## Capability matrix
 
-| Capability                                                                          | Status                                  |
-| ----------------------------------------------------------------------------------- | --------------------------------------- |
-| Twenty template rules (IAM, resource policies, S3, Lambda, API, KMS, SNS, Cognito)  | implemented + tested                    |
-| IAM statement listing, pasted-policy analysis, trust policies                       | implemented + tested                    |
-| `AccessDenied` message explanation                                                  | implemented + tested (fixture messages) |
-| API authorization matrix (HTTP and REST), JWT and CORS checks                       | implemented + tested                    |
-| Exclusions with reason, expiry, and trust rules                                     | implemented + tested                    |
-| Live-account checks (Access Analyzer, public access, CloudTrail, KMS, Security Hub) | not yet implemented (0.2)               |
-| `threat-model`, `remediate`, the `serverless-security-reviewer` agent               | not yet implemented (0.2)               |
-| Dependency vulnerability audit                                                      | not yet implemented (0.2)               |
-| AppSync and WebSocket API authorization                                             | not yet implemented                     |
+| Capability                                                                                                                | Status                                  |
+| ------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Twenty template rules (IAM, resource policies, S3, Lambda, API, KMS, SNS, Cognito)                                        | implemented + tested                    |
+| IAM statement listing, pasted-policy analysis, trust policies                                                             | implemented + tested                    |
+| `AccessDenied` message explanation                                                                                        | implemented + tested (fixture messages) |
+| API authorization matrix (HTTP and REST), JWT and CORS checks                                                             | implemented + tested                    |
+| Exclusions with reason, expiry, and trust rules                                                                           | implemented + tested                    |
+| Live-account checks (Access Analyzer, public access, CloudTrail, KMS, Security Hub)                                       | not yet implemented (0.2)               |
+| `threat-model`: entry points, boundaries, candidate attack paths (hypotheses); `remediate`: proposed fixes, never applied | implemented + tested (template-based)   |
+| The `serverless-security-reviewer` agent                                                                                  | not yet implemented                     |
+| Dependency vulnerability audit                                                                                            | not yet implemented (0.2)               |
+| AppSync and WebSocket API authorization                                                                                   | not yet implemented                     |
 
 ## Limitations
 

@@ -33,14 +33,15 @@ This file is updated by the pull request that changes a capability. The per-plug
 
 ## aws-security
 
-| Capability                                                                         | Status                                  |
-| ---------------------------------------------------------------------------------- | --------------------------------------- |
-| Twenty template rules (IAM, resource policies, S3, Lambda, API, KMS, SNS, Cognito) | implemented + tested                    |
-| IAM statement listing, pasted-policy analysis, trust policies                      | implemented + tested                    |
-| `AccessDenied` message explanation                                                 | implemented + tested (fixture messages) |
-| API authorization matrix (HTTP and REST), JWT and CORS checks                      | implemented + tested                    |
-| Exclusions with reason, expiry, and trust rules                                    | implemented + tested                    |
-| Live-account checks, `threat-model`, `remediate`, reviewer agent, dependency audit | not yet implemented (0.2)               |
+| Capability                                                                                        | Status                                  |
+| ------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Twenty template rules (IAM, resource policies, S3, Lambda, API, KMS, SNS, Cognito)                | implemented + tested                    |
+| IAM statement listing, pasted-policy analysis, trust policies                                     | implemented + tested                    |
+| `AccessDenied` message explanation                                                                | implemented + tested (fixture messages) |
+| API authorization matrix (HTTP and REST), JWT and CORS checks                                     | implemented + tested                    |
+| Exclusions with reason, expiry, and trust rules                                                   | implemented + tested                    |
+| `threat-model` (hypotheses from declared architecture) and `remediate` (proposals, never applied) | implemented + tested (template-based)   |
+| Live-account checks, reviewer agent, dependency audit                                             | not yet implemented                     |
 
 ## aws-testing
 
