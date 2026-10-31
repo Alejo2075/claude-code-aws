@@ -2,7 +2,7 @@ import { collectPages, type Truncation } from "@claude-code-aws/aws-client";
 
 import type { Api } from "./api.js";
 import { classifyServiceError, unavailable } from "./errors.js";
-import { createRedactor, type Redactor, sanitizeText } from "./redact.js";
+import { createRedactor, type Redactor, sanitizeText } from "@claude-code-aws/safe-output";
 import type {
   KeyValue,
   Report,

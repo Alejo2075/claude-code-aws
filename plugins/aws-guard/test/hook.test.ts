@@ -97,7 +97,13 @@ describe.runIf(built)("PreToolUse hook (bundled)", () => {
 
   it("prints nothing for unrelated commands and for reads", async () => {
     await store("production");
-    for (const command of ["npm test", "git status", "aws s3 ls", "cdk diff", "terraform plan"]) {
+    for (const command of [
+      "npm test",
+      "git status",
+      "aws s3 ls",
+      "cdk diff --method=template",
+      "terraform plan",
+    ]) {
       const result = await run(bash(command));
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toBe("");

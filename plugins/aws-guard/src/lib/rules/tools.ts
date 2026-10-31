@@ -1,7 +1,7 @@
 // Classification of the other AWS-affecting tools a developer runs from the shell. Same stance as
 // the `aws` rules: recognized read and local verbs are quiet, recognized changes are classified,
 // and everything else is `unknown`, which is treated as a change.
-import { type Parsed, parseArgs } from "../args.js";
+import { optionValue, type Parsed, parseArgs } from "../args.js";
 import type { Classification, OpClass } from "../types.js";
 import { classifyAws } from "./aws.js";
 
@@ -63,6 +63,8 @@ const CDK_VALUE_OPTIONS = new Set([
   "change-set-name",
   "concurrency",
   "exclusively",
+  "method",
+  "m",
 ]);
 
 const CDK: Record<string, OpClass> = {
@@ -230,6 +232,18 @@ export function classifyTool(
       return classifyAws(args, dynamic);
     case "cdk": {
       const parsed = parseArgs(args, CDK_VALUE_OPTIONS);
+      // `cdk diff` defaults to --method=auto, which creates a CloudFormation change set in the
+      // account (and uses the deploy role). Only the template-only methods are reads.
+      if (parsed.positionals[0] === "diff") {
+        const method = optionValue(parsed, "method") ?? optionValue(parsed, "m");
+        const templateOnly =
+          method === "template" ||
+          parsed.options.has("no-change-set") ||
+          parsed.options.has("template");
+        return templateOnly
+          ? result("read", "CDK_DIFF_TEMPLATE")
+          : result("write", "CDK_DIFF_CHANGE_SET");
+      }
       return fromTable("cdk", parsed.positionals[0], CDK);
     }
     case "sam": {

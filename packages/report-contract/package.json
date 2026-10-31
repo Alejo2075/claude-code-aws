@@ -1,0 +1,17 @@
+{
+  "name": "@claude-code-aws/report-contract",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Versioned schemas, validators, and a plain-text renderer for what the AWS plugins report: findings, template diffs, test results, deployment events, cost figures, time series, and architecture plans. Pure code, bundled into each plugin.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/context-contract": "workspace:*"
+  }
+}

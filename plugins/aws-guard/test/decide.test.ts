@@ -10,7 +10,7 @@ describe("quiet by default", () => {
   it.each([
     "aws s3 ls",
     "aws sts get-caller-identity",
-    "cdk diff",
+    "cdk diff --method=template",
     "terraform plan",
     "ls -la && echo hello",
     "git commit -m 'update aws docs'",
@@ -255,7 +255,7 @@ describe("rules", () => {
   it("ask rules add questions for non-production changes", () => {
     const ctx = withRules([{ action: "ask", class: "write", environment: "non-production" }]);
     expect(decide("cdk deploy", ctx)).toMatchObject({ decision: "ask", code: "GUARD_ASK_BY_RULE" });
-    expect(decide("cdk diff", ctx).decision).toBe("none");
+    expect(decide("cdk diff --method=template", ctx).decision).toBe("none");
   });
 
   it("an unverified target counts as environment unknown", () => {
