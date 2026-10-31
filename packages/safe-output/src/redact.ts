@@ -36,8 +36,12 @@ export function isSecretName(name: string): boolean {
 const ESC = 0x1b;
 const BEL = 0x07;
 
-/** Characters that take no part in text: controls, and bidirectional overrides that reorder it. */
-function isInvisible(code: number): boolean {
+/**
+ * Characters that take no part in text: controls, and bidirectional overrides that reorder it.
+ * Tab, newline, and carriage return are kept only when the caller handles multi-line text.
+ */
+function isInvisible(code: number, keepLines: boolean): boolean {
+  if (keepLines && (code === 0x09 || code === 0x0a || code === 0x0d)) return false;
   return (
     code < 0x20 ||
     (code >= 0x7f && code <= 0x9f) ||
@@ -50,7 +54,7 @@ function isInvisible(code: number): boolean {
  * Removes terminal escape sequences (CSI and OSC) and control characters that could redraw or
  * inject into a terminal. A single linear pass, with no regular expression to attack.
  */
-export function sanitizeText(value: string): string {
+export function sanitizeText(value: string, keepLines = false): string {
   let out = "";
   for (let i = 0; i < value.length; i += 1) {
     const code = value.charCodeAt(i);
@@ -72,7 +76,7 @@ export function sanitizeText(value: string): string {
       }
       continue;
     }
-    if (!isInvisible(code)) out += value.charAt(i);
+    if (!isInvisible(code, keepLines)) out += value.charAt(i);
   }
   return out;
 }

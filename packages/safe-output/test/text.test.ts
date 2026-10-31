@@ -40,6 +40,10 @@ describe("redactText", () => {
     expect(redactText("carol@example.com", { personalData: false }).text).toBe("carol@example.com");
   });
 
+  it("keeps line breaks and tabs in multi-line text, but removes other controls", () => {
+    expect(redactText("a\n\tb\r\nc\u0007d").text).toBe("a\n\tb\r\ncd");
+  });
+
   it("removes terminal escapes", () => {
     expect(redactText("\u001b[31mred\u001b[0m").text).toBe("red");
   });

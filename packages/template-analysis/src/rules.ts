@@ -10,6 +10,11 @@ export interface RuleHit {
   affected?: string[];
 }
 
+export interface RuleContext {
+  /** The current time, for rules that depend on dates such as runtime support. */
+  now: Date;
+}
+
 export interface Rule {
   /** Stable identifier, for example `SEC-IAM-WILDCARD-ACTION`. */
   id: string;
@@ -22,7 +27,7 @@ export interface Rule {
   /** Official documentation that supports the rule. */
   source: string;
   recommendation?: string;
-  check: (template: Template) => RuleHit[];
+  check: (template: Template, context: RuleContext) => RuleHit[];
 }
 
 export interface NamedTemplate {
@@ -42,13 +47,13 @@ export function runRules(
   plugin: string,
   rules: readonly Rule[],
   templates: readonly NamedTemplate[],
-  options: { exclusions?: readonly Exclusion[] } = {},
+  options: { exclusions?: readonly Exclusion[]; now?: Date } = {},
 ): { findings: Finding[]; suppressed: number } {
   const findings: Finding[] = [];
   let suppressed = 0;
   for (const { name, template } of templates) {
     for (const rule of rules) {
-      for (const hit of rule.check(template)) {
+      for (const hit of rule.check(template, { now: options.now ?? new Date() })) {
         const excluded = (options.exclusions ?? []).some(
           (exclusion) =>
             exclusion.ruleId === rule.id &&

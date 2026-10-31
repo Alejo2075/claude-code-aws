@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync, realpathSync } from "node:fs";
-import { delimiter, isAbsolute, join, relative, resolve, sep } from "node:path";
+import { basename, delimiter, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 
 export type Env = Record<string, string | undefined>;
 
@@ -64,13 +64,26 @@ export function scrubbedEnv(
   return { ...env, ...options.extra };
 }
 
-/** True when `path` is `root` or inside it, after resolving links. Missing paths are judged lexically. */
+/**
+ * The real location of a path that may not exist yet: the nearest existing ancestor is resolved
+ * through links, and the missing part is appended. Judging a new file lexically would let a link
+ * in the middle of the path point outside the project.
+ */
+function realLocation(path: string): string {
+  let current = resolve(path);
+  const missing: string[] = [];
+  while (!existsSync(current)) {
+    const parent = dirname(current);
+    if (parent === current) break;
+    missing.unshift(basename(current));
+    current = parent;
+  }
+  return join(existsSync(current) ? realpathSync(current) : current, ...missing);
+}
+
+/** True when `path` is `root` or inside it, after resolving links. `path` need not exist. */
 export function isInside(root: string, path: string): boolean {
-  const real = (value: string): string => {
-    const absolute = resolve(value);
-    return existsSync(absolute) ? realpathSync(absolute) : absolute;
-  };
-  const rel = relative(real(root), real(path));
+  const rel = relative(realLocation(root), realLocation(path));
   return rel === "" || (!rel.startsWith("..") && !isAbsolute(rel));
 }
 

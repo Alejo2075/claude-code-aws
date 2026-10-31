@@ -19,6 +19,9 @@ import {
   replacementProperties,
   resourcesOfType,
   REPLACEMENT_DATA_DATE,
+  RUNTIME_TABLE_DATE,
+  RUNTIME_TABLE_SOURCE,
+  runtimeStatus,
   runRules,
   summarizeChanges,
   type ResourceInfo,
@@ -310,5 +313,28 @@ describe("runRules", () => {
         exclusions: [{ ruleId: "TEST-NO-QUEUES", logicalId: "*" }],
       }).findings,
     ).toEqual([]);
+  });
+});
+
+describe("runtimeStatus", () => {
+  const now = new Date("2026-10-31T00:00:00Z");
+  it("classifies runtimes against the dated table", () => {
+    expect(runtimeStatus("nodejs22.x", now).state).toBe("supported");
+    expect(runtimeStatus("nodejs20.x", now)).toEqual({
+      state: "deprecated",
+      deprecationDate: "2026-04-30",
+    });
+    expect(runtimeStatus("nodejs16.x", now).state).toBe("deprecated");
+    expect(runtimeStatus("python3.10", now).state).toBe("deprecated");
+    expect(runtimeStatus("dotnet8", now)).toEqual({
+      state: "approaching",
+      deprecationDate: "2026-11-10",
+    });
+    expect(runtimeStatus("nodejs26.x", now)).toEqual({ state: "preview", deprecationDate: null });
+    expect(runtimeStatus("cobol1.0", now)).toEqual({ state: "unknown", deprecationDate: null });
+  });
+  it("is sourced and dated", () => {
+    expect(RUNTIME_TABLE_SOURCE).toContain("lambda-runtimes");
+    expect(RUNTIME_TABLE_DATE).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 });

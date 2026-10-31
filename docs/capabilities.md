@@ -17,3 +17,16 @@ This file is updated by the pull request that changes a capability. The per-plug
 | `template-analysis`: inventory, graph, stateful and replacement catalogs, IAM, diff | implemented + tested |
 | `tool-runner`: no shell, scrubbed environment, timeout, bounded output              | implemented + tested |
 | Fixture corpus of real synthesized CDK templates                                    | implemented + tested |
+
+## aws-infrastructure
+
+| Capability                                                        | Status                                         |
+| ----------------------------------------------------------------- | ---------------------------------------------- |
+| Inventory, graph, stateful resources from `cdk.out` or a template | implemented + tested                           |
+| Safe `synth` and failure diagnostics                              | implemented + tested (against a fake `cdk`)    |
+| Template diff, replacement and deletion risk, rename detection    | implemented + tested                           |
+| `diff --deployed`                                                 | implemented + unverified (fake endpoints only) |
+| Nine operational-quality rules                                    | implemented + tested                           |
+| Scaffolds: queue-lambda-dynamodb, http-api-cognito, s3-sqs-lambda | implemented + tested                           |
+| Change-set backed diff                                            | not yet implemented                            |
+| `refactor`, drift detection, CDK upgrade checks, multi-account    | not yet implemented                            |

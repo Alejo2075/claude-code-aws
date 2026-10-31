@@ -98,7 +98,9 @@ describe("createRedactor", () => {
   });
 
   it("removes terminal escapes and control characters, keeping text", () => {
-    expect(sanitizeText("\u001b[31mred\u001b[0m\u0007 ok‮")).toBe("red ok");
+    expect(sanitizeText(`\u001b[31mred\u001b[0m\u0007 ok${String.fromCharCode(0x202e)}`)).toBe(
+      "red ok",
+    );
     const redactor = createRedactor();
     expect(redactor.field("Description", "a\u001b[2Jb")).toBe("ab");
   });
