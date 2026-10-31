@@ -1,4 +1,4 @@
-import { sanitizeText } from "./redact.js";
+import { sanitizeText } from "@claude-code-aws/safe-output";
 import type { Report, ReportData, StackEvent } from "./types.js";
 
 function table(headers: string[], rows: string[][]): string[] {

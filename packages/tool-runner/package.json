@@ -1,0 +1,14 @@
+{
+  "name": "@claude-code-aws/tool-runner",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Runs a child process the careful way: no shell, an allowlisted environment, a timeout, bounded output, and a working directory confined to the project. Node only; bundled into each plugin.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@claude-code-aws/template-analysis",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Reads synthesized CloudFormation templates: resource inventory, reference graph, stateful and replacement catalogs, IAM statements, template diffs, and a rule engine. Pure code, bundled into each plugin.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/report-contract": "workspace:*"
+  }
+}

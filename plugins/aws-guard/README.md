@@ -44,22 +44,24 @@ Without `aws-context` the guard still works, but with no verified identity it as
 
 Each AWS command is classified as `read`, `local`, `write`, `delete`, `destructive`, or `unknown` (not recognized, treated as a change):
 
-| Situation                                                               | Decision                          |
-| ----------------------------------------------------------------------- | --------------------------------- |
-| `read` or `local` (`describe-*`, `s3 ls`, `cdk diff`, `terraform plan`) | no decision                       |
-| change to a verified **non-production** account                         | no decision                       |
-| change to a **production** account                                      | `ask` (`GUARD_PRODUCTION_CHANGE`) |
-| change when the target is **not verified** (see below)                  | `ask` (`GUARD_TARGET_UNVERIFIED`) |
-| **destructive** operation, in any environment                           | `ask` (`GUARD_DESTRUCTIVE`)       |
-| a command that mentions an AWS tool but **cannot be analyzed**          | `ask` (`GUARD_UNANALYZABLE`)      |
-| matches a `deny` rule of yours                                          | `deny` (`GUARD_DENIED_BY_RULE`)   |
-| an `ask` in `bypassPermissions` or `dontAsk` mode                       | `deny` (`GUARD_UNATTENDED`)       |
+| Situation                                                                                              | Decision                          |
+| ------------------------------------------------------------------------------------------------------ | --------------------------------- |
+| `read` or `local` (`describe-*`, `s3 ls`, `cdk synth`, `cdk diff --method=template`, `terraform plan`) | no decision                       |
+| change to a verified **non-production** account                                                        | no decision                       |
+| change to a **production** account                                                                     | `ask` (`GUARD_PRODUCTION_CHANGE`) |
+| change when the target is **not verified** (see below)                                                 | `ask` (`GUARD_TARGET_UNVERIFIED`) |
+| **destructive** operation, in any environment                                                          | `ask` (`GUARD_DESTRUCTIVE`)       |
+| a command that mentions an AWS tool but **cannot be analyzed**                                         | `ask` (`GUARD_UNANALYZABLE`)      |
+| matches a `deny` rule of yours                                                                         | `deny` (`GUARD_DENIED_BY_RULE`)   |
+| an `ask` in `bypassPermissions` or `dontAsk` mode                                                      | `deny` (`GUARD_UNATTENDED`)       |
 
 An environment is `production` only if **you** classified the account in `aws-context`. An account you never classified is `unknown`, and the guard does not guess from names.
 
 The target is **not verified** when: there is no current, STS-verified context; the command uses a different profile than the verified one (`--profile`, `AWS_PROFILE=`, `export AWS_PROFILE=`, `aws-vault exec`); it sets its own credentials, credential files, or a non-local endpoint; or it picks its profile with an expansion. A call to a local emulator endpoint (`localhost`, `127.0.0.1`) is not treated as AWS.
 
 **Destructive** means deleting or replacing something that holds data or infrastructure: databases and snapshots, tables, buckets (`s3 rb`, `s3 rm --recursive`, `s3 sync --delete`), volumes, file systems, stacks (`cdk destroy`, `delete-stack`, `sam delete`), queues, log groups, repositories, hosted zones, KMS keys, secrets, IAM users, roles and keys, and `terraform destroy`, `terraform apply -destroy`, `terraform state rm`.
+
+`cdk diff` is a **change** unless it is told to compare templates only (`--method=template`, `-m template`, `--no-change-set`, or `--template`): its default creates a read-only CloudFormation change set in the account and uses the deploy role. `cdk synth` is quiet, but it runs your project's own code with your environment, which the guard cannot judge.
 
 ### What it recognizes
 

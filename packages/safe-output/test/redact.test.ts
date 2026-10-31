@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createRedactor, isSecretName, REDACTED, sanitizeText } from "../src/lib/redact.js";
+import { createRedactor, isSecretName, REDACTED, sanitizeText } from "../src/redact.js";
 
 describe("isSecretName", () => {
   it.each([

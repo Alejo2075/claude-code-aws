@@ -1,0 +1,1682 @@
+{
+  "note": "createOnly lists properties the CloudFormation resource provider schema marks createOnlyProperties: changing one replaces the resource. Conditional or nested cases are not captured.",
+  "retrieved": "2026-10-31",
+  "source": "https://schema.cloudformation.us-east-1.amazonaws.com/CloudformationSchema.zip",
+  "supplement": {
+    "note": "Properties whose change CloudFormation documents as constrained in prose rather than as a replacement rule. The analyzer reports possible replacement or a failed update, never a certain replacement; a change set confirms.",
+    "source": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-dynamodb-table.html",
+    "types": {
+      "AWS::DynamoDB::Table": [
+        "KeySchema",
+        "AttributeDefinitions",
+        "LocalSecondaryIndexes",
+        "GlobalSecondaryIndexes"
+      ]
+    }
+  },
+  "types": {
+    "AWS::ApiGateway::Account": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::ApiGateway::ApiKey": {
+      "createOnly": ["GenerateDistinctId", "Name", "Value"],
+      "primaryIdentifier": ["APIKeyId"]
+    },
+    "AWS::ApiGateway::Authorizer": {
+      "createOnly": ["RestApiId"],
+      "primaryIdentifier": ["RestApiId", "AuthorizerId"]
+    },
+    "AWS::ApiGateway::BasePathMapping": {
+      "createOnly": ["BasePath", "DomainName"],
+      "primaryIdentifier": ["DomainName", "BasePath"]
+    },
+    "AWS::ApiGateway::BasePathMappingV2": {
+      "createOnly": ["BasePath", "DomainNameArn"],
+      "primaryIdentifier": ["BasePathMappingArn"]
+    },
+    "AWS::ApiGateway::ClientCertificate": {
+      "createOnly": [],
+      "primaryIdentifier": ["ClientCertificateId"]
+    },
+    "AWS::ApiGateway::Deployment": {
+      "createOnly": ["DeploymentCanarySettings", "RestApiId"],
+      "primaryIdentifier": ["DeploymentId", "RestApiId"]
+    },
+    "AWS::ApiGateway::DocumentationPart": {
+      "createOnly": ["Location", "RestApiId"],
+      "primaryIdentifier": ["DocumentationPartId", "RestApiId"]
+    },
+    "AWS::ApiGateway::DocumentationVersion": {
+      "createOnly": ["DocumentationVersion", "RestApiId"],
+      "primaryIdentifier": ["DocumentationVersion", "RestApiId"]
+    },
+    "AWS::ApiGateway::DomainName": {
+      "createOnly": ["DomainName"],
+      "primaryIdentifier": ["DomainName"]
+    },
+    "AWS::ApiGateway::DomainNameAccessAssociation": {
+      "createOnly": [
+        "AccessAssociationSource",
+        "AccessAssociationSourceType",
+        "DomainNameArn",
+        "Tags"
+      ],
+      "primaryIdentifier": ["DomainNameAccessAssociationArn"]
+    },
+    "AWS::ApiGateway::DomainNameV2": {
+      "createOnly": ["DomainName", "EndpointConfiguration", "SecurityPolicy"],
+      "primaryIdentifier": ["DomainNameArn"]
+    },
+    "AWS::ApiGateway::GatewayResponse": {
+      "createOnly": ["ResponseType", "RestApiId"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::ApiGateway::Method": {
+      "createOnly": ["HttpMethod", "ResourceId", "RestApiId"],
+      "primaryIdentifier": ["RestApiId", "ResourceId", "HttpMethod"]
+    },
+    "AWS::ApiGateway::Model": {
+      "createOnly": ["ContentType", "Name", "RestApiId"],
+      "primaryIdentifier": ["RestApiId", "Name"]
+    },
+    "AWS::ApiGateway::RequestValidator": {
+      "createOnly": ["Name", "RestApiId"],
+      "primaryIdentifier": ["RestApiId", "RequestValidatorId"]
+    },
+    "AWS::ApiGateway::Resource": {
+      "createOnly": ["ParentId", "PathPart", "RestApiId"],
+      "primaryIdentifier": ["RestApiId", "ResourceId"]
+    },
+    "AWS::ApiGateway::RestApi": {
+      "createOnly": [],
+      "primaryIdentifier": ["RestApiId"]
+    },
+    "AWS::ApiGateway::Stage": {
+      "createOnly": ["RestApiId", "StageName"],
+      "primaryIdentifier": ["RestApiId", "StageName"]
+    },
+    "AWS::ApiGateway::UsagePlan": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::ApiGateway::UsagePlanKey": {
+      "createOnly": ["KeyId", "KeyType", "UsagePlanId"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::ApiGateway::VpcLink": {
+      "createOnly": ["TargetArns"],
+      "primaryIdentifier": ["VpcLinkId"]
+    },
+    "AWS::ApiGatewayV2::Api": {
+      "createOnly": ["ProtocolType"],
+      "primaryIdentifier": ["ApiId"]
+    },
+    "AWS::ApiGatewayV2::ApiGatewayManagedOverrides": {
+      "createOnly": ["ApiId"],
+      "primaryIdentifier": ["ApiId"]
+    },
+    "AWS::ApiGatewayV2::ApiMapping": {
+      "createOnly": ["DomainName"],
+      "primaryIdentifier": ["ApiMappingId", "DomainName"]
+    },
+    "AWS::ApiGatewayV2::Authorizer": {
+      "createOnly": ["ApiId"],
+      "primaryIdentifier": ["AuthorizerId", "ApiId"]
+    },
+    "AWS::ApiGatewayV2::Deployment": {
+      "createOnly": ["ApiId"],
+      "primaryIdentifier": ["ApiId", "DeploymentId"]
+    },
+    "AWS::ApiGatewayV2::DomainName": {
+      "createOnly": ["DomainName"],
+      "primaryIdentifier": ["DomainName"]
+    },
+    "AWS::ApiGatewayV2::Integration": {
+      "createOnly": ["ApiId"],
+      "primaryIdentifier": ["ApiId", "IntegrationId"]
+    },
+    "AWS::ApiGatewayV2::IntegrationResponse": {
+      "createOnly": ["ApiId", "IntegrationId"],
+      "primaryIdentifier": ["ApiId", "IntegrationId", "IntegrationResponseId"]
+    },
+    "AWS::ApiGatewayV2::Model": {
+      "createOnly": ["ApiId"],
+      "primaryIdentifier": ["ApiId", "ModelId"]
+    },
+    "AWS::ApiGatewayV2::PortalProduct": {
+      "createOnly": [],
+      "primaryIdentifier": ["PortalProductArn"]
+    },
+    "AWS::ApiGatewayV2::Route": {
+      "createOnly": ["ApiId"],
+      "primaryIdentifier": ["ApiId", "RouteId"]
+    },
+    "AWS::ApiGatewayV2::RouteResponse": {
+      "createOnly": ["ApiId", "RouteId"],
+      "primaryIdentifier": ["ApiId", "RouteId", "RouteResponseId"]
+    },
+    "AWS::ApiGatewayV2::RoutingRule": {
+      "createOnly": ["DomainNameArn"],
+      "primaryIdentifier": ["RoutingRuleArn"]
+    },
+    "AWS::ApiGatewayV2::Stage": {
+      "createOnly": ["ApiId", "StageName"],
+      "primaryIdentifier": ["ApiId", "StageName"]
+    },
+    "AWS::ApiGatewayV2::VpcLink": {
+      "createOnly": ["SecurityGroupIds", "SubnetIds"],
+      "primaryIdentifier": ["VpcLinkId"]
+    },
+    "AWS::AppSync::Api": {
+      "createOnly": [],
+      "primaryIdentifier": ["ApiArn"]
+    },
+    "AWS::AppSync::ApiCache": {
+      "createOnly": ["ApiId", "AtRestEncryptionEnabled", "TransitEncryptionEnabled"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::AppSync::ApiKey": {
+      "createOnly": ["ApiId"],
+      "primaryIdentifier": ["ApiId", "ApiKeyId"]
+    },
+    "AWS::AppSync::ChannelNamespace": {
+      "createOnly": ["ApiId", "Name"],
+      "primaryIdentifier": ["ChannelNamespaceArn"]
+    },
+    "AWS::AppSync::DataSource": {
+      "createOnly": ["ApiId", "Name"],
+      "primaryIdentifier": ["DataSourceArn"]
+    },
+    "AWS::AppSync::DomainName": {
+      "createOnly": ["CertificateArn", "DomainName"],
+      "primaryIdentifier": ["DomainName"]
+    },
+    "AWS::AppSync::DomainNameApiAssociation": {
+      "createOnly": ["DomainName"],
+      "primaryIdentifier": ["ApiAssociationIdentifier"]
+    },
+    "AWS::AppSync::FunctionConfiguration": {
+      "createOnly": ["ApiId"],
+      "primaryIdentifier": ["FunctionArn"]
+    },
+    "AWS::AppSync::GraphQLApi": {
+      "createOnly": [],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::AppSync::GraphQLSchema": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::AppSync::Resolver": {
+      "createOnly": ["ApiId", "FieldName", "TypeName"],
+      "primaryIdentifier": ["ResolverArn"]
+    },
+    "AWS::AppSync::SourceApiAssociation": {
+      "createOnly": ["MergedApiIdentifier", "SourceApiIdentifier"],
+      "primaryIdentifier": ["AssociationArn"]
+    },
+    "AWS::AppSync::Type": {
+      "createOnly": ["ApiId"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Athena::CapacityReservation": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Athena::DataCatalog": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Athena::NamedQuery": {
+      "createOnly": ["Database", "Description", "Name", "QueryString", "WorkGroup"],
+      "primaryIdentifier": ["NamedQueryId"]
+    },
+    "AWS::Athena::PreparedStatement": {
+      "createOnly": ["StatementName", "WorkGroup"],
+      "primaryIdentifier": ["StatementName", "WorkGroup"]
+    },
+    "AWS::Athena::WorkGroup": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Backup::BackupAccessPoint": {
+      "createOnly": ["AccessPointInTime", "AccessPointPolicy", "Name", "RecoveryPointArn"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Backup::BackupPlan": {
+      "createOnly": [],
+      "primaryIdentifier": ["BackupPlanId"]
+    },
+    "AWS::Backup::BackupSelection": {
+      "createOnly": ["BackupPlanId", "BackupSelection"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::Backup::BackupVault": {
+      "createOnly": ["BackupVaultName", "EncryptionKeyArn"],
+      "primaryIdentifier": ["BackupVaultName"]
+    },
+    "AWS::Backup::Framework": {
+      "createOnly": ["FrameworkName"],
+      "primaryIdentifier": ["FrameworkArn"]
+    },
+    "AWS::Backup::LegalHold": {
+      "createOnly": ["Description", "RecoveryPointSelection", "Title"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Backup::LogicallyAirGappedBackupVault": {
+      "createOnly": ["BackupVaultName", "EncryptionKeyArn", "MaxRetentionDays", "MinRetentionDays"],
+      "primaryIdentifier": ["BackupVaultName"]
+    },
+    "AWS::Backup::ReportPlan": {
+      "createOnly": ["ReportPlanName"],
+      "primaryIdentifier": ["ReportPlanArn"]
+    },
+    "AWS::Backup::RestoreTestingPlan": {
+      "createOnly": ["RestoreTestingPlanName"],
+      "primaryIdentifier": ["RestoreTestingPlanName"]
+    },
+    "AWS::Backup::RestoreTestingSelection": {
+      "createOnly": [
+        "ProtectedResourceType",
+        "RestoreTestingPlanName",
+        "RestoreTestingSelectionName"
+      ],
+      "primaryIdentifier": ["RestoreTestingPlanName", "RestoreTestingSelectionName"]
+    },
+    "AWS::Backup::TieringConfiguration": {
+      "createOnly": ["TieringConfigurationName"],
+      "primaryIdentifier": ["TieringConfigurationName"]
+    },
+    "AWS::CertificateManager::Account": {
+      "createOnly": [],
+      "primaryIdentifier": ["AccountId"]
+    },
+    "AWS::CertificateManager::AcmeDomainValidation": {
+      "createOnly": [
+        "AcmeEndpointArn",
+        "DomainName",
+        "PrevalidationOptions/DnsPrevalidation/HostedZoneId"
+      ],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::CertificateManager::AcmeEndpoint": {
+      "createOnly": ["AuthorizationBehavior", "CertificateTags"],
+      "primaryIdentifier": ["AcmeEndpointArn"]
+    },
+    "AWS::CertificateManager::AcmeExternalAccountBinding": {
+      "createOnly": ["AcmeEndpointArn", "Expiration", "RoleArn"],
+      "primaryIdentifier": ["AcmeExternalAccountBindingArn"]
+    },
+    "AWS::CertificateManager::Certificate": {
+      "createOnly": [
+        "CertificateAuthorityArn",
+        "CertificateExport",
+        "DomainName",
+        "DomainValidationOptions",
+        "KeyAlgorithm",
+        "SubjectAlternativeNames"
+      ],
+      "primaryIdentifier": ["CertificateArn"]
+    },
+    "AWS::CloudFront::AnycastIpList": {
+      "createOnly": ["IpCount", "Name", "Tags"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::CachePolicy": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::CloudFrontOriginAccessIdentity": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::ConnectionFunction": {
+      "createOnly": ["ConnectionFunctionConfig/Runtime", "Name"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::ConnectionGroup": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::ContinuousDeploymentPolicy": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::Distribution": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::DistributionTenant": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::FieldLevelEncryptionConfig": {
+      "createOnly": ["CallerReference"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::CloudFront::FieldLevelEncryptionProfile": {
+      "createOnly": ["FieldLevelEncryptionProfileConfig/CallerReference"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::CloudFront::Function": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["FunctionARN"]
+    },
+    "AWS::CloudFront::KeyGroup": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::KeyValueStore": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::CloudFront::MonitoringSubscription": {
+      "createOnly": ["DistributionId"],
+      "primaryIdentifier": ["DistributionId"]
+    },
+    "AWS::CloudFront::OriginAccessControl": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::OriginRequestPolicy": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::PublicKey": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::RealtimeLogConfig": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::CloudFront::ResponseHeadersPolicy": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::StreamingDistribution": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::TrustStore": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudFront::VpcOrigin": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudWatch::AccessGrant": {
+      "createOnly": [
+        "DomainId",
+        "Name",
+        "Permission",
+        "Principal",
+        "ScopedActions",
+        "SpaceId",
+        "Tags"
+      ],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::CloudWatch::AccessProfile": {
+      "createOnly": ["SpaceId"],
+      "primaryIdentifier": ["SpaceId", "ProfileId"]
+    },
+    "AWS::CloudWatch::Alarm": {
+      "createOnly": ["AlarmName"],
+      "primaryIdentifier": ["AlarmName"]
+    },
+    "AWS::CloudWatch::AlarmMuteRule": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::CloudWatch::AnomalyDetector": {
+      "createOnly": [
+        "Dimensions",
+        "MetricCharacteristics",
+        "MetricMathAnomalyDetector",
+        "MetricName",
+        "Namespace",
+        "SingleMetricAnomalyDetector",
+        "Stat"
+      ],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::CloudWatch::CompositeAlarm": {
+      "createOnly": ["AlarmName"],
+      "primaryIdentifier": ["AlarmName"]
+    },
+    "AWS::CloudWatch::Dashboard": {
+      "createOnly": ["DashboardName"],
+      "primaryIdentifier": ["DashboardName"]
+    },
+    "AWS::CloudWatch::Domain": {
+      "createOnly": [],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::CloudWatch::DomainAccessGrantForOrganization": {
+      "createOnly": ["DomainId", "Name", "Permission", "Principal", "Tags"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::CloudWatch::DomainForOrganization": {
+      "createOnly": ["DomainAccessRoleArn"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::CloudWatch::InsightRule": {
+      "createOnly": ["RuleName"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::CloudWatch::Integration": {
+      "createOnly": ["IntegrationType", "Name"],
+      "primaryIdentifier": ["IntegrationArn"]
+    },
+    "AWS::CloudWatch::LogAlarm": {
+      "createOnly": ["AlarmName"],
+      "primaryIdentifier": ["AlarmName"]
+    },
+    "AWS::CloudWatch::MetricStream": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::CloudWatch::OTelEnrichment": {
+      "createOnly": [],
+      "primaryIdentifier": ["AccountId"]
+    },
+    "AWS::CloudWatch::OmniDashboard": {
+      "createOnly": ["SpaceId"],
+      "primaryIdentifier": ["SpaceId", "DashboardId"]
+    },
+    "AWS::CloudWatch::ResourceMetricsConfiguration": {
+      "createOnly": ["ResourceArn"],
+      "primaryIdentifier": ["ResourceArn"]
+    },
+    "AWS::CloudWatch::Space": {
+      "createOnly": ["AgentCoreEvaluationRoleArn", "DataAccessRoleArn", "DomainId"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::CloudWatch::View": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::CodeDeploy::Application": {
+      "createOnly": ["ApplicationName", "ComputePlatform"],
+      "primaryIdentifier": ["ApplicationName"]
+    },
+    "AWS::CodeDeploy::DeploymentConfig": {
+      "createOnly": [
+        "ComputePlatform",
+        "DeploymentConfigName",
+        "MinimumHealthyHosts",
+        "TrafficRoutingConfig",
+        "ZonalConfig"
+      ],
+      "primaryIdentifier": ["DeploymentConfigName"]
+    },
+    "AWS::CodeDeploy::DeploymentGroup": {
+      "createOnly": ["ApplicationName", "DeploymentGroupName"],
+      "primaryIdentifier": ["ApplicationName", "DeploymentGroupName"]
+    },
+    "AWS::Cognito::IdentityPool": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::Cognito::IdentityPoolPrincipalTag": {
+      "createOnly": ["IdentityPoolId", "IdentityProviderName"],
+      "primaryIdentifier": ["IdentityPoolId", "IdentityProviderName"]
+    },
+    "AWS::Cognito::IdentityPoolRoleAttachment": {
+      "createOnly": ["IdentityPoolId"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::Cognito::LogDeliveryConfiguration": {
+      "createOnly": ["UserPoolId"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::Cognito::ManagedLoginBranding": {
+      "createOnly": ["ClientId", "UserPoolId"],
+      "primaryIdentifier": ["UserPoolId", "ManagedLoginBrandingId"]
+    },
+    "AWS::Cognito::Terms": {
+      "createOnly": ["ClientId", "UserPoolId"],
+      "primaryIdentifier": ["UserPoolId", "TermsId"]
+    },
+    "AWS::Cognito::UserPool": {
+      "createOnly": [],
+      "primaryIdentifier": ["UserPoolId"]
+    },
+    "AWS::Cognito::UserPoolClient": {
+      "createOnly": ["GenerateSecret", "UserPoolId"],
+      "primaryIdentifier": ["UserPoolId", "ClientId"]
+    },
+    "AWS::Cognito::UserPoolDomain": {
+      "createOnly": ["Domain", "UserPoolId"],
+      "primaryIdentifier": ["UserPoolId", "Domain"]
+    },
+    "AWS::Cognito::UserPoolGroup": {
+      "createOnly": ["GroupName", "UserPoolId"],
+      "primaryIdentifier": ["UserPoolId", "GroupName"]
+    },
+    "AWS::Cognito::UserPoolIdentityProvider": {
+      "createOnly": ["ProviderName", "ProviderType", "UserPoolId"],
+      "primaryIdentifier": ["UserPoolId", "ProviderName"]
+    },
+    "AWS::Cognito::UserPoolRegionalConfigurationAttachment": {
+      "createOnly": ["UserPoolId"],
+      "primaryIdentifier": ["UserPoolId"]
+    },
+    "AWS::Cognito::UserPoolReplica": {
+      "createOnly": ["RegionName", "UserPoolId", "UserPoolTagsAtCreate"],
+      "primaryIdentifier": ["UserPoolId", "RegionName"]
+    },
+    "AWS::Cognito::UserPoolResourceServer": {
+      "createOnly": ["Identifier", "UserPoolId"],
+      "primaryIdentifier": ["UserPoolId", "Identifier"]
+    },
+    "AWS::Cognito::UserPoolRiskConfigurationAttachment": {
+      "createOnly": ["ClientId", "UserPoolId"],
+      "primaryIdentifier": ["UserPoolId", "ClientId"]
+    },
+    "AWS::Cognito::UserPoolUICustomizationAttachment": {
+      "createOnly": ["ClientId", "UserPoolId"],
+      "primaryIdentifier": ["UserPoolId", "ClientId"]
+    },
+    "AWS::Cognito::UserPoolUser": {
+      "createOnly": [
+        "ClientMetadata",
+        "DesiredDeliveryMediums",
+        "ForceAliasCreation",
+        "MessageAction",
+        "UserAttributes",
+        "UserPoolId",
+        "Username",
+        "ValidationData"
+      ],
+      "primaryIdentifier": ["UserPoolId", "Username"]
+    },
+    "AWS::Cognito::UserPoolUserToGroupAttachment": {
+      "createOnly": ["GroupName", "UserPoolId", "Username"],
+      "primaryIdentifier": ["UserPoolId", "GroupName", "Username"]
+    },
+    "AWS::DynamoDB::GlobalTable": {
+      "createOnly": ["TableName"],
+      "primaryIdentifier": ["TableName"]
+    },
+    "AWS::DynamoDB::Table": {
+      "createOnly": ["ImportSourceSpecification", "TableName"],
+      "primaryIdentifier": ["TableName"]
+    },
+    "AWS::ECR::PublicRepository": {
+      "createOnly": ["RepositoryName"],
+      "primaryIdentifier": ["RepositoryName"]
+    },
+    "AWS::ECR::PullThroughCacheRule": {
+      "createOnly": [
+        "CredentialArn",
+        "CustomRoleArn",
+        "EcrRepositoryPrefix",
+        "UpstreamRegistry",
+        "UpstreamRegistryUrl",
+        "UpstreamRepositoryPrefix"
+      ],
+      "primaryIdentifier": ["EcrRepositoryPrefix"]
+    },
+    "AWS::ECR::PullTimeUpdateExclusion": {
+      "createOnly": ["PrincipalArn"],
+      "primaryIdentifier": ["PrincipalArn"]
+    },
+    "AWS::ECR::RegistryPolicy": {
+      "createOnly": [],
+      "primaryIdentifier": ["RegistryId"]
+    },
+    "AWS::ECR::RegistryScanningConfiguration": {
+      "createOnly": [],
+      "primaryIdentifier": ["RegistryId"]
+    },
+    "AWS::ECR::ReplicationConfiguration": {
+      "createOnly": [],
+      "primaryIdentifier": ["RegistryId"]
+    },
+    "AWS::ECR::Repository": {
+      "createOnly": [
+        "EncryptionConfiguration",
+        "EncryptionConfiguration/EncryptionType",
+        "EncryptionConfiguration/KmsKey",
+        "RepositoryName"
+      ],
+      "primaryIdentifier": ["RepositoryName"]
+    },
+    "AWS::ECR::RepositoryCreationTemplate": {
+      "createOnly": ["Prefix"],
+      "primaryIdentifier": ["Prefix"]
+    },
+    "AWS::ECR::SigningConfiguration": {
+      "createOnly": [],
+      "primaryIdentifier": ["RegistryId"]
+    },
+    "AWS::EFS::AccessPoint": {
+      "createOnly": [
+        "ClientToken",
+        "CreationInfo",
+        "CreationInfo/OwnerGid",
+        "CreationInfo/OwnerUid",
+        "CreationInfo/Permissions",
+        "FileSystemId",
+        "PosixUser",
+        "PosixUser/Gid",
+        "PosixUser/SecondaryGids",
+        "PosixUser/Uid",
+        "RootDirectory",
+        "RootDirectory/CreationInfo",
+        "RootDirectory/Path"
+      ],
+      "primaryIdentifier": ["AccessPointId"]
+    },
+    "AWS::EFS::FileSystem": {
+      "createOnly": ["AvailabilityZoneName", "Encrypted", "KmsKeyId", "PerformanceMode"],
+      "primaryIdentifier": ["FileSystemId"]
+    },
+    "AWS::EFS::MountTarget": {
+      "createOnly": ["FileSystemId", "IpAddress", "IpAddressType", "Ipv6Address", "SubnetId"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::Events::ApiDestination": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Events::Archive": {
+      "createOnly": ["ArchiveName", "SourceArn"],
+      "primaryIdentifier": ["ArchiveName"]
+    },
+    "AWS::Events::Connection": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Events::Endpoint": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Events::EventBus": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Events::EventBusPolicy": {
+      "createOnly": ["EventBusName", "StatementId"],
+      "primaryIdentifier": ["EventBusName", "StatementId"]
+    },
+    "AWS::Events::Rule": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Glue::Blueprint": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Glue::Catalog": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["ResourceArn"]
+    },
+    "AWS::Glue::Classifier": {
+      "createOnly": [
+        "CsvClassifier/Name",
+        "GrokClassifier/Name",
+        "JsonClassifier/Name",
+        "XMLClassifier/Name"
+      ],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Glue::Connection": {
+      "createOnly": ["CatalogId", "ConnectionInput/Name"],
+      "primaryIdentifier": ["CatalogId", "Name"]
+    },
+    "AWS::Glue::ConnectionType": {
+      "createOnly": [
+        "ConnectionProperties",
+        "ConnectionType",
+        "ConnectorAuthenticationConfiguration",
+        "Description",
+        "IntegrationType",
+        "RestConfiguration"
+      ],
+      "primaryIdentifier": ["ConnectionTypeArn"]
+    },
+    "AWS::Glue::Crawler": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Glue::CustomEntityType": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Glue::DataCatalogEncryptionSettings": {
+      "createOnly": ["CatalogId"],
+      "primaryIdentifier": ["CatalogId"]
+    },
+    "AWS::Glue::DataQualityRuleset": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Glue::Database": {
+      "createOnly": ["DatabaseName"],
+      "primaryIdentifier": ["DatabaseName"]
+    },
+    "AWS::Glue::DevEndpoint": {
+      "createOnly": ["EndpointName"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::Glue::IdentityCenterConfiguration": {
+      "createOnly": ["InstanceArn"],
+      "primaryIdentifier": ["AccountId"]
+    },
+    "AWS::Glue::Integration": {
+      "createOnly": [
+        "AdditionalEncryptionContext",
+        "IntegrationConfig",
+        "IntegrationConfig/RefreshInterval",
+        "IntegrationName",
+        "KmsKeyId",
+        "SourceArn",
+        "TargetArn"
+      ],
+      "primaryIdentifier": ["IntegrationArn", "IntegrationName"]
+    },
+    "AWS::Glue::IntegrationResourceProperty": {
+      "createOnly": ["ResourceArn"],
+      "primaryIdentifier": ["ResourceArn", "ResourcePropertyArn"]
+    },
+    "AWS::Glue::Job": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Glue::MLTransform": {
+      "createOnly": [
+        "InputRecordTables",
+        "TransformEncryption",
+        "TransformParameters/FindMatchesParameters/PrimaryKeyColumnName"
+      ],
+      "primaryIdentifier": ["TransformId"]
+    },
+    "AWS::Glue::Partition": {
+      "createOnly": ["CatalogId", "DatabaseName", "PartitionInput/Values", "TableName"],
+      "primaryIdentifier": [
+        "CatalogId",
+        "DatabaseName",
+        "TableName",
+        "IdentifierPartitionInputValues"
+      ]
+    },
+    "AWS::Glue::Registry": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Glue::Schema": {
+      "createOnly": ["DataFormat", "Name", "Registry", "SchemaDefinition"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Glue::SchemaVersion": {
+      "createOnly": ["Schema", "SchemaDefinition"],
+      "primaryIdentifier": ["VersionId"]
+    },
+    "AWS::Glue::SchemaVersionMetadata": {
+      "createOnly": ["Key", "SchemaVersionId", "Value"],
+      "primaryIdentifier": ["SchemaVersionId", "Key", "Value"]
+    },
+    "AWS::Glue::SecurityConfiguration": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Glue::Session": {
+      "createOnly": [
+        "Command",
+        "Connections",
+        "DefaultArguments",
+        "Description",
+        "GlueVersion",
+        "Id",
+        "IdleTimeout",
+        "MaxCapacity",
+        "NumberOfWorkers",
+        "RequestOrigin",
+        "Role",
+        "SecurityConfiguration",
+        "Timeout",
+        "WorkerType"
+      ],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Glue::Table": {
+      "createOnly": ["CatalogId", "DatabaseName", "Name", "TableInput/Name"],
+      "primaryIdentifier": ["CatalogId", "DatabaseName", "Name"]
+    },
+    "AWS::Glue::TableOptimizer": {
+      "createOnly": ["CatalogId", "DatabaseName", "TableName", "Type"],
+      "primaryIdentifier": ["TableName", "DatabaseName", "Type", "CatalogId"]
+    },
+    "AWS::Glue::Trigger": {
+      "createOnly": ["Name", "Type", "WorkflowName"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Glue::UsageProfile": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Glue::UserDefinedFunction": {
+      "createOnly": ["DatabaseName", "FunctionName", "FunctionType"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Glue::Workflow": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::IAM::AccessKey": {
+      "createOnly": ["Serial", "UserName"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::IAM::Group": {
+      "createOnly": ["GroupName"],
+      "primaryIdentifier": ["GroupName"]
+    },
+    "AWS::IAM::GroupPolicy": {
+      "createOnly": ["GroupName", "PolicyName"],
+      "primaryIdentifier": ["PolicyName", "GroupName"]
+    },
+    "AWS::IAM::InstanceProfile": {
+      "createOnly": ["InstanceProfileName", "Path"],
+      "primaryIdentifier": ["InstanceProfileName"]
+    },
+    "AWS::IAM::ManagedPolicy": {
+      "createOnly": ["Description", "ManagedPolicyName", "Path"],
+      "primaryIdentifier": ["PolicyArn"]
+    },
+    "AWS::IAM::OIDCProvider": {
+      "createOnly": ["Url"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::IAM::Policy": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::IAM::Role": {
+      "createOnly": ["Path", "RoleName"],
+      "primaryIdentifier": ["RoleName"]
+    },
+    "AWS::IAM::RolePolicy": {
+      "createOnly": ["PolicyName", "RoleName"],
+      "primaryIdentifier": ["PolicyName", "RoleName"]
+    },
+    "AWS::IAM::SAMLProvider": {
+      "createOnly": ["AddPrivateKey", "Name", "RemovePrivateKey"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::IAM::ServerCertificate": {
+      "createOnly": ["CertificateBody", "CertificateChain", "PrivateKey", "ServerCertificateName"],
+      "primaryIdentifier": ["ServerCertificateName"]
+    },
+    "AWS::IAM::ServiceLinkedRole": {
+      "createOnly": ["AWSServiceName", "CustomSuffix"],
+      "primaryIdentifier": ["RoleName"]
+    },
+    "AWS::IAM::User": {
+      "createOnly": ["UserName"],
+      "primaryIdentifier": ["UserName"]
+    },
+    "AWS::IAM::UserPolicy": {
+      "createOnly": ["PolicyName", "UserName"],
+      "primaryIdentifier": ["PolicyName", "UserName"]
+    },
+    "AWS::IAM::UserToGroupAddition": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::IAM::VirtualMFADevice": {
+      "createOnly": ["Base32StringSeed", "Path", "VirtualMfaDeviceName"],
+      "primaryIdentifier": ["SerialNumber"]
+    },
+    "AWS::KMS::Alias": {
+      "createOnly": ["AliasName"],
+      "primaryIdentifier": ["AliasName"]
+    },
+    "AWS::KMS::Key": {
+      "createOnly": [],
+      "primaryIdentifier": ["KeyId"]
+    },
+    "AWS::KMS::ReplicaKey": {
+      "createOnly": ["PrimaryKeyArn"],
+      "primaryIdentifier": ["KeyId"]
+    },
+    "AWS::Kinesis::Channel": {
+      "createOnly": [
+        "ChannelName",
+        "EncryptionConfiguration",
+        "S3DestinationConfiguration/DeadLetterQueueS3Configuration",
+        "S3DestinationConfiguration/StorageConfiguration",
+        "S3TablesDestinationConfiguration/DeadLetterQueueS3Configuration",
+        "S3TablesDestinationConfiguration/S3TablesConfigurationList",
+        "ServiceExecutionRoleARN",
+        "StreamConfigurationList"
+      ],
+      "primaryIdentifier": ["ChannelARN"]
+    },
+    "AWS::Kinesis::ResourcePolicy": {
+      "createOnly": ["ResourceArn"],
+      "primaryIdentifier": ["ResourceArn"]
+    },
+    "AWS::Kinesis::Stream": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Kinesis::StreamConsumer": {
+      "createOnly": ["ConsumerName", "StreamARN", "Tags"],
+      "primaryIdentifier": ["ConsumerARN"]
+    },
+    "AWS::KinesisFirehose::DeliveryStream": {
+      "createOnly": [
+        "AmazonOpenSearchServerlessDestinationConfiguration/VpcConfiguration",
+        "AmazonopensearchserviceDestinationConfiguration/VpcConfiguration",
+        "DatabaseSourceConfiguration",
+        "DeliveryStreamName",
+        "DeliveryStreamType",
+        "DirectPutSourceConfiguration",
+        "ElasticsearchDestinationConfiguration/VpcConfiguration",
+        "IcebergDestinationConfiguration/CatalogConfiguration",
+        "KinesisStreamSourceConfiguration",
+        "MSKSourceConfiguration",
+        "SnowflakeDestinationConfiguration/SnowflakeVpcConfiguration"
+      ],
+      "primaryIdentifier": ["DeliveryStreamName"]
+    },
+    "AWS::Lambda::Alias": {
+      "createOnly": ["FunctionName", "Name"],
+      "primaryIdentifier": ["AliasArn"]
+    },
+    "AWS::Lambda::CapacityProvider": {
+      "createOnly": [
+        "CapacityProviderName",
+        "InstanceRequirements",
+        "KmsKeyArn",
+        "PermissionsConfig",
+        "VpcConfig"
+      ],
+      "primaryIdentifier": ["CapacityProviderName"]
+    },
+    "AWS::Lambda::CodeSigningConfig": {
+      "createOnly": [],
+      "primaryIdentifier": ["CodeSigningConfigArn"]
+    },
+    "AWS::Lambda::EventInvokeConfig": {
+      "createOnly": ["FunctionName", "Qualifier"],
+      "primaryIdentifier": ["FunctionName", "Qualifier"]
+    },
+    "AWS::Lambda::EventSourceMapping": {
+      "createOnly": [
+        "EventSourceArn",
+        "SelfManagedEventSource",
+        "StartingPosition",
+        "StartingPositionTimestamp"
+      ],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::Lambda::Function": {
+      "createOnly": ["FunctionName", "PackageType", "TenancyConfig"],
+      "primaryIdentifier": ["FunctionName"]
+    },
+    "AWS::Lambda::LayerVersion": {
+      "createOnly": [
+        "CompatibleArchitectures",
+        "CompatibleRuntimes",
+        "Content",
+        "Description",
+        "LayerName",
+        "LicenseInfo"
+      ],
+      "primaryIdentifier": ["LayerVersionArn"]
+    },
+    "AWS::Lambda::LayerVersionPermission": {
+      "createOnly": ["Action", "LayerVersionArn", "OrganizationId", "Principal"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::Lambda::MicrovmImage": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["ImageArn"]
+    },
+    "AWS::Lambda::NetworkConnector": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Lambda::Permission": {
+      "createOnly": [
+        "Action",
+        "EventSourceToken",
+        "FunctionName",
+        "FunctionUrlAuthType",
+        "InvokedViaFunctionUrl",
+        "Principal",
+        "PrincipalOrgID",
+        "SourceAccount",
+        "SourceArn"
+      ],
+      "primaryIdentifier": ["FunctionName", "Id"]
+    },
+    "AWS::Lambda::ResourcePolicy": {
+      "createOnly": ["ResourceArn"],
+      "primaryIdentifier": ["ResourceArn"]
+    },
+    "AWS::Lambda::Url": {
+      "createOnly": ["Qualifier", "TargetFunctionArn"],
+      "primaryIdentifier": ["FunctionArn"]
+    },
+    "AWS::Lambda::Version": {
+      "createOnly": [
+        "CodeSha256",
+        "Description",
+        "FunctionName",
+        "ProvisionedConcurrencyConfig",
+        "RuntimePolicy"
+      ],
+      "primaryIdentifier": ["FunctionArn"]
+    },
+    "AWS::Lambda::WebFunction": {
+      "createOnly": ["FunctionName"],
+      "primaryIdentifier": ["FunctionArn"]
+    },
+    "AWS::Lambda::WebFunctionEndpoint": {
+      "createOnly": ["EndpointName", "EndpointType", "FunctionName", "Regions"],
+      "primaryIdentifier": ["EndpointArn"]
+    },
+    "AWS::Lambda::WebFunctionRevision": {
+      "createOnly": ["BuildConfig", "Description", "FunctionName", "KmsKeyArn", "ServiceConfig"],
+      "primaryIdentifier": ["RevisionArn"]
+    },
+    "AWS::Logs::AccountPolicy": {
+      "createOnly": ["PolicyName", "PolicyType"],
+      "primaryIdentifier": ["AccountId", "PolicyType", "PolicyName"]
+    },
+    "AWS::Logs::Delivery": {
+      "createOnly": ["DeliveryDestinationArn", "DeliverySourceName"],
+      "primaryIdentifier": ["DeliveryId"]
+    },
+    "AWS::Logs::DeliveryDestination": {
+      "createOnly": ["DeliveryDestinationType", "DestinationResourceArn", "Name", "OutputFormat"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Logs::DeliverySource": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Logs::Destination": {
+      "createOnly": ["DestinationName"],
+      "primaryIdentifier": ["DestinationName"]
+    },
+    "AWS::Logs::Integration": {
+      "createOnly": ["IntegrationName", "IntegrationType", "ResourceConfig"],
+      "primaryIdentifier": ["IntegrationName"]
+    },
+    "AWS::Logs::LogAnomalyDetector": {
+      "createOnly": [],
+      "primaryIdentifier": ["AnomalyDetectorArn"]
+    },
+    "AWS::Logs::LogGroup": {
+      "createOnly": ["LogGroupName"],
+      "primaryIdentifier": ["LogGroupName"]
+    },
+    "AWS::Logs::LogStream": {
+      "createOnly": ["LogGroupName", "LogStreamName"],
+      "primaryIdentifier": ["LogGroupName", "LogStreamName"]
+    },
+    "AWS::Logs::MetricFilter": {
+      "createOnly": ["FilterName", "LogGroupName"],
+      "primaryIdentifier": ["LogGroupName", "FilterName"]
+    },
+    "AWS::Logs::QueryDefinition": {
+      "createOnly": [],
+      "primaryIdentifier": ["QueryDefinitionId"]
+    },
+    "AWS::Logs::ResourcePolicy": {
+      "createOnly": ["PolicyName"],
+      "primaryIdentifier": ["PolicyName"]
+    },
+    "AWS::Logs::ScheduledQuery": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["ScheduledQueryArn"]
+    },
+    "AWS::Logs::StorageTierPolicy": {
+      "createOnly": [],
+      "primaryIdentifier": ["AccountId"]
+    },
+    "AWS::Logs::SubscriptionFilter": {
+      "createOnly": ["FilterName", "LogGroupName"],
+      "primaryIdentifier": ["FilterName", "LogGroupName"]
+    },
+    "AWS::Logs::Transformer": {
+      "createOnly": ["LogGroupIdentifier"],
+      "primaryIdentifier": ["LogGroupIdentifier"]
+    },
+    "AWS::OpenSearchService::Application": {
+      "createOnly": ["KmsKeyArn", "Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::OpenSearchService::Domain": {
+      "createOnly": ["DomainName", "EngineMode"],
+      "primaryIdentifier": ["DomainName"]
+    },
+    "AWS::Pipes::Pipe": {
+      "createOnly": [
+        "Name",
+        "Source",
+        "SourceParameters/ActiveMQBrokerParameters/QueueName",
+        "SourceParameters/DynamoDBStreamParameters/StartingPosition",
+        "SourceParameters/KinesisStreamParameters/StartingPosition",
+        "SourceParameters/KinesisStreamParameters/StartingPositionTimestamp",
+        "SourceParameters/ManagedStreamingKafkaParameters/ConsumerGroupID",
+        "SourceParameters/ManagedStreamingKafkaParameters/StartingPosition",
+        "SourceParameters/ManagedStreamingKafkaParameters/TopicName",
+        "SourceParameters/RabbitMQBrokerParameters/QueueName",
+        "SourceParameters/RabbitMQBrokerParameters/VirtualHost",
+        "SourceParameters/SelfManagedKafkaParameters/AdditionalBootstrapServers",
+        "SourceParameters/SelfManagedKafkaParameters/ConsumerGroupID",
+        "SourceParameters/SelfManagedKafkaParameters/StartingPosition",
+        "SourceParameters/SelfManagedKafkaParameters/TopicName"
+      ],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::RDS::ClusterSnapshot": {
+      "createOnly": ["DBClusterIdentifier", "DBClusterSnapshotIdentifier"],
+      "primaryIdentifier": ["DBClusterSnapshotArn"]
+    },
+    "AWS::RDS::CustomDBEngineVersion": {
+      "createOnly": [
+        "DatabaseInstallationFiles",
+        "DatabaseInstallationFilesS3BucketName",
+        "DatabaseInstallationFilesS3Prefix",
+        "Engine",
+        "EngineVersion",
+        "ImageId",
+        "KMSKeyId",
+        "Manifest",
+        "SourceCustomDbEngineVersionIdentifier",
+        "UseAwsProvidedLatestImage"
+      ],
+      "primaryIdentifier": ["Engine", "EngineVersion"]
+    },
+    "AWS::RDS::DBCluster": {
+      "createOnly": [
+        "ClusterScalabilityType",
+        "DBClusterIdentifier",
+        "DBSubnetGroupName",
+        "DBSystemId",
+        "DatabaseName",
+        "EngineMode",
+        "KmsKeyId",
+        "PubliclyAccessible",
+        "RestoreToTime",
+        "RestoreType",
+        "SnapshotIdentifier",
+        "SourceDBClusterIdentifier",
+        "SourceDbClusterResourceId",
+        "SourceRegion",
+        "StorageEncrypted",
+        "UseLatestRestorableTime",
+        "WithExpressConfiguration"
+      ],
+      "primaryIdentifier": ["DBClusterIdentifier"]
+    },
+    "AWS::RDS::DBClusterEndpoint": {
+      "createOnly": ["DBClusterEndpointIdentifier", "DBClusterIdentifier"],
+      "primaryIdentifier": ["DBClusterEndpointArn"]
+    },
+    "AWS::RDS::DBClusterParameterGroup": {
+      "createOnly": ["DBClusterParameterGroupName", "Description", "Family"],
+      "primaryIdentifier": ["DBClusterParameterGroupName"]
+    },
+    "AWS::RDS::DBInstance": {
+      "createOnly": [
+        "BackupTarget",
+        "CharacterSetName",
+        "CustomIAMInstanceProfile",
+        "DBClusterIdentifier",
+        "DBInstanceIdentifier",
+        "DBName",
+        "DBSubnetGroupName",
+        "DBSystemId",
+        "KmsKeyId",
+        "MasterUsername",
+        "NcharCharacterSetName",
+        "SourceRegion",
+        "StorageEncrypted",
+        "Timezone"
+      ],
+      "primaryIdentifier": ["DBInstanceIdentifier"]
+    },
+    "AWS::RDS::DBParameterGroup": {
+      "createOnly": ["DBParameterGroupName", "Description", "Family"],
+      "primaryIdentifier": ["DBParameterGroupName"]
+    },
+    "AWS::RDS::DBProxy": {
+      "createOnly": [
+        "DBProxyName",
+        "EndpointNetworkType",
+        "EngineFamily",
+        "TargetConnectionNetworkType",
+        "VpcSubnetIds"
+      ],
+      "primaryIdentifier": ["DBProxyName"]
+    },
+    "AWS::RDS::DBProxyEndpoint": {
+      "createOnly": ["DBProxyEndpointName", "DBProxyName", "EndpointNetworkType", "VpcSubnetIds"],
+      "primaryIdentifier": ["DBProxyEndpointName"]
+    },
+    "AWS::RDS::DBProxyTargetGroup": {
+      "createOnly": ["DBProxyName", "TargetGroupName"],
+      "primaryIdentifier": ["TargetGroupArn"]
+    },
+    "AWS::RDS::DBSecurityGroup": {
+      "createOnly": ["EC2VpcId", "GroupDescription"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::RDS::DBSecurityGroupIngress": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::RDS::DBShardGroup": {
+      "createOnly": ["DBClusterIdentifier", "DBShardGroupIdentifier", "PubliclyAccessible"],
+      "primaryIdentifier": ["DBShardGroupIdentifier"]
+    },
+    "AWS::RDS::DBSnapshot": {
+      "createOnly": ["DBInstanceIdentifier", "DBSnapshotIdentifier"],
+      "primaryIdentifier": ["DBSnapshotArn"]
+    },
+    "AWS::RDS::DBSubnetGroup": {
+      "createOnly": ["DBSubnetGroupName"],
+      "primaryIdentifier": ["DBSubnetGroupName"]
+    },
+    "AWS::RDS::Deployment": {
+      "createOnly": [
+        "BlueGreenDeploymentName",
+        "Source",
+        "TargetAllocatedStorage",
+        "TargetDBClusterParameterGroupName",
+        "TargetDBInstanceClass",
+        "TargetDBParameterGroupName",
+        "TargetEngineVersion",
+        "TargetIops",
+        "TargetStorageThroughput",
+        "TargetStorageType",
+        "UpgradeTargetStorageConfig"
+      ],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::RDS::EventSubscription": {
+      "createOnly": ["SnsTopicArn", "SubscriptionName"],
+      "primaryIdentifier": ["SubscriptionName"]
+    },
+    "AWS::RDS::GlobalCluster": {
+      "createOnly": [
+        "Engine",
+        "GlobalClusterIdentifier",
+        "SourceDBClusterIdentifier",
+        "StorageEncrypted"
+      ],
+      "primaryIdentifier": ["GlobalClusterIdentifier"]
+    },
+    "AWS::RDS::Integration": {
+      "createOnly": ["AdditionalEncryptionContext", "KMSKeyId", "SourceArn", "TargetArn"],
+      "primaryIdentifier": ["IntegrationArn"]
+    },
+    "AWS::RDS::OptionGroup": {
+      "createOnly": [
+        "EngineName",
+        "MajorEngineVersion",
+        "OptionGroupDescription",
+        "OptionGroupName"
+      ],
+      "primaryIdentifier": ["OptionGroupName"]
+    },
+    "AWS::Route53::CidrCollection": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::Route53::DNSSEC": {
+      "createOnly": ["HostedZoneId"],
+      "primaryIdentifier": ["HostedZoneId"]
+    },
+    "AWS::Route53::DelegationSet": {
+      "createOnly": [],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Route53::HealthCheck": {
+      "createOnly": [
+        "HealthCheckConfig/MeasureLatency",
+        "HealthCheckConfig/RequestInterval",
+        "HealthCheckConfig/Type"
+      ],
+      "primaryIdentifier": ["HealthCheckId"]
+    },
+    "AWS::Route53::HostedZone": {
+      "createOnly": ["DelegationSetId", "Name"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::Route53::KeySigningKey": {
+      "createOnly": ["HostedZoneId", "KeyManagementServiceArn", "Name"],
+      "primaryIdentifier": ["HostedZoneId", "Name"]
+    },
+    "AWS::Route53::QueryLoggingConfig": {
+      "createOnly": ["CloudWatchLogsLogGroupArn", "HostedZoneId"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Route53::RecordSet": {
+      "createOnly": ["HostedZoneId", "HostedZoneName"],
+      "primaryIdentifier": ["Name", "HostedZoneId", "Type", "SetIdentifier"]
+    },
+    "AWS::Route53::RecordSetGroup": {
+      "createOnly": ["HostedZoneId", "HostedZoneName"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::Route53::TrafficPolicy": {
+      "createOnly": ["Document", "Name"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Route53::TrafficPolicyInstance": {
+      "createOnly": ["HostedZoneId", "Name"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::S3::AccessGrant": {
+      "createOnly": ["S3PrefixType", "Tags"],
+      "primaryIdentifier": ["AccessGrantId"]
+    },
+    "AWS::S3::AccessGrantsInstance": {
+      "createOnly": ["Tags"],
+      "primaryIdentifier": ["AccessGrantsInstanceArn"]
+    },
+    "AWS::S3::AccessGrantsLocation": {
+      "createOnly": ["Tags"],
+      "primaryIdentifier": ["AccessGrantsLocationId"]
+    },
+    "AWS::S3::AccessPoint": {
+      "createOnly": ["Bucket", "BucketAccountId", "Name", "VpcConfiguration"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::S3::Bucket": {
+      "createOnly": ["BucketName", "BucketNamePrefix", "BucketNamespace"],
+      "primaryIdentifier": ["BucketName"]
+    },
+    "AWS::S3::BucketPolicy": {
+      "createOnly": ["Bucket"],
+      "primaryIdentifier": ["Bucket"]
+    },
+    "AWS::S3::MultiRegionAccessPoint": {
+      "createOnly": ["Name", "PublicAccessBlockConfiguration", "Regions"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::S3::MultiRegionAccessPointPolicy": {
+      "createOnly": ["MrapName"],
+      "primaryIdentifier": ["MrapName"]
+    },
+    "AWS::S3::StorageLens": {
+      "createOnly": ["StorageLensConfiguration/Id"],
+      "primaryIdentifier": ["StorageLensConfiguration/Id"]
+    },
+    "AWS::S3::StorageLensGroup": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::SES::ConfigurationSet": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::SES::ConfigurationSetEventDestination": {
+      "createOnly": ["ConfigurationSetName"],
+      "primaryIdentifier": ["Id", "ConfigurationSetName"]
+    },
+    "AWS::SES::ContactList": {
+      "createOnly": ["ContactListName"],
+      "primaryIdentifier": ["ContactListName"]
+    },
+    "AWS::SES::CustomVerificationEmailTemplate": {
+      "createOnly": ["TemplateName"],
+      "primaryIdentifier": ["TemplateName"]
+    },
+    "AWS::SES::DedicatedIpPool": {
+      "createOnly": ["PoolName"],
+      "primaryIdentifier": ["PoolName"]
+    },
+    "AWS::SES::EmailIdentity": {
+      "createOnly": ["EmailIdentity"],
+      "primaryIdentifier": ["EmailIdentity"]
+    },
+    "AWS::SES::EmailIdentityCertificate": {
+      "createOnly": ["CertificateArn", "EmailIdentity", "FromAddress"],
+      "primaryIdentifier": ["EmailIdentity", "FromAddress"]
+    },
+    "AWS::SES::MailManagerAddonInstance": {
+      "createOnly": ["AddonSubscriptionId"],
+      "primaryIdentifier": ["AddonInstanceId"]
+    },
+    "AWS::SES::MailManagerAddonSubscription": {
+      "createOnly": ["AddonName"],
+      "primaryIdentifier": ["AddonSubscriptionId"]
+    },
+    "AWS::SES::MailManagerAddressList": {
+      "createOnly": ["AddressListName"],
+      "primaryIdentifier": ["AddressListId"]
+    },
+    "AWS::SES::MailManagerArchive": {
+      "createOnly": ["KmsKeyArn"],
+      "primaryIdentifier": ["ArchiveId"]
+    },
+    "AWS::SES::MailManagerIngressPoint": {
+      "createOnly": ["NetworkConfiguration", "Type"],
+      "primaryIdentifier": ["IngressPointId"]
+    },
+    "AWS::SES::MailManagerRelay": {
+      "createOnly": [],
+      "primaryIdentifier": ["RelayId"]
+    },
+    "AWS::SES::MailManagerRuleSet": {
+      "createOnly": [],
+      "primaryIdentifier": ["RuleSetId"]
+    },
+    "AWS::SES::MailManagerTrafficPolicy": {
+      "createOnly": [],
+      "primaryIdentifier": ["TrafficPolicyId"]
+    },
+    "AWS::SES::MultiRegionEndpoint": {
+      "createOnly": ["Details", "EndpointName"],
+      "primaryIdentifier": ["EndpointName"]
+    },
+    "AWS::SES::ReceiptFilter": {
+      "createOnly": [
+        "Filter",
+        "Filter/IpFilter",
+        "Filter/IpFilter/Cidr",
+        "Filter/IpFilter/Policy",
+        "Filter/Name"
+      ],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::SES::ReceiptRule": {
+      "createOnly": ["Rule/Name", "RuleSetName"],
+      "primaryIdentifier": ["RuleName", "RuleSetName"]
+    },
+    "AWS::SES::ReceiptRuleSet": {
+      "createOnly": ["RuleSetName"],
+      "primaryIdentifier": ["RuleSetName"]
+    },
+    "AWS::SES::Template": {
+      "createOnly": ["Template/TemplateName"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::SES::Tenant": {
+      "createOnly": ["TenantName"],
+      "primaryIdentifier": ["TenantName"]
+    },
+    "AWS::SES::VdmAttributes": {
+      "createOnly": [],
+      "primaryIdentifier": ["VdmAttributesResourceId"]
+    },
+    "AWS::SNS::Subscription": {
+      "createOnly": ["Endpoint", "Protocol", "TopicArn"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::SNS::Topic": {
+      "createOnly": ["FifoTopic", "TopicName"],
+      "primaryIdentifier": ["TopicArn"]
+    },
+    "AWS::SNS::TopicInlinePolicy": {
+      "createOnly": ["TopicArn"],
+      "primaryIdentifier": ["TopicArn"]
+    },
+    "AWS::SNS::TopicPolicy": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::SQS::Queue": {
+      "createOnly": ["FifoQueue", "QueueName"],
+      "primaryIdentifier": ["QueueUrl"]
+    },
+    "AWS::SQS::QueueInlinePolicy": {
+      "createOnly": ["Queue"],
+      "primaryIdentifier": ["Queue"]
+    },
+    "AWS::SQS::QueuePolicy": {
+      "createOnly": [],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::SSM::Association": {
+      "createOnly": ["InstanceId"],
+      "primaryIdentifier": ["AssociationId"]
+    },
+    "AWS::SSM::CloudConnector": {
+      "createOnly": ["ConfigConnectorArn", "Configuration/AzureConfiguration/TenantId", "RoleArn"],
+      "primaryIdentifier": ["CloudConnectorArn"]
+    },
+    "AWS::SSM::Document": {
+      "createOnly": ["DocumentType", "Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::SSM::MaintenanceWindow": {
+      "createOnly": [],
+      "primaryIdentifier": ["WindowId"]
+    },
+    "AWS::SSM::MaintenanceWindowTarget": {
+      "createOnly": ["WindowId"],
+      "primaryIdentifier": ["WindowId", "WindowTargetId"]
+    },
+    "AWS::SSM::MaintenanceWindowTask": {
+      "createOnly": ["TaskType", "WindowId"],
+      "primaryIdentifier": ["WindowId", "WindowTaskId"]
+    },
+    "AWS::SSM::OpsItem": {
+      "createOnly": ["Source"],
+      "primaryIdentifier": ["OpsItemArn"]
+    },
+    "AWS::SSM::Parameter": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::SSM::PatchBaseline": {
+      "createOnly": ["OperatingSystem"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::SSM::ResourceDataSync": {
+      "createOnly": [
+        "BucketName",
+        "BucketPrefix",
+        "BucketRegion",
+        "KMSKeyArn",
+        "S3Destination",
+        "SyncFormat",
+        "SyncName",
+        "SyncType"
+      ],
+      "primaryIdentifier": ["SyncName"]
+    },
+    "AWS::SSM::ResourcePolicy": {
+      "createOnly": ["ResourceArn"],
+      "primaryIdentifier": ["PolicyId", "ResourceArn"]
+    },
+    "AWS::SSM::ServiceSetting": {
+      "createOnly": ["SettingId"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::Scheduler::Schedule": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::Scheduler::ScheduleGroup": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Name"]
+    },
+    "AWS::SecretsManager::ResourcePolicy": {
+      "createOnly": ["SecretId"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::SecretsManager::RotationSchedule": {
+      "createOnly": ["SecretId"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::SecretsManager::Secret": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::SecretsManager::SecretTargetAttachment": {
+      "createOnly": ["SecretId"],
+      "primaryIdentifier": ["Id"]
+    },
+    "AWS::StepFunctions::Activity": {
+      "createOnly": ["EncryptionConfiguration", "Name"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::StepFunctions::StateMachine": {
+      "createOnly": ["StateMachineName", "StateMachineType"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::StepFunctions::StateMachineAlias": {
+      "createOnly": ["Name"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::StepFunctions::StateMachineVersion": {
+      "createOnly": ["Description", "StateMachineArn", "StateMachineRevisionId"],
+      "primaryIdentifier": ["Arn"]
+    },
+    "AWS::WAFv2::IPSet": {
+      "createOnly": ["Name", "Scope"],
+      "primaryIdentifier": ["Name", "Id", "Scope"]
+    },
+    "AWS::WAFv2::LoggingConfiguration": {
+      "createOnly": ["ResourceArn"],
+      "primaryIdentifier": ["ResourceArn"]
+    },
+    "AWS::WAFv2::RegexPatternSet": {
+      "createOnly": ["Name", "Scope"],
+      "primaryIdentifier": ["Name", "Id", "Scope"]
+    },
+    "AWS::WAFv2::RuleGroup": {
+      "createOnly": ["Name", "Scope"],
+      "primaryIdentifier": ["Name", "Id", "Scope"]
+    },
+    "AWS::WAFv2::WebACL": {
+      "createOnly": ["Name", "Scope"],
+      "primaryIdentifier": ["Name", "Id", "Scope"]
+    },
+    "AWS::WAFv2::WebACLAssociation": {
+      "createOnly": ["ResourceArn", "WebACLArn"],
+      "primaryIdentifier": ["ResourceArn", "WebACLArn"]
+    },
+    "AWS::XRay::Group": {
+      "createOnly": [],
+      "primaryIdentifier": ["GroupARN"]
+    },
+    "AWS::XRay::ResourcePolicy": {
+      "createOnly": ["PolicyName"],
+      "primaryIdentifier": ["PolicyName"]
+    },
+    "AWS::XRay::SamplingRule": {
+      "createOnly": ["SamplingRule/Version"],
+      "primaryIdentifier": ["RuleARN"]
+    },
+    "AWS::XRay::TransactionSearchConfig": {
+      "createOnly": ["CloudWatchLogsConfiguration"],
+      "primaryIdentifier": ["AccountId"]
+    }
+  }
+}

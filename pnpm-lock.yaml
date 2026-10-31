@@ -62,7 +62,23 @@ importers:
 
   packages/context-contract: {}
 
+  packages/report-contract:
+    devDependencies:
+      '@claude-code-aws/context-contract':
+        specifier: workspace:*
+        version: link:../context-contract
+
+  packages/safe-output: {}
+
+  packages/template-analysis:
+    devDependencies:
+      '@claude-code-aws/report-contract':
+        specifier: workspace:*
+        version: link:../report-contract
+
   packages/testkit: {}
+
+  packages/tool-runner: {}
 
   plugins/aws-context:
     devDependencies:
@@ -93,6 +109,9 @@ importers:
       '@claude-code-aws/context-contract':
         specifier: workspace:*
         version: link:../../packages/context-contract
+      '@claude-code-aws/safe-output':
+        specifier: workspace:*
+        version: link:../../packages/safe-output
       '@claude-code-aws/testkit':
         specifier: workspace:*
         version: link:../../packages/testkit

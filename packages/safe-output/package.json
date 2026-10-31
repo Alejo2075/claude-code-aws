@@ -1,0 +1,14 @@
+{
+  "name": "@claude-code-aws/safe-output",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Redaction, terminal-text sanitizing, and size bounds for anything printed, stored, or sent to the model: AWS data, logs, and command output. Bundled into each plugin, never installed on its own.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}
