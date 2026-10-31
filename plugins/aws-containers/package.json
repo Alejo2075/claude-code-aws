@@ -1,6 +1,6 @@
 {
   "name": "aws-containers",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Inspect ECS Fargate services, task definitions, and ECR repositories in synthesized CDK output, validate Fargate CPU and memory, review Dockerfiles, scaffold a hardened Dockerfile, and map stopped-task reasons to likely causes. No image is built, pushed, or run.",
   "license": "MIT",

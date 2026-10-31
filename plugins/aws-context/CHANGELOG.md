@@ -1,5 +1,11 @@
 # aws-context
 
+## 0.2.1
+
+### Patch Changes
+
+- [#15](https://github.com/Alejo2075/claude-code-aws/pull/15) [`739d2ca`](https://github.com/Alejo2075/claude-code-aws/commit/739d2ca56babfc97f60c71802f1167deb9c67a1f) Thanks [@Alejo2075](https://github.com/Alejo2075)! - Internal: the STS check, region resolution, and error classification now live in a shared package that other plugins will reuse. No change in behavior.
+
 ## 0.2.0
 
 ### Minor Changes

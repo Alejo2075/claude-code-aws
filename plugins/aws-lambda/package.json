@@ -1,6 +1,6 @@
 {
   "name": "aws-lambda",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Inspect Lambda functions in synthesized CDK output, scaffold TypeScript handlers with validation and idempotency hooks, check configuration against Lambda's quotas, and prepare (never run) an invocation command. No function is invoked.",
   "license": "MIT",

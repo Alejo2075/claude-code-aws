@@ -1,6 +1,6 @@
 {
   "name": "aws-config",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Validate AppConfig feature flag documents and JSON configuration against a schema, plan a gradual rollout from a deployment strategy, and inspect AppConfig and Parameter Store resources in synthesized CDK output. Nothing is deployed and no value is changed.",
   "license": "MIT",

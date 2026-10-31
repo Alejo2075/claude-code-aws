@@ -1,6 +1,6 @@
 {
   "name": "aws-email",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Inspect SES identities, configuration sets, and receipt rules in synthesized CDK output, validate email templates against sample data, dry-run a recipient list without sending, and judge bounce and complaint rates. No email is sent.",
   "author": {
     "name": "Alejandro Santana",
