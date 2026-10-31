@@ -1,0 +1,14 @@
+{
+  "name": "aws-architect",
+  "version": "0.0.0",
+  "description": "Turn requirements or an existing CDK app into architecture artifacts: Mermaid diagrams that separate declared from inferred links, a Well-Architected style review against the template, decision tables with sources, ADRs, and a plan other plugins can read.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-architect#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "architecture", "diagram", "adr", "well-architected", "serverless"]
+}

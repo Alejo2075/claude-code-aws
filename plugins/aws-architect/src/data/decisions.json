@@ -1,0 +1,179 @@
+{
+  "note": "Short summaries of the guidance in the pages they cite, for choosing between alternatives. They are a starting point and are NOT a substitute for the sources: open the link before relying on a row. Written from the published guidance; not re-verified line by line against the pages on the date of this snapshot.",
+  "snapshot": "2026-10-31",
+  "topics": {
+    "api-type": {
+      "title": "HTTP API, REST API, or GraphQL (AppSync)",
+      "source": "https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html",
+      "options": [
+        {
+          "name": "HTTP API",
+          "useWhen": [
+            "You need a low-cost, low-latency proxy to Lambda or HTTP backends",
+            "JWT or OIDC authorization is enough"
+          ],
+          "watchOut": [
+            "It lacks API keys and usage plans, request validation, caching, and some WAF and private-endpoint features of REST APIs"
+          ]
+        },
+        {
+          "name": "REST API",
+          "useWhen": [
+            "You need API keys and usage plans, request validation, response caching, WAF, or private endpoints"
+          ],
+          "watchOut": ["Higher price per request than an HTTP API"]
+        },
+        {
+          "name": "GraphQL (AppSync)",
+          "useWhen": [
+            "Clients need to choose their fields, combine several sources in one call, or subscribe to changes"
+          ],
+          "watchOut": [
+            "A different operating model: schema design, resolvers, and authorization per field are yours to manage"
+          ]
+        }
+      ],
+      "askFirst": [
+        "Which clients call it and what do they need to authenticate with?",
+        "Is per-client throttling or an API key required?"
+      ]
+    },
+    "messaging": {
+      "title": "SQS, SNS, or EventBridge",
+      "source": "https://docs.aws.amazon.com/decision-guides/latest/sns-or-sqs-or-eventbridge/sns-or-sqs-or-eventbridge.html",
+      "options": [
+        {
+          "name": "SQS",
+          "useWhen": [
+            "One consumer group must process each message, at its own pace, with retries and a dead-letter queue",
+            "You need to buffer bursts and protect a downstream service"
+          ],
+          "watchOut": [
+            "Standard queues deliver at least once and possibly out of order: handlers must be idempotent",
+            "A visibility timeout shorter than the consumer's processing time causes duplicates"
+          ]
+        },
+        {
+          "name": "SNS",
+          "useWhen": [
+            "One message must fan out to many subscribers (queues, functions, HTTP endpoints)"
+          ],
+          "watchOut": ["Push delivery: pair each slow subscriber with its own queue"]
+        },
+        {
+          "name": "EventBridge",
+          "useWhen": [
+            "Producers and consumers should be decoupled by event content, with routing rules, schema discovery, archive and replay, or SaaS and cross-account events"
+          ],
+          "watchOut": [
+            "It is an event router, not a buffer: delivery targets still need retries and a dead-letter queue",
+            "Event size and throughput quotas apply"
+          ]
+        }
+      ],
+      "askFirst": [
+        "How many independent consumers need each message?",
+        "Does a consumer need to be able to fall behind without losing messages?",
+        "Do events need to be routed by their content?"
+      ]
+    },
+    "workflow": {
+      "title": "Step Functions Standard or Express",
+      "source": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html",
+      "options": [
+        {
+          "name": "Standard",
+          "useWhen": [
+            "Workflows are long-running, need an audit trail of every step, or must not run a step twice"
+          ],
+          "watchOut": ["Priced per state transition: chatty workflows get expensive"]
+        },
+        {
+          "name": "Express",
+          "useWhen": ["Workflows are short and run at high volume, such as event processing"],
+          "watchOut": [
+            "Limited duration, at-least-once semantics for asynchronous executions, and execution history only through logs"
+          ]
+        }
+      ],
+      "askFirst": [
+        "How long can one execution take?",
+        "What happens if a step runs twice?",
+        "How many executions per second?"
+      ]
+    },
+    "integration": {
+      "title": "Lambda or a direct service integration",
+      "source": "https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/welcome.html",
+      "options": [
+        {
+          "name": "Direct integration (API Gateway, EventBridge Pipes, Step Functions SDK integrations)",
+          "useWhen": ["The step only moves or maps data between services, with no business logic"],
+          "watchOut": [
+            "Mapping templates and error handling are configuration you must test and operate"
+          ]
+        },
+        {
+          "name": "Lambda",
+          "useWhen": ["There is logic, validation, or composition that needs code"],
+          "watchOut": [
+            "Every function is code to patch, monitor, and size, and adds a cold start and a timeout to reason about"
+          ]
+        }
+      ],
+      "askFirst": ["Is there any decision in this step, or only plumbing?"]
+    },
+    "data-store": {
+      "title": "DynamoDB or a relational database",
+      "source": "https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/welcome.html",
+      "options": [
+        {
+          "name": "DynamoDB",
+          "useWhen": [
+            "Access patterns are known up front, you need predictable single-digit-millisecond access at any scale, and no ad hoc joins"
+          ],
+          "watchOut": [
+            "Changing the key schema later usually means a migration; the design follows the queries"
+          ]
+        },
+        {
+          "name": "Relational (for example Aurora)",
+          "useWhen": [
+            "Queries are varied or ad hoc, you need joins and transactions across entities"
+          ],
+          "watchOut": [
+            "Connections, scaling, and cost model differ from DynamoDB; Lambda needs connection management"
+          ]
+        }
+      ],
+      "askFirst": [
+        "List the queries: which are known and which are not?",
+        "What consistency and transactions does the business need?"
+      ]
+    },
+    "sync-async": {
+      "title": "Synchronous or asynchronous",
+      "source": "https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/welcome.html",
+      "options": [
+        {
+          "name": "Synchronous",
+          "useWhen": ["The caller needs the result now and can wait for it"],
+          "watchOut": [
+            "Timeouts and failures propagate to the caller; chains of calls multiply latency"
+          ]
+        },
+        {
+          "name": "Asynchronous",
+          "useWhen": ["The caller only needs an acknowledgment and the work can finish later"],
+          "watchOut": [
+            "You must design for duplicates, ordering, retries, dead-letter handling, and how the caller learns the outcome"
+          ]
+        }
+      ],
+      "askFirst": [
+        "What does the caller do with the result?",
+        "What is the longest acceptable wait?"
+      ]
+    }
+  }
+}
