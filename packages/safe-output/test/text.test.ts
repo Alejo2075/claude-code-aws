@@ -84,3 +84,12 @@ describe("boundText", () => {
     expect(result.redacted).toBe(1);
   });
 });
+
+describe("token counts", () => {
+  it("keeps a model token budget but still redacts a token value", () => {
+    expect(redactText('{"maxTokens": 200}').text).toBe('{"maxTokens": 200}');
+    expect(redactText("output_tokens=1500").redacted).toBe(0);
+    expect(redactText("token=abc12345").redacted).toBe(1);
+    expect(redactText("maxTokens: sk-abcdefghijklmnopqrstuvwxyz").redacted).toBeGreaterThan(0);
+  });
+});

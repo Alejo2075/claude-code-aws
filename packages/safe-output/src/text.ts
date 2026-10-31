@@ -13,6 +13,7 @@ const CREDENTIAL_VALUE: RegExp[] = [
 /** `name=value`, `name: value`, or `"name":"value"` where the name says it is a secret. */
 const SECRET_PAIR =
   /\b([A-Za-z0-9_.-]*(?:password|passwd|secret|token|api[_-]?key|access[_-]?key|authorization|credential|private[_-]?key|session[_-]?token)[A-Za-z0-9_.-]*)(["']?\s*[:=]\s*["']?)(?!\[redacted\])([^\s"',;}&]{3,})/gi;
+const TOKEN_COUNT_NAME = /(?:max|min|input|output|total|prompt|completion|usage)[_-]?tokens$/i;
 const BEARER = /\b(Bearer|Basic)\s+[A-Za-z0-9._~+/=-]{8,}/gi;
 const EMAIL = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
 const CARD = /\b(?:\d[ -]?){13,19}\b/g;
@@ -53,9 +54,9 @@ export function redactText(input: string, options: TextOptions = {}): TextRedact
   };
   for (const pattern of CREDENTIAL_VALUE) text = text.replace(pattern, replace);
   text = text.replace(BEARER, (_match, scheme: string) => `${scheme} ${replace()}`);
-  text = text.replace(
-    SECRET_PAIR,
-    (_match, name: string, separator: string) => `${name}${separator}${replace()}`,
+  text = text.replace(SECRET_PAIR, (match, name: string, separator: string, value: string) =>
+    // A model's token budget (`maxTokens: 200`) is a count, not a credential.
+    TOKEN_COUNT_NAME.test(name) && /^\d+$/.test(value) ? match : `${name}${separator}${replace()}`,
   );
   if (options.personalData !== false) {
     text = text.replace(EMAIL, replace);

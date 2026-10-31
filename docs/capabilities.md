@@ -116,3 +116,13 @@ This file is updated by the pull request that changes a capability. The per-plug
 | Backlog, improvement plan, compare, stale and conflicting evidence          | implemented + tested                                                             |
 | `well-architected-reviewer` agent and two evals                             | implemented + unverified (evals not run)                                         |
 | Reading evidence from the account; AWS Well-Architected Tool records        | not yet implemented                                                              |
+
+## aws-prototyping
+
+| Capability                                                     | Status                                                      |
+| -------------------------------------------------------------- | ----------------------------------------------------------- |
+| `start`, `validate`, manifest bounds, secret and wildcard scan | implemented + tested                                        |
+| Local queue model, `experiment`, `record`, `compare`           | implemented + tested (model hand-checked on limiting cases) |
+| `sandbox-plan`, `cleanup-plan`, `promote` (plans only)         | implemented + tested                                        |
+| Skill evals                                                    | implemented + unverified (evals not run)                    |
+| Running on AWS; models for APIs, workflows, Bedrock latency    | not yet implemented                                         |
