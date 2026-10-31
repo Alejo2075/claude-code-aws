@@ -308,6 +308,30 @@ importers:
         specifier: workspace:*
         version: link:../../packages/testkit
 
+  plugins/aws-prototyping:
+    devDependencies:
+      '@claude-code-aws/context-contract':
+        specifier: workspace:*
+        version: link:../../packages/context-contract
+      '@claude-code-aws/report-contract':
+        specifier: workspace:*
+        version: link:../../packages/report-contract
+      '@claude-code-aws/safe-output':
+        specifier: workspace:*
+        version: link:../../packages/safe-output
+      '@claude-code-aws/template-analysis':
+        specifier: workspace:*
+        version: link:../../packages/template-analysis
+      '@claude-code-aws/testkit':
+        specifier: workspace:*
+        version: link:../../packages/testkit
+      '@claude-code-aws/tool-runner':
+        specifier: workspace:*
+        version: link:../../packages/tool-runner
+      yaml:
+        specifier: 2.9.1
+        version: 2.9.1
+
   plugins/aws-security:
     devDependencies:
       '@claude-code-aws/aws-client':

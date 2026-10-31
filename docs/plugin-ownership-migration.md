@@ -48,3 +48,12 @@ Checked on `main` at commit `4dc5122`, by reading the code and not the file name
 ## What stays where
 
 `aws-infrastructure` keeps the reference graph (`inspect`) as **source data** for `aws-diagrams`; it gains no diagram code. `aws-ui` keeps footer labels and the status line; the panel that renders diagrams is a later milestone and consumes `DiagramArtifact` / `ArchitectureGraph` JSON only.
+
+## Prototyping: `aws-prototyping`
+
+|                   |                                                                                                                                                                                                                                                                                     |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Before**        | **Not present** in `aws-architect`, `aws-infrastructure`, `aws-testing`, or `aws-deploy`: no PoC runner, experiment state, or promotion report existed to move.                                                                                                                     |
+| **After**         | `aws-prototyping` is new code. It owns the prototype manifest, the local queue model, result comparison, and the sandbox, cleanup, and promotion **plans**. It reuses the owners: `aws-infrastructure scaffold` for CDK, `aws-testing` for suites, `aws-deploy` for any deployment. |
+| **Files**         | Added `plugins/aws-prototyping/**`. Changed `packages/safe-output/src/text.ts` (a model token budget such as `maxTokens: 200` is no longer redacted as a secret; credential-like values still are). No other plugin changed.                                                        |
+| **Test evidence** | `plugins/aws-prototyping/test` (21), `packages/safe-output/test` (one new case).                                                                                                                                                                                                    |
