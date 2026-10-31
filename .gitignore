@@ -13,3 +13,5 @@ coverage/
 # claude plugin eval output
 .eval-results/
 evals/**/results/
+
+plugins/*/.tmp-project-*/
