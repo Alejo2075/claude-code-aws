@@ -1,0 +1,18 @@
+{
+  "name": "@claude-code-aws/aws-client",
+  "version": "0.0.0",
+  "private": true,
+  "description": "AWS SDK adapters shared by the plugins that call AWS: identity verification with STS, region resolution, error classification, safe client defaults, and bounded pagination. Bundled into each plugin, never installed on its own.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-sts": "3.1158.0",
+    "@claude-code-aws/context-contract": "workspace:*"
+  }
+}

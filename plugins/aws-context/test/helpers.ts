@@ -1,3 +1,4 @@
+import type { Identity } from "@claude-code-aws/aws-client";
 import {
   type EffectiveConfig,
   type EnvReader,
@@ -6,7 +7,6 @@ import {
 } from "@claude-code-aws/context-contract";
 
 import type { RefreshDeps } from "../src/lib/refresh.js";
-import type { Identity } from "../src/lib/sts.js";
 
 /** Documentation-style placeholders, not real accounts. */
 export const ACCOUNT = "123456789012";

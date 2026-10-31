@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { classifyError } from "../src/lib/diagnostics.js";
+import { classifyError } from "@claude-code-aws/aws-client";
 import { refreshContext } from "../src/lib/refresh.js";
 import { ACCOUNT, ARN, configOf, deps, envOf, failure, NOW, OTHER_ACCOUNT } from "./helpers.js";
 

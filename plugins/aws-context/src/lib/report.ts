@@ -8,7 +8,7 @@ import {
   maskAccount,
 } from "@claude-code-aws/context-contract";
 
-import { DIAGNOSTIC_HELP } from "./diagnostics.js";
+import { DIAGNOSTIC_HELP } from "@claude-code-aws/aws-client";
 
 export interface StatusReport {
   state: Interpretation["state"];
