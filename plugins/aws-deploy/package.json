@@ -1,0 +1,23 @@
+{
+  "name": "aws-deploy",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Plan and run CDK deployments safely: identity checked, templates hashed, destructive and permission-broadening changes acknowledged, production confirmed by name. Never deploys without an explicit plan.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-cloudformation": "3.1161.0",
+    "@aws-sdk/client-sts": "3.1158.0",
+    "@claude-code-aws/aws-client": "workspace:*",
+    "@claude-code-aws/context-contract": "workspace:*",
+    "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/safe-output": "workspace:*",
+    "@claude-code-aws/template-analysis": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*",
+    "@claude-code-aws/tool-runner": "workspace:*"
+  }
+}

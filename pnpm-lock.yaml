@@ -78,6 +78,9 @@ importers:
       '@claude-code-aws/report-contract':
         specifier: workspace:*
         version: link:../report-contract
+      '@claude-code-aws/safe-output':
+        specifier: workspace:*
+        version: link:../safe-output
       '@claude-code-aws/tool-runner':
         specifier: workspace:*
         version: link:../tool-runner
@@ -97,6 +100,36 @@ importers:
       '@claude-code-aws/testkit':
         specifier: workspace:*
         version: link:../../packages/testkit
+
+  plugins/aws-deploy:
+    devDependencies:
+      '@aws-sdk/client-cloudformation':
+        specifier: 3.1161.0
+        version: 3.1161.0
+      '@aws-sdk/client-sts':
+        specifier: 3.1158.0
+        version: 3.1158.0
+      '@claude-code-aws/aws-client':
+        specifier: workspace:*
+        version: link:../../packages/aws-client
+      '@claude-code-aws/context-contract':
+        specifier: workspace:*
+        version: link:../../packages/context-contract
+      '@claude-code-aws/report-contract':
+        specifier: workspace:*
+        version: link:../../packages/report-contract
+      '@claude-code-aws/safe-output':
+        specifier: workspace:*
+        version: link:../../packages/safe-output
+      '@claude-code-aws/template-analysis':
+        specifier: workspace:*
+        version: link:../../packages/template-analysis
+      '@claude-code-aws/testkit':
+        specifier: workspace:*
+        version: link:../../packages/testkit
+      '@claude-code-aws/tool-runner':
+        specifier: workspace:*
+        version: link:../../packages/tool-runner
 
   plugins/aws-explorer:
     devDependencies:

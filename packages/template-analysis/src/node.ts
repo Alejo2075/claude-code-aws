@@ -123,3 +123,5 @@ export function loadStacks(root: string, path: string): LoadResult {
   }
   return result;
 }
+
+export * from "./synth.js";

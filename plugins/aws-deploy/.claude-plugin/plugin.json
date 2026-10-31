@@ -1,0 +1,14 @@
+{
+  "name": "aws-deploy",
+  "version": "0.0.0",
+  "description": "Plan and run CDK deployments safely: identity checked, templates hashed, destructive and permission-broadening changes acknowledged, production confirmed by name. Never deploys without an explicit plan.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-deploy#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "deploy", "cdk", "cloudformation", "safety", "pipeline"]
+}
