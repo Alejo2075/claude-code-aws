@@ -63,3 +63,13 @@ This file is updated by the pull request that changes a capability. The per-plug
 | `status`, `rollback` advice                                          | implemented + tested                                      |
 | `pipeline` (OIDC, bootstrap-role-only policy, protected environment) | implemented + tested (generated text; never run)          |
 | Change-set plans, rollback execution, CodeDeploy traffic shifting    | not yet implemented                                       |
+
+## aws-observability
+
+| Capability                                                                   | Status                                                     |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Function and queue status, DLQ depth, bounded redacted logs, metrics, alarms | implemented + unverified (fake API; SDK adapter never run) |
+| Log analyzers and the evidence ledger with findings that cite it             | implemented + tested                                       |
+| `incident-investigator` agent and two evals                                  | implemented + unverified (evals not run)                   |
+| X-Ray traces, Step Functions history, API Gateway and DynamoDB telemetry     | not yet implemented                                        |
+| Powertools guidance, SLO and error-budget reports, opt-in monitor            | not yet implemented                                        |
