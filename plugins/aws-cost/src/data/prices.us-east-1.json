@@ -1,0 +1,221 @@
+{
+  "note": "Public AWS Price List, on-demand, US East (N. Virginia). A dated snapshot: prices change, and credits, free tier, taxes, and discounts are not applied.",
+  "prices": {
+    "apigw.http": {
+      "description": "API Gateway HTTP API requests",
+      "offer": "AmazonApiGateway",
+      "publicationDate": "2026-10-13T00:30:44Z",
+      "tiers": [
+        {
+          "price": 1e-6,
+          "upTo": 300000000.0
+        },
+        {
+          "price": 9e-7,
+          "upTo": null
+        }
+      ],
+      "unit": "request",
+      "usagetype": "USE1-ApiGatewayHttpRequest"
+    },
+    "apigw.rest": {
+      "description": "API Gateway REST API requests",
+      "offer": "AmazonApiGateway",
+      "publicationDate": "2026-10-13T00:30:44Z",
+      "tiers": [
+        {
+          "price": 3.5e-6,
+          "upTo": 333000000.0
+        },
+        {
+          "price": 2.8e-6,
+          "upTo": 1000000000.0
+        },
+        {
+          "price": 2.38e-6,
+          "upTo": 20000000000.0
+        },
+        {
+          "price": 1.51e-6,
+          "upTo": null
+        }
+      ],
+      "unit": "request",
+      "usagetype": "USE1-ApiGatewayRequest"
+    },
+    "dynamodb.read": {
+      "description": "DynamoDB on-demand reads",
+      "offer": "AmazonDynamoDB",
+      "publicationDate": "2026-09-11T12:44:22Z",
+      "tiers": [
+        {
+          "price": 1.25e-7,
+          "upTo": null
+        }
+      ],
+      "unit": "read request unit",
+      "usagetype": "ReadRequestUnits"
+    },
+    "dynamodb.write": {
+      "description": "DynamoDB on-demand writes",
+      "offer": "AmazonDynamoDB",
+      "publicationDate": "2026-09-11T12:44:22Z",
+      "tiers": [
+        {
+          "price": 6.25e-7,
+          "upTo": null
+        }
+      ],
+      "unit": "write request unit",
+      "usagetype": "WriteRequestUnits"
+    },
+    "lambda.compute.arm": {
+      "description": "Lambda compute (Graviton)",
+      "offer": "AWSLambda",
+      "publicationDate": "2026-10-30T23:42:55Z",
+      "tiers": [
+        {
+          "price": 1.33334e-5,
+          "upTo": 7500000000.0
+        },
+        {
+          "price": 1.20001e-5,
+          "upTo": 18750000000.0
+        },
+        {
+          "price": 1.06667e-5,
+          "upTo": null
+        }
+      ],
+      "unit": "GB-second",
+      "usagetype": "Lambda-GB-Second-ARM"
+    },
+    "lambda.compute.x86": {
+      "description": "Lambda compute (x86)",
+      "offer": "AWSLambda",
+      "publicationDate": "2026-10-30T23:42:55Z",
+      "tiers": [
+        {
+          "price": 1.66667e-5,
+          "upTo": 6000000000.0
+        },
+        {
+          "price": 1.5e-5,
+          "upTo": 15000000000.0
+        },
+        {
+          "price": 1.33334e-5,
+          "upTo": null
+        }
+      ],
+      "unit": "GB-second",
+      "usagetype": "Lambda-GB-Second"
+    },
+    "lambda.request.arm": {
+      "description": "Lambda requests (Graviton)",
+      "offer": "AWSLambda",
+      "publicationDate": "2026-10-30T23:42:55Z",
+      "tiers": [
+        {
+          "price": 2e-7,
+          "upTo": null
+        }
+      ],
+      "unit": "request",
+      "usagetype": "Request-ARM"
+    },
+    "lambda.request.x86": {
+      "description": "Lambda requests (x86)",
+      "offer": "AWSLambda",
+      "publicationDate": "2026-10-30T23:42:55Z",
+      "tiers": [
+        {
+          "price": 2e-7,
+          "upTo": null
+        }
+      ],
+      "unit": "request",
+      "usagetype": "Request"
+    },
+    "logs.ingest": {
+      "description": "CloudWatch Logs ingestion (Standard class)",
+      "offer": "AmazonCloudWatch",
+      "publicationDate": "2026-10-07T11:55:40Z",
+      "tiers": [
+        {
+          "price": 0.5,
+          "upTo": null
+        }
+      ],
+      "unit": "GB",
+      "usagetype": "USE1-DataProcessing-Bytes"
+    },
+    "logs.storage": {
+      "description": "CloudWatch Logs storage",
+      "offer": "AmazonCloudWatch",
+      "publicationDate": "2026-10-07T11:55:40Z",
+      "tiers": [
+        {
+          "price": 0.03,
+          "upTo": null
+        }
+      ],
+      "unit": "GB-month",
+      "usagetype": "USE1-TimedStorage-ByteHrs"
+    },
+    "sns.request": {
+      "description": "SNS API requests (after the free tier)",
+      "offer": "AmazonSNS",
+      "publicationDate": "2026-09-15T15:19:44Z",
+      "tiers": [
+        {
+          "price": 0.0,
+          "upTo": 1000000.0
+        },
+        {
+          "price": 5e-7,
+          "upTo": null
+        }
+      ],
+      "unit": "request",
+      "usagetype": "Requests-Tier1"
+    },
+    "sqs.standard": {
+      "description": "SQS standard queue requests",
+      "offer": "AWSQueueService",
+      "publicationDate": "2026-09-11T12:46:07Z",
+      "tiers": [
+        {
+          "price": 4e-7,
+          "upTo": 100000000000.0
+        },
+        {
+          "price": 3e-7,
+          "upTo": 200000000000.0
+        },
+        {
+          "price": 2.4e-7,
+          "upTo": null
+        }
+      ],
+      "unit": "request",
+      "usagetype": "Requests-RBP"
+    },
+    "stepfunctions.standard": {
+      "description": "Step Functions Standard state transitions",
+      "offer": "AmazonStates",
+      "publicationDate": "2026-09-11T12:45:11Z",
+      "tiers": [
+        {
+          "price": 2.5e-5,
+          "upTo": null
+        }
+      ],
+      "unit": "state transition",
+      "usagetype": "USE1-StateTransition"
+    }
+  },
+  "region": "us-east-1",
+  "retrieved": "2026-10-31",
+  "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/index.json"
+}

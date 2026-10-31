@@ -1,0 +1,14 @@
+{
+  "name": "aws-cost",
+  "version": "0.0.0",
+  "description": "Estimate and compare the monthly cost of serverless workloads from stated inputs and dated AWS list prices, clearly separate from billed amounts. Makes no AWS calls.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-cost#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "cost", "estimate", "lambda", "pricing", "serverless"]
+}
