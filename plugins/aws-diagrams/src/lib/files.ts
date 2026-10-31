@@ -21,7 +21,7 @@ export function writeNew(root: string, path: string, content: string | Buffer): 
     } finally {
       closeSync(fd);
     }
-    return { ok: true, file: target.slice(resolve(root).length + 1) };
+    return { ok: true, file: target.slice(resolve(root).length + 1).replaceAll("\\", "/") };
   } catch (error) {
     return (error as NodeJS.ErrnoException).code === "EEXIST"
       ? {

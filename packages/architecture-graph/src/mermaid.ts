@@ -14,16 +14,20 @@ function hash(value: string): string {
   return h.toString(36);
 }
 
+function trimUnderscores(value: string): string {
+  let start = 0;
+  let end = value.length;
+  while (start < end && value[start] === "_") start += 1;
+  while (end > start && value[end - 1] === "_") end -= 1;
+  return value.slice(start, end);
+}
+
 /** Ids that depend only on the node's own id, so adding a node never renames the others. */
 export function mermaidIds(ids: readonly string[]): Map<string, string> {
   const out = new Map<string, string>();
   const used = new Set<string>();
   for (const id of [...ids].sort()) {
-    const slug =
-      id
-        .replace(/[^A-Za-z0-9]+/g, "_")
-        .replace(/^_+|_+$/g, "")
-        .slice(0, 40) || "n";
+    const slug = trimUnderscores(id.replace(/[^A-Za-z0-9]+/g, "_")).slice(0, 40) || "n";
     let candidate = `n_${slug}`;
     if (used.has(candidate)) candidate = `${candidate}_${hash(id)}`;
     used.add(candidate);
