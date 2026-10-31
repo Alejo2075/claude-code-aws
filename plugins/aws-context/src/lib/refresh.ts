@@ -1,3 +1,4 @@
+import { classifyError, type Identity, type VerifyInput } from "@claude-code-aws/aws-client";
 import {
   type AwsContextSnapshotV1,
   classifyAccount,
@@ -6,9 +7,6 @@ import {
   isValidRegion,
   workspaceId,
 } from "@claude-code-aws/context-contract";
-
-import { classifyError } from "./diagnostics.js";
-import type { Identity, VerifyInput } from "./sts.js";
 
 export const DEFAULT_TIMEOUT_MS = 5000;
 /** Region used only to pick an STS endpoint when none resolves. It is never reported as the region. */

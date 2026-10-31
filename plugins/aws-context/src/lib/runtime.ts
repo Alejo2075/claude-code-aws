@@ -1,5 +1,6 @@
 import { statSync } from "node:fs";
 
+import { resolveSdkRegion, verifyWithSts } from "@claude-code-aws/aws-client";
 import {
   type AwsContextSnapshotV1,
   type EffectiveConfig,
@@ -14,7 +15,6 @@ import {
 import { loadConfig } from "./config-files.js";
 import { refreshContext } from "./refresh.js";
 import { pruneSnapshots, readSnapshotFile, writeSnapshotFile } from "./store.js";
-import { resolveSdkRegion, verifyWithSts } from "./sts.js";
 
 export const processEnv: EnvReader = (name) => process.env[name];
 
