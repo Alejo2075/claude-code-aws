@@ -67,6 +67,15 @@ importers:
         specifier: workspace:*
         version: link:../../packages/testkit
 
+  plugins/aws-guard:
+    devDependencies:
+      '@claude-code-aws/context-contract':
+        specifier: workspace:*
+        version: link:../../packages/context-contract
+      '@claude-code-aws/testkit':
+        specifier: workspace:*
+        version: link:../../packages/testkit
+
   plugins/aws-ui:
     devDependencies:
       '@claude-code-aws/context-contract':

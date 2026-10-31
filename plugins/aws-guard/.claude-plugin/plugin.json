@@ -1,0 +1,14 @@
+{
+  "name": "aws-guard",
+  "version": "0.0.0",
+  "description": "Asks for approval before AWS-changing commands, especially in production or with an unverified identity. A guardrail, not an enforcement boundary.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-guard#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "guardrail", "approval", "production", "safety"]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "aws-guard",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Asks for approval before AWS-changing commands, especially in production or with an unverified identity. A guardrail, not an enforcement boundary.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/context-contract": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*"
+  }
+}
