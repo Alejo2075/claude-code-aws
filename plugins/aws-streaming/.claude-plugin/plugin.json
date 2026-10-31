@@ -1,0 +1,14 @@
+{
+  "name": "aws-streaming",
+  "version": "0.0.0",
+  "description": "Inspect Kinesis Data Streams and Amazon Data Firehose in synthesized CDK output, size shards from throughput, check where partition keys land, and validate delivery buffering. No records are written or read.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-streaming#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "kinesis", "firehose", "streaming"]
+}

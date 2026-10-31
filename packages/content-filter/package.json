@@ -1,0 +1,14 @@
+{
+  "name": "@claude-code-aws/content-filter",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A local matcher for EventBridge event patterns and SNS filter policies (exact, prefix, suffix, anything-but, numeric, exists, cidr, wildcard, equals-ignore-case, $or), so a pattern can be tried against a sample event without sending anything. Pure code.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

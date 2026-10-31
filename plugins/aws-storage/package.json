@@ -1,0 +1,18 @@
+{
+  "name": "aws-storage",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Inspect S3 buckets and EFS file systems in synthesized CDK output, validate object keys, plan uploads (single or multipart) and lifecycle rules, and review bucket policies. No objects are read, written, or deleted.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/plugin-kit": "workspace:*",
+    "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/template-analysis": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*"
+  }
+}

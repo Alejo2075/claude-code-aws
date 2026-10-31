@@ -1,0 +1,21 @@
+{
+  "name": "@claude-code-aws/plugin-kit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The small command-line scaffolding shared by the service plugins: argument parsing, command dispatch, bounded JSON reads inside the project, new-file-only writes, and local analysis reports. Pure code, bundled into each plugin.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/context-contract": "workspace:*",
+    "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/safe-output": "workspace:*",
+    "@claude-code-aws/template-analysis": "workspace:*",
+    "@claude-code-aws/tool-runner": "workspace:*"
+  }
+}
