@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { existsSync, realpathSync } from "node:fs";
+import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { delimiter, isAbsolute, join, relative, resolve, sep } from "node:path";
 
 export type Env = Record<string, string | undefined>;
@@ -90,6 +90,37 @@ export function findLocalBin(root: string, name: string): string | null {
   return null;
 }
 
+/**
+ * Finds the JavaScript entry of a package's command (`node_modules/<package>/package.json` `bin`),
+ * walking up from `root`. Run it with `process.execPath`: that works the same on every platform and
+ * never needs a shell, unlike the `.cmd` shims in `node_modules/.bin` on Windows.
+ */
+export function findPackageBin(root: string, packageName: string, binName?: string): string | null {
+  let dir = resolve(root);
+  for (let depth = 0; depth < 20; depth += 1) {
+    const manifest = join(dir, "node_modules", packageName, "package.json");
+    if (existsSync(manifest)) {
+      try {
+        const bin = (
+          JSON.parse(readFileSync(manifest, "utf8")) as { bin?: string | Record<string, string> }
+        ).bin;
+        const relativePath = typeof bin === "string" ? bin : bin?.[binName ?? packageName];
+        if (relativePath === undefined) return null;
+        const target = resolve(dir, "node_modules", packageName, relativePath);
+        return existsSync(target) && isInside(join(dir, "node_modules", packageName), target)
+          ? target
+          : null;
+      } catch {
+        return null;
+      }
+    }
+    const parent = resolve(dir, "..");
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return null;
+}
+
 /** Finds an executable on `PATH` without running anything. */
 export function findOnPath(name: string, pathValue: string | undefined): string | null {
   const suffixes = process.platform === "win32" ? [".cmd", ".exe", ".bat", ""] : [""];
@@ -128,21 +159,8 @@ export interface RunResult {
   spawnError: string | null;
 }
 
-/** Characters that would be interpreted by cmd.exe when a `.cmd` shim has to be run on Windows. */
-const UNSAFE_CMD = /["%^&|<>\r\n`]/;
-
-function windowsCommand(
-  command: string,
-  args: readonly string[],
-): { command: string; args: string[] } | null {
-  if (!/\.(cmd|bat)$/i.test(command)) return { command, args: [...args] };
-  if ([command, ...args].some((part) => UNSAFE_CMD.test(part))) return null;
-  const quote = (value: string): string => `"${value}"`;
-  return {
-    command: process.env["ComSpec"] ?? "cmd.exe",
-    args: ["/d", "/s", "/c", `"${[command, ...args].map(quote).join(" ")}"`],
-  };
-}
+/** Windows command shims (`.cmd`, `.bat`) need cmd.exe, which means building a shell command line. */
+const WINDOWS_SHIM = /\.(cmd|bat)$/i;
 
 /**
  * Runs a program with no shell. The caller decides the allowlisted environment; this function
@@ -165,14 +183,14 @@ export function runTool(options: RunOptions): Promise<RunResult> {
   });
   if (!isInside(options.root, cwd))
     return Promise.resolve(empty("The working directory is outside the project."));
-  const prepared =
-    process.platform === "win32"
-      ? windowsCommand(options.command, options.args)
-      : { command: options.command, args: [...options.args] };
-  if (prepared === null)
+  if (process.platform === "win32" && WINDOWS_SHIM.test(options.command)) {
     return Promise.resolve(
-      empty("An argument contains characters that are unsafe to pass to a Windows command shim."),
+      empty(
+        "UNSUPPORTED_WINDOWS_SHIM: run the package's JavaScript entry with node instead (see findPackageBin).",
+      ),
     );
+  }
+  const prepared = { command: options.command, args: [...options.args] };
 
   return new Promise((resolvePromise) => {
     const posix = process.platform !== "win32";
@@ -183,8 +201,6 @@ export function runTool(options: RunOptions): Promise<RunResult> {
       stdio: ["ignore", "pipe", "pipe"],
       windowsHide: true,
       detached: posix,
-      windowsVerbatimArguments:
-        process.platform === "win32" && /cmd(\.exe)?$/i.test(prepared.command),
     });
     const chunks = { out: [] as Buffer[], err: [] as Buffer[] };
     const size = { out: 0, err: 0 };

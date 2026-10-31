@@ -4,7 +4,14 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { findLocalBin, findOnPath, isInside, runTool, scrubbedEnv } from "../src/index.js";
+import {
+  findLocalBin,
+  findOnPath,
+  findPackageBin,
+  isInside,
+  runTool,
+  scrubbedEnv,
+} from "../src/index.js";
 
 const node = process.execPath;
 const root = mkdtempSync(join(tmpdir(), "tool-runner-"));
@@ -110,6 +117,54 @@ describe("runTool", () => {
   it("refuses a working directory outside the project", async () => {
     const result = await run("console.log(1)", { cwd: tmpdir() });
     expect(result.spawnError).toContain("outside the project");
+  });
+});
+
+describe("Windows shims", () => {
+  it.runIf(process.platform === "win32")(
+    "refuses to run a .cmd shim, which would need a shell",
+    async () => {
+      const result = await run("", { command: join(root, "tool.cmd") });
+      expect(result.spawnError).toContain("UNSUPPORTED_WINDOWS_SHIM");
+    },
+  );
+});
+
+describe("findPackageBin", () => {
+  it("finds a package's JavaScript entry by walking up, from the string or the object form of bin", () => {
+    const pkg = join(root, "node_modules", "fake-cli");
+    mkdirSync(join(pkg, "bin"), { recursive: true });
+    writeFileSync(join(pkg, "bin", "run.js"), "console.log('hi')");
+    writeFileSync(
+      join(pkg, "package.json"),
+      JSON.stringify({ name: "fake-cli", bin: { fake: "bin/run.js" } }),
+    );
+    mkdirSync(join(root, "a", "b"), { recursive: true });
+    expect(findPackageBin(join(root, "a", "b"), "fake-cli", "fake")).toBe(
+      join(pkg, "bin", "run.js"),
+    );
+    writeFileSync(
+      join(pkg, "package.json"),
+      JSON.stringify({ name: "fake-cli", bin: "bin/run.js" }),
+    );
+    expect(findPackageBin(root, "fake-cli")).toBe(join(pkg, "bin", "run.js"));
+  });
+
+  it("returns null for a missing package, a missing bin, or a bin that escapes the package", () => {
+    expect(findPackageBin(root, "no-such-package")).toBeNull();
+    const pkg = join(root, "node_modules", "odd-cli");
+    mkdirSync(pkg, { recursive: true });
+    writeFileSync(
+      join(pkg, "package.json"),
+      JSON.stringify({ name: "odd-cli", bin: { other: "x.js" } }),
+    );
+    expect(findPackageBin(root, "odd-cli", "odd-cli")).toBeNull();
+    writeFileSync(
+      join(pkg, "package.json"),
+      JSON.stringify({ name: "odd-cli", bin: "../../escape.js" }),
+    );
+    writeFileSync(join(root, "escape.js"), "");
+    expect(findPackageBin(root, "odd-cli")).toBeNull();
   });
 });
 
