@@ -51,6 +51,10 @@ Re-generate the test counts with `pnpm exec vitest run --reporter=json`. Validat
 
 Cross-plugin scenarios: `tests/integration/scenarios.test.ts` (7 tests): diagrams from CDK output, the real security audit merged into a Well-Architected review, plan to diagram to prototype, event and workflow graphs into diagrams, and static checks that none of the 17 new plugins imports an AWS SDK client.
 
+## Installation
+
+All 28 plugins were installed from the plugin cache outside the source tree in a throwaway worktree on 2026-10-31 (`pnpm version-packages`, `pnpm build:release`, `pnpm test:packaging`: 230 checks passed: install, listed and enabled, version, details, disable and enable, uninstall, data removed). That check found one real problem (the word "error" in the `aws-edge` description trips the details check), which was fixed. Plugins stay at `0.0.0` on `main` until a Version PR is merged, so CI cannot repeat this until a release.
+
 ## Not verified, in one place
 
 - Nothing ran against a real AWS account. SDK adapters (`aws-explorer`, `aws-observability`, `aws-infrastructure --deployed`, `aws-deploy`) only ran against fakes or loopback endpoints.
