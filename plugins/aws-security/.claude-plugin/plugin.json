@@ -1,0 +1,14 @@
+{
+  "name": "aws-security",
+  "version": "0.0.0",
+  "description": "Audit CDK templates and, read-only, the account for security problems: IAM, public exposure, API authorization, secrets, with evidence. Advisory only.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-security#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "security", "iam", "audit", "serverless", "read-only"]
+}

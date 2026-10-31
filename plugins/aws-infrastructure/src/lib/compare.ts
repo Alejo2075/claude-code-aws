@@ -9,7 +9,7 @@ import {
 } from "@claude-code-aws/report-contract";
 import { diffTemplates, summarizeChanges, type Template } from "@claude-code-aws/template-analysis";
 
-import type { LoadedStack } from "./load.js";
+import type { LoadedStack } from "@claude-code-aws/template-analysis/node";
 
 const PLUGIN = "aws-infrastructure";
 const DOC_REPLACE =

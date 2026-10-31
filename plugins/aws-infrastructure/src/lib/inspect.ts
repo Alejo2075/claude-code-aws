@@ -1,6 +1,6 @@
 import { inventory, type Inventory } from "@claude-code-aws/template-analysis";
 
-import type { LoadedStack } from "./load.js";
+import type { LoadedStack } from "@claude-code-aws/template-analysis/node";
 
 export interface StackInspection {
   name: string;

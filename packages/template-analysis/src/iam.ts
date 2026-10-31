@@ -13,6 +13,8 @@ export interface PolicyStatement {
   /** `*`, or `Type:value` such as `AWS:arn:...` or `Service:lambda.amazonaws.com`. */
   principals: string[];
   hasCondition: boolean;
+  /** The raw Condition block, for rules that look inside it. */
+  condition: Record<string, unknown> | null;
   sid: string | null;
   /** Where it is, for evidence. */
   path: string;
@@ -62,6 +64,7 @@ function fromDocument(
       notResources: strings(entry["NotResource"]),
       principals: principals(entry["Principal"]),
       hasCondition: isRecord(entry["Condition"]) && Object.keys(entry["Condition"]).length > 0,
+      condition: isRecord(entry["Condition"]) ? entry["Condition"] : null,
       sid: typeof entry["Sid"] === "string" ? entry["Sid"] : null,
       path: `${path}/Statement/${index}`,
     });
@@ -175,6 +178,7 @@ export function iamStatements(template: Template): PolicyStatement[] {
           ].some(
             (key) => properties[key] !== undefined && properties["FunctionUrlAuthType"] !== "NONE",
           ),
+          condition: null,
           sid: null,
           path: at,
         });
