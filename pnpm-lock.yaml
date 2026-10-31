@@ -101,6 +101,18 @@ importers:
         specifier: workspace:*
         version: link:../../packages/testkit
 
+  plugins/aws-cost:
+    devDependencies:
+      '@claude-code-aws/report-contract':
+        specifier: workspace:*
+        version: link:../../packages/report-contract
+      '@claude-code-aws/safe-output':
+        specifier: workspace:*
+        version: link:../../packages/safe-output
+      '@claude-code-aws/testkit':
+        specifier: workspace:*
+        version: link:../../packages/testkit
+
   plugins/aws-deploy:
     devDependencies:
       '@aws-sdk/client-cloudformation':

@@ -73,3 +73,13 @@ This file is updated by the pull request that changes a capability. The per-plug
 | `incident-investigator` agent and two evals                                  | implemented + unverified (evals not run)                   |
 | X-Ray traces, Step Functions history, API Gateway and DynamoDB telemetry     | not yet implemented                                        |
 | Powertools guidance, SLO and error-budget reports, opt-in monitor            | not yet implemented                                        |
+
+## aws-cost
+
+| Capability                                                                     | Status                                                     |
+| ------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `estimate` for seven services with tiers, assumptions, exclusions, sensitivity | implemented + tested (golden calculations checked by hand) |
+| `compare`: Lambda memory, architecture, API type                               | implemented + tested                                       |
+| Price snapshot (us-east-1, from the public Price List)                         | implemented + tested (dated snapshot)                      |
+| `analyze` (Cost Explorer), `optimize`, `budgets`, cost-analyst agent           | not yet implemented                                        |
+| Other regions, Express workflows, DynamoDB provisioned, S3, EventBridge        | not yet implemented                                        |
