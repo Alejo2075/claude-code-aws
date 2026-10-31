@@ -1,0 +1,21 @@
+{
+  "name": "aws-diagrams",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Generate, validate, update, and export architecture diagrams as editable Mermaid from CDK output, plans, or inventories, marking what is intended, declared, deployed, observed, or inferred.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/architecture-graph": "workspace:*",
+    "@claude-code-aws/context-contract": "workspace:*",
+    "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/safe-output": "workspace:*",
+    "@claude-code-aws/template-analysis": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*",
+    "@claude-code-aws/tool-runner": "workspace:*"
+  }
+}

@@ -1,11 +1,13 @@
 ---
 name: diagram
-description: Draw a Mermaid diagram of a synthesized CDK app or CloudFormation template, with links the template declares drawn solid and links inferred from permissions or environment variables drawn dotted. Use when the user asks for an architecture diagram or how the parts of a stack connect.
+description: DEPRECATED, prefer /aws-diagrams:from-cdk (same engine, more diagram types, export). Draw a Mermaid diagram of a synthesized CDK app or CloudFormation template, with links the template declares drawn solid and links inferred from permissions or environment variables drawn dotted. Use when the user asks for an architecture diagram or how the parts of a stack connect.
 argument-hint: "[path to cdk.out or template] [--stack <name>]"
 allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/cli.mjs diagram *)
 ---
 
-# Architecture diagram
+# Architecture diagram (deprecated)
+
+Diagram generation moved to the `aws-diagrams` plugin. This skill keeps working with the same engine so nothing breaks; say so and suggest `/aws-diagrams:from-cdk` when that plugin is installed.
 
 ## Side effects
 

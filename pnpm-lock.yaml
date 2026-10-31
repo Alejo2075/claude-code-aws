@@ -51,6 +51,18 @@ importers:
         specifier: 5.0.5
         version: 5.0.5(@types/node@22.20.5)(@vitest/coverage-v8@5.0.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))
 
+  packages/architecture-graph:
+    devDependencies:
+      '@claude-code-aws/report-contract':
+        specifier: workspace:*
+        version: link:../report-contract
+      '@claude-code-aws/safe-output':
+        specifier: workspace:*
+        version: link:../safe-output
+      '@claude-code-aws/template-analysis':
+        specifier: workspace:*
+        version: link:../template-analysis
+
   packages/aws-client:
     devDependencies:
       '@aws-sdk/client-sts':
@@ -91,6 +103,9 @@ importers:
 
   plugins/aws-architect:
     devDependencies:
+      '@claude-code-aws/architecture-graph':
+        specifier: workspace:*
+        version: link:../../packages/architecture-graph
       '@claude-code-aws/context-contract':
         specifier: workspace:*
         version: link:../../packages/context-contract
@@ -145,6 +160,30 @@ importers:
       '@claude-code-aws/aws-client':
         specifier: workspace:*
         version: link:../../packages/aws-client
+      '@claude-code-aws/context-contract':
+        specifier: workspace:*
+        version: link:../../packages/context-contract
+      '@claude-code-aws/report-contract':
+        specifier: workspace:*
+        version: link:../../packages/report-contract
+      '@claude-code-aws/safe-output':
+        specifier: workspace:*
+        version: link:../../packages/safe-output
+      '@claude-code-aws/template-analysis':
+        specifier: workspace:*
+        version: link:../../packages/template-analysis
+      '@claude-code-aws/testkit':
+        specifier: workspace:*
+        version: link:../../packages/testkit
+      '@claude-code-aws/tool-runner':
+        specifier: workspace:*
+        version: link:../../packages/tool-runner
+
+  plugins/aws-diagrams:
+    devDependencies:
+      '@claude-code-aws/architecture-graph':
+        specifier: workspace:*
+        version: link:../../packages/architecture-graph
       '@claude-code-aws/context-contract':
         specifier: workspace:*
         version: link:../../packages/context-contract
