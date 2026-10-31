@@ -1,0 +1,14 @@
+{
+  "name": "aws-database",
+  "version": "0.0.0",
+  "description": "Design DynamoDB key schemas from access patterns, plan queries and cost units, plan key-schema migrations, and inspect DynamoDB and Aurora definitions in synthesized CDK output. No rows are read or written.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-database#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "dynamodb", "aurora", "database"]
+}

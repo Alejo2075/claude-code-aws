@@ -1,0 +1,19 @@
+{
+  "name": "aws-auth",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Inspect Cognito user pools and app clients in synthesized CDK output, check decoded token claims against what an API expects, and recommend sign-in flows by application type. Tokens are never read or printed; no user is created.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/plugin-kit": "workspace:*",
+    "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/safe-output": "workspace:*",
+    "@claude-code-aws/template-analysis": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*"
+  }
+}
