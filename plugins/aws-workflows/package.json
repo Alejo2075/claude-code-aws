@@ -1,0 +1,20 @@
+{
+  "name": "aws-workflows",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Validate Step Functions state machine definitions (Amazon States Language), read them out of synthesized CDK output, walk them logically against sample input, and summarize an execution history you supply. Nothing is started.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/architecture-graph": "workspace:*",
+    "@claude-code-aws/plugin-kit": "workspace:*",
+    "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/safe-output": "workspace:*",
+    "@claude-code-aws/template-analysis": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*"
+  }
+}

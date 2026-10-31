@@ -1,0 +1,14 @@
+{
+  "name": "aws-events",
+  "version": "0.0.0",
+  "description": "Inspect EventBridge buses, rules, targets, and Scheduler schedules in synthesized CDK output; try an event pattern against a sample event; check schedule expressions and their next run times across time zones. No AWS calls, no events published.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-events#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "eventbridge", "scheduler", "events"]
+}

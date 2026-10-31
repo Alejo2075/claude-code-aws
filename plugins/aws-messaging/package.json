@@ -1,0 +1,19 @@
+{
+  "name": "aws-messaging",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Inspect SQS queues and SNS topics in synthesized CDK output, check dead-letter and FIFO design, try SNS filter policies against sample messages, and diagnose a backlog from numbers you supply. No messages are sent, received, or deleted.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/content-filter": "workspace:*",
+    "@claude-code-aws/plugin-kit": "workspace:*",
+    "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/template-analysis": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*"
+  }
+}

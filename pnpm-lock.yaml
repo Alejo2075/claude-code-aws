@@ -72,6 +72,8 @@ importers:
         specifier: workspace:*
         version: link:../context-contract
 
+  packages/content-filter: {}
+
   packages/context-contract: {}
 
   packages/lens-questions:
@@ -79,6 +81,24 @@ importers:
       '@claude-code-aws/template-analysis':
         specifier: workspace:*
         version: link:../template-analysis
+
+  packages/plugin-kit:
+    devDependencies:
+      '@claude-code-aws/context-contract':
+        specifier: workspace:*
+        version: link:../context-contract
+      '@claude-code-aws/report-contract':
+        specifier: workspace:*
+        version: link:../report-contract
+      '@claude-code-aws/safe-output':
+        specifier: workspace:*
+        version: link:../safe-output
+      '@claude-code-aws/template-analysis':
+        specifier: workspace:*
+        version: link:../template-analysis
+      '@claude-code-aws/tool-runner':
+        specifier: workspace:*
+        version: link:../tool-runner
 
   packages/report-contract:
     devDependencies:
@@ -212,6 +232,27 @@ importers:
         specifier: workspace:*
         version: link:../../packages/tool-runner
 
+  plugins/aws-events:
+    devDependencies:
+      '@claude-code-aws/architecture-graph':
+        specifier: workspace:*
+        version: link:../../packages/architecture-graph
+      '@claude-code-aws/content-filter':
+        specifier: workspace:*
+        version: link:../../packages/content-filter
+      '@claude-code-aws/plugin-kit':
+        specifier: workspace:*
+        version: link:../../packages/plugin-kit
+      '@claude-code-aws/report-contract':
+        specifier: workspace:*
+        version: link:../../packages/report-contract
+      '@claude-code-aws/template-analysis':
+        specifier: workspace:*
+        version: link:../../packages/template-analysis
+      '@claude-code-aws/testkit':
+        specifier: workspace:*
+        version: link:../../packages/testkit
+
   plugins/aws-explorer:
     devDependencies:
       '@aws-sdk/client-cloudcontrol':
@@ -274,6 +315,24 @@ importers:
       '@claude-code-aws/tool-runner':
         specifier: workspace:*
         version: link:../../packages/tool-runner
+
+  plugins/aws-messaging:
+    devDependencies:
+      '@claude-code-aws/content-filter':
+        specifier: workspace:*
+        version: link:../../packages/content-filter
+      '@claude-code-aws/plugin-kit':
+        specifier: workspace:*
+        version: link:../../packages/plugin-kit
+      '@claude-code-aws/report-contract':
+        specifier: workspace:*
+        version: link:../../packages/report-contract
+      '@claude-code-aws/template-analysis':
+        specifier: workspace:*
+        version: link:../../packages/template-analysis
+      '@claude-code-aws/testkit':
+        specifier: workspace:*
+        version: link:../../packages/testkit
 
   plugins/aws-observability:
     devDependencies:
@@ -356,6 +415,36 @@ importers:
         specifier: workspace:*
         version: link:../../packages/tool-runner
 
+  plugins/aws-storage:
+    devDependencies:
+      '@claude-code-aws/plugin-kit':
+        specifier: workspace:*
+        version: link:../../packages/plugin-kit
+      '@claude-code-aws/report-contract':
+        specifier: workspace:*
+        version: link:../../packages/report-contract
+      '@claude-code-aws/template-analysis':
+        specifier: workspace:*
+        version: link:../../packages/template-analysis
+      '@claude-code-aws/testkit':
+        specifier: workspace:*
+        version: link:../../packages/testkit
+
+  plugins/aws-streaming:
+    devDependencies:
+      '@claude-code-aws/plugin-kit':
+        specifier: workspace:*
+        version: link:../../packages/plugin-kit
+      '@claude-code-aws/report-contract':
+        specifier: workspace:*
+        version: link:../../packages/report-contract
+      '@claude-code-aws/template-analysis':
+        specifier: workspace:*
+        version: link:../../packages/template-analysis
+      '@claude-code-aws/testkit':
+        specifier: workspace:*
+        version: link:../../packages/testkit
+
   plugins/aws-testing:
     devDependencies:
       '@claude-code-aws/context-contract':
@@ -409,6 +498,27 @@ importers:
       '@claude-code-aws/tool-runner':
         specifier: workspace:*
         version: link:../../packages/tool-runner
+
+  plugins/aws-workflows:
+    devDependencies:
+      '@claude-code-aws/architecture-graph':
+        specifier: workspace:*
+        version: link:../../packages/architecture-graph
+      '@claude-code-aws/plugin-kit':
+        specifier: workspace:*
+        version: link:../../packages/plugin-kit
+      '@claude-code-aws/report-contract':
+        specifier: workspace:*
+        version: link:../../packages/report-contract
+      '@claude-code-aws/safe-output':
+        specifier: workspace:*
+        version: link:../../packages/safe-output
+      '@claude-code-aws/template-analysis':
+        specifier: workspace:*
+        version: link:../../packages/template-analysis
+      '@claude-code-aws/testkit':
+        specifier: workspace:*
+        version: link:../../packages/testkit
 
 packages:
 

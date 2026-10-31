@@ -126,3 +126,58 @@ This file is updated by the pull request that changes a capability. The per-plug
 | `sandbox-plan`, `cleanup-plan`, `promote` (plans only)         | implemented + tested                                        |
 | Skill evals                                                    | implemented + unverified (evals not run)                    |
 | Running on AWS; models for APIs, workflows, Bedrock latency    | not yet implemented                                         |
+
+## aws-events
+
+| Capability                                                   | Status                                                                                                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `inspect` rules (8 rule ids) over declared resources         | implemented + tested                                                                                                                       |
+| `test`: pattern matcher (10 operators) against sample events | implemented + tested (operators from the EventBridge documentation; edge cases such as arrays of objects not verified against the service) |
+| `schedule`: at, rate, cron with time zones and DST notes     | implemented + tested (hand-checked New York cases); service behavior in DST gaps unverified                                                |
+| `envelope`, `graph`                                          | implemented + tested                                                                                                                       |
+| cron `W`, `#`, and offset `L` syntax                         | not yet implemented (reported as unsupported, never guessed)                                                                               |
+| Live inspection through the AWS SDK                          | not yet implemented                                                                                                                        |
+
+## aws-messaging
+
+| Capability                                                                | Status                                                                            |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `inspect` rules (11 rule ids) over declared queues, topics, subscriptions | implemented + tested                                                              |
+| `filter-test`: SNS filter policy matcher for attributes and body          | implemented + tested (local approximation; SNS operator differences not verified) |
+| `fifo-check`: group and deduplication id rules                            | implemented + tested (group id limit from the SQS quotas page)                    |
+| `diagnose`: backlog hypotheses from supplied numbers                      | implemented + tested (rules of thumb, not a diagnosis)                            |
+| Receiving, previewing, or redriving messages                              | not implemented by design (needs explicit approval and a live adapter)            |
+| Live inspection through the AWS SDK                                       | not yet implemented                                                               |
+
+## aws-streaming
+
+| Capability                                                                      | Status                                                              |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `inspect` rules (7 rule ids) over declared streams, consumers, delivery streams | implemented + tested                                                |
+| `shards`: provisioned-mode estimate from the quota page limits                  | implemented + tested (hand-checked cases)                           |
+| `partition-check`: MD5 placement on equal shard ranges, hot-key warnings        | implemented + tested (assumes a stream that has not been resharded) |
+| `record-check`, `diagnose`                                                      | implemented + tested                                                |
+| Reading metrics, resharding, starting load tests                                | not implemented by design                                           |
+| Live inspection through the AWS SDK                                             | not yet implemented                                                 |
+
+## aws-storage
+
+| Capability                                                                      | Status                                                                                    |
+| ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `inspect` rules (8 rule ids) over declared buckets, file systems, access points | implemented + tested                                                                      |
+| `upload-plan` within the S3 multipart limits                                    | implemented + tested (limits read from the S3 multipart upload limits page on 2026-10-31) |
+| `key-check`, `lifecycle`, `access`                                              | implemented + tested                                                                      |
+| Reading, copying, or deleting objects; lifecycle cost modeling                  | not implemented by design / not yet implemented                                           |
+| Live inspection through the AWS SDK                                             | not yet implemented                                                                       |
+
+## aws-workflows
+
+| Capability                                                    | Status                                                                                                 |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `validate`: 20+ structural and flow checks, Express limits    | implemented + tested                                                                                   |
+| `inspect` over CDK output with placeholders for references    | implemented + tested                                                                                   |
+| `graph` to Mermaid and ArchitectureGraph                      | implemented + tested                                                                                   |
+| `simulate`: Choice, Pass, Wait, Succeed, Fail, mocked Task    | implemented + tested (a subset; Parallel, Map, retries, and input/output processing are not simulated) |
+| `debug` from an exported history                              | implemented + tested (hand-built history; real exports not exercised)                                  |
+| Starting, stopping, or changing executions and state machines | not implemented by design                                                                              |
+| Live inspection through the AWS SDK                           | not yet implemented                                                                                    |

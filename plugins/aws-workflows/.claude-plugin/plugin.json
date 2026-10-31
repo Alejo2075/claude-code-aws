@@ -1,0 +1,14 @@
+{
+  "name": "aws-workflows",
+  "version": "0.0.0",
+  "description": "Validate Step Functions state machine definitions (Amazon States Language), read them out of synthesized CDK output, walk them logically against sample input, and summarize an execution history you supply. Nothing is started.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-workflows#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "step-functions", "asl", "workflows"]
+}

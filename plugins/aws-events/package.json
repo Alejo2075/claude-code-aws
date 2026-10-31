@@ -1,0 +1,20 @@
+{
+  "name": "aws-events",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Inspect EventBridge buses, rules, targets, and Scheduler schedules in synthesized CDK output; try an event pattern against a sample event; check schedule expressions and their next run times across time zones. No AWS calls, no events published.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/architecture-graph": "workspace:*",
+    "@claude-code-aws/content-filter": "workspace:*",
+    "@claude-code-aws/plugin-kit": "workspace:*",
+    "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/template-analysis": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "aws-messaging",
+  "version": "0.0.0",
+  "description": "Inspect SQS queues and SNS topics in synthesized CDK output, check dead-letter and FIFO design, try SNS filter policies against sample messages, and diagnose a backlog from numbers you supply. No messages are sent, received, or deleted.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-messaging#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "sqs", "sns", "messaging", "dlq"]
+}
