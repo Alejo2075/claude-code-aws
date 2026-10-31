@@ -10,14 +10,14 @@ import { parseTemplate } from "@claude-code-aws/template-analysis";
 import { runRules } from "@claude-code-aws/template-analysis";
 import { safeText } from "@claude-code-aws/safe-output";
 
-import { compareStacks, diffFindings, diffReport } from "./compare.js";
+import { compareStacks, diffFindings, diffReport } from "@claude-code-aws/template-analysis";
 import { classifyAwsFailure } from "./failures.js";
 import { type DeployedApi } from "./deployed.js";
 import { inspectStacks, renderInspect } from "./inspect.js";
 import { type LoadedStack, loadStacks } from "@claude-code-aws/template-analysis/node";
 import { IAC_QUALITY_RULES } from "./rules.js";
 import { PATTERNS, planScaffold, writeScaffold } from "./scaffold.js";
-import { type Runner, synth } from "./synth.js";
+import { type Runner, synth } from "@claude-code-aws/template-analysis/node";
 
 export const USAGE = `Usage: aws-infrastructure <command> [options]
 

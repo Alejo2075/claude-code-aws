@@ -15,6 +15,7 @@
   "devDependencies": {
     "@claude-code-aws/context-contract": "workspace:*",
     "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/safe-output": "workspace:*",
     "@claude-code-aws/tool-runner": "workspace:*"
   }
 }

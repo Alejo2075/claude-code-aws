@@ -7,9 +7,10 @@ import {
   type TemplateChange,
   type TemplateDiff,
 } from "@claude-code-aws/report-contract";
-import { diffTemplates, summarizeChanges, type Template } from "@claude-code-aws/template-analysis";
+import { diffTemplates, summarizeChanges } from "./diff.js";
+import type { Template } from "./types.js";
 
-import type { LoadedStack } from "@claude-code-aws/template-analysis/node";
+import type { LoadedStack } from "./node.js";
 
 const PLUGIN = "aws-infrastructure";
 const DOC_REPLACE =
@@ -23,6 +24,8 @@ export interface CompareInput {
   baselineLabel: string;
   candidateLabel: string;
   context: ExecutionContext;
+  /** The plugin named in the result. Defaults to aws-infrastructure. */
+  plugin?: string;
   now?: Date;
 }
 
@@ -68,7 +71,7 @@ export function compareStacks(input: CompareInput): { diff: TemplateDiff; notes:
   }
   const diff: TemplateDiff = {
     schemaVersion: "1",
-    plugin: PLUGIN,
+    plugin: input.plugin ?? PLUGIN,
     generatedAt: (input.now ?? new Date()).toISOString(),
     context: input.context,
     method: "template",
@@ -82,12 +85,15 @@ export function compareStacks(input: CompareInput): { diff: TemplateDiff; notes:
 }
 
 /** Findings for the changes that deserve a decision before deploying. */
-export function diffFindings(changes: readonly TemplateChange[]): Finding[] {
+export function diffFindings(
+  changes: readonly TemplateChange[],
+  plugin: string = PLUGIN,
+): Finding[] {
   const findings: Finding[] = [];
   for (const change of changes) {
     const subject = change.logicalId;
     const base = {
-      plugin: PLUGIN,
+      plugin,
       source: "static" as const,
       status: "confirmed" as const,
       affectedResources: [subject],
@@ -206,7 +212,7 @@ export function diffReport(diff: TemplateDiff, findings: Finding[]): AnalysisRep
     (finding) => finding.severity === "high" || finding.severity === "critical",
   ).length;
   return buildReport({
-    plugin: PLUGIN,
+    plugin: diff.plugin,
     context: diff.context,
     mode: "local",
     summary: `${summary.create} to create, ${summary.update} to update, ${summary.replace} to replace, ${summary.possibleReplace} possibly replaced, ${summary.delete} to delete. ${risky === 0 ? "No high-risk change found." : `${risky} high-risk finding(s).`}`,

@@ -52,3 +52,14 @@ This file is updated by the pull request that changes a capability. The per-plug
 | `generate cdk-assertions` and `generate handler`                   | implemented + tested                                      |
 | `coverage` summary                                                 | implemented + tested                                      |
 | `integration`, affected-tests hook, `load`, property-based cases   | not yet implemented                                       |
+
+## aws-deploy
+
+| Capability                                                           | Status                                                    |
+| -------------------------------------------------------------------- | --------------------------------------------------------- |
+| `preflight` / `plan` with identity, environment, bootstrap, diff     | implemented + tested (fake CloudFormation)                |
+| Plan binding (hashes, account, region, expiry) and the six gates     | implemented + tested                                      |
+| `deploy` from the reviewed `cdk.out`, never hotswap                  | implemented + unverified (fake `cdk`; no real deployment) |
+| `status`, `rollback` advice                                          | implemented + tested                                      |
+| `pipeline` (OIDC, bootstrap-role-only policy, protected environment) | implemented + tested (generated text; never run)          |
+| Change-set plans, rollback execution, CodeDeploy traffic shifting    | not yet implemented                                       |

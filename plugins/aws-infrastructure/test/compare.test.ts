@@ -1,7 +1,7 @@
 import { LOCAL_CONTEXT } from "@claude-code-aws/report-contract";
 import { describe, expect, it } from "vitest";
 
-import { compareStacks, diffFindings, diffReport } from "../src/lib/compare.js";
+import { compareStacks, diffFindings, diffReport } from "@claude-code-aws/template-analysis";
 import { template } from "./helpers.js";
 
 const compare = (before: string, after: string) => {

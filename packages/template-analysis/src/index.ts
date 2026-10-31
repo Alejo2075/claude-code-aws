@@ -1,4 +1,5 @@
 export * from "./catalog.js";
+export * from "./compare.js";
 export * from "./diff.js";
 export * from "./graph.js";
 export * from "./iam.js";

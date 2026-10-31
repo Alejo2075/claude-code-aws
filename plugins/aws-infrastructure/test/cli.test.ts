@@ -14,7 +14,7 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { runCli } from "../src/lib/cli.js";
-import { diagnose, synth } from "../src/lib/synth.js";
+import { diagnose, synth } from "@claude-code-aws/template-analysis/node";
 import { PATTERNS, planScaffold, writeScaffold } from "../src/lib/scaffold.js";
 import { deps, FIXTURES, fakeDeployed, TEMPLATES } from "./helpers.js";
 
