@@ -1,0 +1,14 @@
+{
+  "name": "aws-diagrams",
+  "version": "0.0.0",
+  "description": "Generate, validate, update, and export architecture diagrams as editable Mermaid from CDK output, plans, or inventories, marking what is intended, declared, deployed, observed, or inferred.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-diagrams#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "diagram", "mermaid", "architecture"]
+}

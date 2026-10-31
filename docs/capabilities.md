@@ -94,3 +94,15 @@ This file is updated by the pull request that changes a capability. The per-plug
 | `intake`, `plan init` / `check`, `adr` (write never overwrites) | implemented + tested                                          |
 | `serverless-architect` agent and two evals                      | implemented + unverified (evals not run)                      |
 | `evolve`, VPC and Cognito diagrams, deployed-state diagrams     | not yet implemented                                           |
+
+## aws-diagrams
+
+| Capability                                                   | Status                                                          |
+| ------------------------------------------------------------ | --------------------------------------------------------------- |
+| `from-cdk` with declared and inferred links, stacks as boxes | implemented + tested (real CDK fixtures)                        |
+| `generate` from plan, inventory, graph; seven view types     | implemented + tested                                            |
+| State graph from an ASL definition                           | implemented + tested                                            |
+| `update`, `diff`, `validate`, stable ids, label redaction    | implemented + tested                                            |
+| `export`: Mermaid source                                     | implemented + tested                                            |
+| `export`: SVG/PNG through the Mermaid CLI                    | implemented + unverified (fake renderer; real `mmdc` never run) |
+| Live inventory reads, rendering in `aws-ui`                  | not yet implemented                                             |

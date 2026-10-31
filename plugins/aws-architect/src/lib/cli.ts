@@ -5,7 +5,7 @@ import { loadStacks } from "@claude-code-aws/template-analysis/node";
 import { isInside } from "@claude-code-aws/tool-runner";
 
 import { type AdrInput, renderAdr, writeAdr } from "./adr.js";
-import { architectureOf, toMermaid } from "./diagram.js";
+import { architectureOf, DIAGRAM_DEPRECATION, toMermaid } from "./diagram.js";
 import { getTopic, renderTopic, renderTopicList, TOPIC_NAMES } from "./decisions.js";
 import { checkIntake, renderIntake } from "./intake.js";
 import { checkPlan, initPlan, renderPlan } from "./plan.js";
@@ -13,7 +13,7 @@ import { review } from "./review.js";
 
 export const USAGE = `Usage: aws-architect <command> [options]
 
-  diagram [path] [--stack name]        Mermaid diagram of cdk.out (default) or a template; declared and inferred links are marked
+  diagram [path] [--stack name]        DEPRECATED, use aws-diagrams: Mermaid diagram of cdk.out or a template
   review [path]                        Well-Architected style questions a template can answer, with evidence
   decisions [topic]                    Decision tables with sources (${TOPIC_NAMES.join(", ")})
   intake --requirements '<json>'       Which requirement questions are still open
@@ -121,9 +121,17 @@ function run(argv: readonly string[], deps: CliDeps): CliResult {
           (part) =>
             `Stack ${part.stack}\n\n\`\`\`mermaid\n${toMermaid(part.architecture)}\n\`\`\`\n\nSolid arrows are written in the template. Dotted arrows are inferred from permissions or environment variables: they show a function can reach a resource, not that it does.`,
         )
-        .concat(notes)
+        .concat(notes, DIAGRAM_DEPRECATION)
         .join("\n\n");
-      return print({ schemaVersion: "1", stacks: parts, problems: loaded.problems }, text);
+      return print(
+        {
+          schemaVersion: "1",
+          deprecated: DIAGRAM_DEPRECATION,
+          stacks: parts,
+          problems: loaded.problems,
+        },
+        text,
+      );
     }
     const reviews = stacks.map((stack) => ({ stack: stack.name, ...review(stack.template) }));
     const text = reviews
