@@ -1,6 +1,6 @@
 {
   "name": "aws-prototyping",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Plan, run locally, compare, and promote bounded serverless proof-of-concepts: a hypothesis, a success metric, a budget, a cleanup plan, and results labeled simulated or measured. Never deploys or runs a second rollout engine.",
   "author": {
     "name": "Alejandro Santana",

@@ -1,6 +1,6 @@
 {
   "name": "aws-storage",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Inspect S3 buckets and EFS file systems in synthesized CDK output, validate object keys, plan uploads (single or multipart) and lifecycle rules, and review bucket policies. No objects are read, written, or deleted.",
   "author": {
     "name": "Alejandro Santana",

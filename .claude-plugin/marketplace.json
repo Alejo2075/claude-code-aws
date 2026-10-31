@@ -8,17 +8,329 @@
   },
   "plugins": [
     {
+      "name": "aws-ai",
+      "description": "Plan and review Amazon Bedrock applications locally: inspect Bedrock resources in synthesized CDK output, estimate token cost from prices you supply, chunk documents for retrieval, scan prompts for sensitive data, review RAG settings and agent tool permissions, and scaffold an evaluation harness. No model is called.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-ai",
+        "ref": "aws-ai--v0.1.0"
+      },
+      "keywords": ["aws", "bedrock", "agentcore", "rag", "ai"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-ai#readme"
+    },
+    {
+      "name": "aws-api",
+      "description": "Inspect API Gateway APIs in synthesized CDK output, validate OpenAPI contracts, compare a contract with the declared routes, and prepare (never send) test requests with masked credentials. No request is made.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-api",
+        "ref": "aws-api--v0.1.0"
+      },
+      "keywords": ["aws", "api-gateway", "openapi", "apis"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-api#readme"
+    },
+    {
+      "name": "aws-architect",
+      "description": "Turn requirements or an existing CDK app into architecture artifacts: Mermaid diagrams that separate declared from inferred links, a Well-Architected style review against the template, decision tables with sources, ADRs, and a plan other plugins can read.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-architect",
+        "ref": "aws-architect--v0.1.0"
+      },
+      "keywords": ["aws", "architecture", "diagram", "adr", "well-architected", "serverless"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-architect#readme"
+    },
+    {
+      "name": "aws-auth",
+      "description": "Inspect Cognito user pools and app clients in synthesized CDK output, check decoded token claims against what an API expects, and recommend sign-in flows by application type. Tokens are never read or printed; no user is created.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-auth",
+        "ref": "aws-auth--v0.1.0"
+      },
+      "keywords": ["aws", "cognito", "auth", "oauth", "jwt"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-auth#readme"
+    },
+    {
+      "name": "aws-config",
+      "description": "Validate AppConfig feature flag documents and JSON configuration against a schema, plan a gradual rollout from a deployment strategy, and inspect AppConfig and Parameter Store resources in synthesized CDK output. Nothing is deployed and no value is changed.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-config",
+        "ref": "aws-config--v0.1.0"
+      },
+      "keywords": ["aws", "appconfig", "ssm", "feature-flags", "configuration"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-config#readme"
+    },
+    {
+      "name": "aws-containers",
+      "description": "Inspect ECS Fargate services, task definitions, and ECR repositories in synthesized CDK output, validate Fargate CPU and memory, review Dockerfiles, scaffold a hardened Dockerfile, and map stopped-task reasons to likely causes. No image is built, pushed, or run.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-containers",
+        "ref": "aws-containers--v0.1.0"
+      },
+      "keywords": ["aws", "ecs", "fargate", "ecr", "containers", "docker"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-containers#readme"
+    },
+    {
       "name": "aws-context",
       "description": "Verified AWS account, principal, region, and environment for the current project, with a status skill and a session-start check. Read-only: it never changes AWS resources.",
       "source": {
         "source": "git-subdir",
         "url": "Alejo2075/claude-code-aws",
         "path": "plugins/aws-context",
-        "ref": "aws-context--v0.2.0"
+        "ref": "aws-context--v0.2.1"
       },
       "keywords": ["aws", "identity", "sts", "context"],
       "license": "MIT",
       "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-context#readme"
+    },
+    {
+      "name": "aws-cost",
+      "description": "Estimate and compare the monthly cost of serverless workloads from stated inputs and dated AWS list prices, clearly separate from billed amounts. Makes no AWS calls.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-cost",
+        "ref": "aws-cost--v0.1.0"
+      },
+      "keywords": ["aws", "cost", "estimate", "lambda", "pricing", "serverless"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-cost#readme"
+    },
+    {
+      "name": "aws-database",
+      "description": "Design DynamoDB key schemas from access patterns, plan queries and cost units, plan key-schema migrations, and inspect DynamoDB and Aurora definitions in synthesized CDK output. No rows are read or written.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-database",
+        "ref": "aws-database--v0.1.0"
+      },
+      "keywords": ["aws", "dynamodb", "aurora", "database"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-database#readme"
+    },
+    {
+      "name": "aws-deploy",
+      "description": "Plan and run CDK deployments safely: identity checked, templates hashed, destructive and permission-broadening changes acknowledged, production confirmed by name. Never deploys without an explicit plan.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-deploy",
+        "ref": "aws-deploy--v0.1.0"
+      },
+      "keywords": ["aws", "deploy", "cdk", "cloudformation", "safety", "pipeline"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-deploy#readme"
+    },
+    {
+      "name": "aws-diagrams",
+      "description": "Generate, validate, update, and export architecture diagrams as editable Mermaid from CDK output, plans, or inventories, marking what is intended, declared, deployed, observed, or inferred.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-diagrams",
+        "ref": "aws-diagrams--v0.1.0"
+      },
+      "keywords": ["aws", "diagram", "mermaid", "architecture"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-diagrams#readme"
+    },
+    {
+      "name": "aws-edge",
+      "description": "Inspect CloudFront distributions in synthesized CDK output, lint CloudFront Function code against the runtime's restrictions, check Lambda@Edge constraints, review cache policies, and map HTTP status codes to likely causes. No distribution is changed and no invalidation is created.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-edge",
+        "ref": "aws-edge--v0.1.0"
+      },
+      "keywords": ["aws", "cloudfront", "cdn", "edge"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-edge#readme"
+    },
+    {
+      "name": "aws-email",
+      "description": "Inspect SES identities, configuration sets, and receipt rules in synthesized CDK output, validate email templates against sample data, dry-run a recipient list without sending, and judge bounce and complaint rates. No email is sent.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-email",
+        "ref": "aws-email--v0.1.0"
+      },
+      "keywords": ["aws", "ses", "email", "deliverability"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-email#readme"
+    },
+    {
+      "name": "aws-events",
+      "description": "Inspect EventBridge buses, rules, targets, and Scheduler schedules in synthesized CDK output; try an event pattern against a sample event; check schedule expressions and their next run times across time zones. No AWS calls, no events published.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-events",
+        "ref": "aws-events--v0.1.0"
+      },
+      "keywords": ["aws", "eventbridge", "scheduler", "events"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-events#readme"
+    },
+    {
+      "name": "aws-explorer",
+      "description": "Browse CloudFormation and CDK stacks, their resources, events, and resource properties in one AWS account and region, read-only.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-explorer",
+        "ref": "aws-explorer--v0.1.0"
+      },
+      "keywords": ["aws", "cloudformation", "cdk", "cloud-control", "inventory", "read-only"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-explorer#readme"
+    },
+    {
+      "name": "aws-guard",
+      "description": "Asks for approval before AWS-changing commands, especially in production or with an unverified identity. A guardrail, not an enforcement boundary.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-guard",
+        "ref": "aws-guard--v0.1.0"
+      },
+      "keywords": ["aws", "guardrail", "approval", "production", "safety"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-guard#readme"
+    },
+    {
+      "name": "aws-infrastructure",
+      "description": "Inspect, synthesize, diff, review, and scaffold CDK TypeScript serverless infrastructure from synthesized CloudFormation templates, without deploying anything.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-infrastructure",
+        "ref": "aws-infrastructure--v0.1.0"
+      },
+      "keywords": ["aws", "cdk", "cloudformation", "infrastructure", "serverless", "diff"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-infrastructure#readme"
+    },
+    {
+      "name": "aws-lambda",
+      "description": "Inspect Lambda functions in synthesized CDK output, scaffold TypeScript handlers with validation and idempotency hooks, check configuration against Lambda's quotas, and prepare (never run) an invocation command. No function is invoked.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-lambda",
+        "ref": "aws-lambda--v0.1.0"
+      },
+      "keywords": ["aws", "lambda", "serverless", "functions"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-lambda#readme"
+    },
+    {
+      "name": "aws-messaging",
+      "description": "Inspect SQS queues and SNS topics in synthesized CDK output, check dead-letter and FIFO design, try SNS filter policies against sample messages, and diagnose a backlog from numbers you supply. No messages are sent, received, or deleted.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-messaging",
+        "ref": "aws-messaging--v0.1.0"
+      },
+      "keywords": ["aws", "sqs", "sns", "messaging", "dlq"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-messaging#readme"
+    },
+    {
+      "name": "aws-observability",
+      "description": "Read-only operational visibility for serverless apps: Lambda and queue health, bounded logs and metrics, alarms, and an evidence ledger for incident investigation. Never changes anything.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-observability",
+        "ref": "aws-observability--v0.1.0"
+      },
+      "keywords": ["aws", "observability", "cloudwatch", "lambda", "sqs", "incident", "read-only"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-observability#readme"
+    },
+    {
+      "name": "aws-prototyping",
+      "description": "Plan, run locally, compare, and promote bounded serverless proof-of-concepts: a hypothesis, a success metric, a budget, a cleanup plan, and results labeled simulated or measured. Never deploys or runs a second rollout engine.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-prototyping",
+        "ref": "aws-prototyping--v0.1.0"
+      },
+      "keywords": ["aws", "prototype", "poc", "experiment", "serverless"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-prototyping#readme"
+    },
+    {
+      "name": "aws-security",
+      "description": "Audit CDK templates and, read-only, the account for security problems: IAM, public exposure, API authorization, secrets, with evidence. Advisory only.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-security",
+        "ref": "aws-security--v0.1.0"
+      },
+      "keywords": ["aws", "security", "iam", "audit", "serverless", "read-only"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-security#readme"
+    },
+    {
+      "name": "aws-storage",
+      "description": "Inspect S3 buckets and EFS file systems in synthesized CDK output, validate object keys, plan uploads (single or multipart) and lifecycle rules, and review bucket policies. No objects are read, written, or deleted.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-storage",
+        "ref": "aws-storage--v0.1.0"
+      },
+      "keywords": ["aws", "s3", "efs", "storage"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-storage#readme"
+    },
+    {
+      "name": "aws-streaming",
+      "description": "Inspect Kinesis Data Streams and Amazon Data Firehose in synthesized CDK output, size shards from throughput, check where partition keys land, and validate delivery buffering. No records are written or read.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-streaming",
+        "ref": "aws-streaming--v0.1.0"
+      },
+      "keywords": ["aws", "kinesis", "firehose", "streaming"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-streaming#readme"
+    },
+    {
+      "name": "aws-testing",
+      "description": "Run, generate, and report tests for serverless apps: Lambda handlers, CDK assertions, and event fixtures for API Gateway, SQS, SNS, EventBridge, DynamoDB Streams, S3 and Step Functions. Never deploys.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-testing",
+        "ref": "aws-testing--v0.1.0"
+      },
+      "keywords": ["aws", "testing", "lambda", "cdk", "fixtures", "serverless"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-testing#readme"
     },
     {
       "name": "aws-ui",
@@ -32,6 +344,32 @@
       "keywords": ["aws", "context", "status-line", "mod"],
       "license": "MIT",
       "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-ui#readme"
+    },
+    {
+      "name": "aws-well-architected",
+      "description": "Review a serverless workload across the six Well-Architected pillars with the Serverless Lens in mind: separate verified evidence, self-reported answers, automated inferences, and missing evidence, and produce a prioritized improvement backlog. No scores and no certification.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-well-architected",
+        "ref": "aws-well-architected--v0.1.0"
+      },
+      "keywords": ["aws", "well-architected", "serverless", "review"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-well-architected#readme"
+    },
+    {
+      "name": "aws-workflows",
+      "description": "Validate Step Functions state machine definitions (Amazon States Language), read them out of synthesized CDK output, walk them logically against sample input, and summarize an execution history you supply. Nothing is started.",
+      "source": {
+        "source": "git-subdir",
+        "url": "Alejo2075/claude-code-aws",
+        "path": "plugins/aws-workflows",
+        "ref": "aws-workflows--v0.1.0"
+      },
+      "keywords": ["aws", "step-functions", "asl", "workflows"],
+      "license": "MIT",
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-workflows#readme"
     }
   ]
 }

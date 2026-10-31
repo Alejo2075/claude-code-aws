@@ -1,6 +1,6 @@
 {
   "name": "aws-events",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Inspect EventBridge buses, rules, targets, and Scheduler schedules in synthesized CDK output; try an event pattern against a sample event; check schedule expressions and their next run times across time zones. No AWS calls, no events published.",
   "license": "MIT",

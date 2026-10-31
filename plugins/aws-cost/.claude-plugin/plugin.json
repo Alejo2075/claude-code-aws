@@ -1,6 +1,6 @@
 {
   "name": "aws-cost",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Estimate and compare the monthly cost of serverless workloads from stated inputs and dated AWS list prices, clearly separate from billed amounts. Makes no AWS calls.",
   "author": {
     "name": "Alejandro Santana",

@@ -1,6 +1,6 @@
 {
   "name": "aws-architect",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Turn requirements or an existing CDK app into architecture artifacts: Mermaid diagrams that separate declared from inferred links, a Well-Architected style review against the template, decision tables with sources, ADRs, and a plan other plugins can read.",
   "license": "MIT",
