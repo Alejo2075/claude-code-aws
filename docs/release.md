@@ -39,15 +39,17 @@ The publish step is idempotent. It releases only catalog plugins whose tag does 
 
 ### Opening the Version PR
 
-By default GitHub forbids Actions from creating pull requests. The repository setting **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests** is off here, so the Release workflow pushes the `changeset-release/main` branch and then fails with `GitHub Actions is not permitted to create or approve pull requests`. Either set `RELEASE_PR_TOKEN` (below, recommended: it also fixes CI on the Version PR) or open the PR from that branch yourself:
+The Release workflow opens the Version PR itself, from `changeset-release/main`, when a changeset reaches `main`. This needs the repository setting **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests**, which is on for this repository (verified on 2026-10-30: PR #14 was opened by `github-actions` after a feature merge).
+
+If that setting is ever off, GitHub forbids Actions from creating pull requests: the workflow pushes the `changeset-release/main` branch and then fails with `GitHub Actions is not permitted to create or approve pull requests`. Turn the setting back on, set `RELEASE_PR_TOKEN` (below), or open the PR from that branch yourself:
 
 ```sh
-gh pr create --base main --head changeset-release/main --title "chore: version packages"
+gh pr create --base main --head changeset-release/main --title "chore: version plugins"
 ```
 
 ### CI on the Version PR
 
-Pull requests opened with the default `GITHUB_TOKEN` do not trigger other workflows, so the Version PR's required checks never start. Use one of these options:
+Pull requests opened with the default `GITHUB_TOKEN`, including the one the workflow opens, do not trigger other workflows, so the Version PR's required checks never start (PR #14 showed no checks). Use one of these options:
 
 - **Recommended:** create a fine-grained personal access token scoped to this repository with **Contents: read and write** and **Pull requests: read and write**. Save it as the repository secret `RELEASE_PR_TOKEN`. The workflow uses it automatically.
 - Or close and reopen the Version PR yourself, which triggers CI under your identity.
