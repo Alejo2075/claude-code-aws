@@ -83,3 +83,14 @@ This file is updated by the pull request that changes a capability. The per-plug
 | Price snapshot (us-east-1, from the public Price List)                         | implemented + tested (dated snapshot)                      |
 | `analyze` (Cost Explorer), `optimize`, `budgets`, cost-analyst agent           | not yet implemented                                        |
 | Other regions, Express workflows, DynamoDB provisioned, S3, EventBridge        | not yet implemented                                        |
+
+## aws-architect
+
+| Capability                                                      | Status                                                        |
+| --------------------------------------------------------------- | ------------------------------------------------------------- |
+| `diagram` with declared and inferred links                      | implemented + tested (real CDK fixtures)                      |
+| `review`: eleven template-answerable questions with evidence    | implemented + tested                                          |
+| `decisions`: six tables with sources                            | implemented + unverified (summaries not checked line by line) |
+| `intake`, `plan init` / `check`, `adr` (write never overwrites) | implemented + tested                                          |
+| `serverless-architect` agent and two evals                      | implemented + unverified (evals not run)                      |
+| `evolve`, VPC and Cognito diagrams, deployed-state diagrams     | not yet implemented                                           |
