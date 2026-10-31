@@ -1,3 +1,4 @@
+// Node-only: reading templates from disk. Imported as `@claude-code-aws/template-analysis/node`.
 import { readdirSync, statSync } from "node:fs";
 import { basename, isAbsolute, join, resolve } from "node:path";
 

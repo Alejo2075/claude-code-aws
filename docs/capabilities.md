@@ -30,3 +30,14 @@ This file is updated by the pull request that changes a capability. The per-plug
 | Scaffolds: queue-lambda-dynamodb, http-api-cognito, s3-sqs-lambda | implemented + tested                           |
 | Change-set backed diff                                            | not yet implemented                            |
 | `refactor`, drift detection, CDK upgrade checks, multi-account    | not yet implemented                            |
+
+## aws-security
+
+| Capability                                                                         | Status                                  |
+| ---------------------------------------------------------------------------------- | --------------------------------------- |
+| Twenty template rules (IAM, resource policies, S3, Lambda, API, KMS, SNS, Cognito) | implemented + tested                    |
+| IAM statement listing, pasted-policy analysis, trust policies                      | implemented + tested                    |
+| `AccessDenied` message explanation                                                 | implemented + tested (fixture messages) |
+| API authorization matrix (HTTP and REST), JWT and CORS checks                      | implemented + tested                    |
+| Exclusions with reason, expiry, and trust rules                                    | implemented + tested                    |
+| Live-account checks, `threat-model`, `remediate`, reviewer agent, dependency audit | not yet implemented (0.2)               |

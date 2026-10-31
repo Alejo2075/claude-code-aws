@@ -14,7 +14,7 @@ import { compareStacks, diffFindings, diffReport } from "./compare.js";
 import { classifyAwsFailure } from "./failures.js";
 import { type DeployedApi } from "./deployed.js";
 import { inspectStacks, renderInspect } from "./inspect.js";
-import { type LoadedStack, loadStacks } from "./load.js";
+import { type LoadedStack, loadStacks } from "@claude-code-aws/template-analysis/node";
 import { IAC_QUALITY_RULES } from "./rules.js";
 import { PATTERNS, planScaffold, writeScaffold } from "./scaffold.js";
 import { type Runner, synth } from "./synth.js";
