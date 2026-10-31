@@ -1,0 +1,20 @@
+{
+  "name": "aws-api",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Inspect API Gateway APIs in synthesized CDK output, validate OpenAPI contracts, compare a contract with the declared routes, and prepare (never send) test requests with masked credentials. No request is made.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/plugin-kit": "workspace:*",
+    "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/safe-output": "workspace:*",
+    "@claude-code-aws/template-analysis": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*",
+    "yaml": "2.9.1"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "aws-database",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Design DynamoDB key schemas from access patterns, plan queries and cost units, plan key-schema migrations, and inspect DynamoDB and Aurora definitions in synthesized CDK output. No rows are read or written.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/plugin-kit": "workspace:*",
+    "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/safe-output": "workspace:*",
+    "@claude-code-aws/template-analysis": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "aws-lambda",
+  "version": "0.0.0",
+  "description": "Inspect Lambda functions in synthesized CDK output, scaffold TypeScript handlers with validation and idempotency hooks, check configuration against Lambda's quotas, and prepare (never run) an invocation command. No function is invoked.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-lambda#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "lambda", "serverless", "functions"]
+}

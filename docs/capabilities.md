@@ -181,3 +181,46 @@ This file is updated by the pull request that changes a capability. The per-plug
 | `debug` from an exported history                              | implemented + tested (hand-built history; real exports not exercised)                                  |
 | Starting, stopping, or changing executions and state machines | not implemented by design                                                                              |
 | Live inspection through the AWS SDK                           | not yet implemented                                                                                    |
+
+## aws-lambda
+
+| Capability                                                                       | Status                                                                     |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `inspect`: 11 rule ids over declared functions; env values never shown           | implemented + tested                                                       |
+| `create`: six event sources; generated tests executed under the Node test runner | implemented + tested                                                       |
+| `invoke`: validated plan with DryRun form; never run                             | implemented + tested                                                       |
+| `explain`: 8 topics, limits read from the Lambda quotas page on 2026-10-31       | implemented + tested                                                       |
+| Invoking a function, reading real durations or logs                              | not implemented by design (use /aws-observability for read-only telemetry) |
+| Live inspection through the AWS SDK                                              | not yet implemented                                                        |
+
+## aws-api
+
+| Capability                                                             | Status                                          |
+| ---------------------------------------------------------------------- | ----------------------------------------------- |
+| `inspect`/`routes` over HTTP, REST, WebSocket: 6 rule ids              | implemented + tested                            |
+| `validate`: OpenAPI 3 structural and convention checks (JSON and YAML) | implemented + tested (local references only)    |
+| `contract-diff`, `test-plan`                                           | implemented + tested                            |
+| GraphQL (AppSync) schema validation                                    | not yet implemented                             |
+| Sending requests, inspecting deployed stages                           | not implemented by design / not yet implemented |
+| Live inspection through the AWS SDK                                    | not yet implemented                             |
+
+## aws-auth
+
+| Capability                                                                        | Status                                                                        |
+| --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `inspect`: 13 rule ids over declared pools and clients                            | implemented + tested                                                          |
+| `claims-check`: issuer, audience, token use, expiry, scope, group; tokens refused | implemented + tested                                                          |
+| `flows`: five application types and a verification checklist                      | implemented + tested (guidance from the Cognito security best practices page) |
+| Signature verification, reading users or sessions, creating or resetting users    | not implemented by design                                                     |
+| Live inspection through the AWS SDK                                               | not yet implemented                                                           |
+
+## aws-database
+
+| Capability                                                                            | Status                                          |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `model`: key and index coverage, scans, suggested indexes, hot-key and quota warnings | implemented + tested                            |
+| `query`: read capacity estimate                                                       | implemented + tested (hand-checked rounding)    |
+| `migrate-plan`                                                                        | implemented + tested                            |
+| `inspect`: DynamoDB (7 rule ids) and Aurora (4 rule ids)                              | implemented + tested                            |
+| Reading rows or table metrics, Aurora Data API, running migrations                    | not implemented by design / not yet implemented |
+| Live inspection through the AWS SDK                                                   | not yet implemented                             |

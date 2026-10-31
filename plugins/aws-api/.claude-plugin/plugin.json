@@ -1,0 +1,14 @@
+{
+  "name": "aws-api",
+  "version": "0.0.0",
+  "description": "Inspect API Gateway APIs in synthesized CDK output, validate OpenAPI contracts, compare a contract with the declared routes, and prepare (never send) test requests with masked credentials. No request is made.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-api#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "api-gateway", "openapi", "apis"]
+}
