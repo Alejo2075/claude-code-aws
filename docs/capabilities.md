@@ -41,3 +41,14 @@ This file is updated by the pull request that changes a capability. The per-plug
 | API authorization matrix (HTTP and REST), JWT and CORS checks                      | implemented + tested                    |
 | Exclusions with reason, expiry, and trust rules                                    | implemented + tested                    |
 | Live-account checks, `threat-model`, `remediate`, reviewer agent, dependency audit | not yet implemented (0.2)               |
+
+## aws-testing
+
+| Capability                                                         | Status                                                    |
+| ------------------------------------------------------------------ | --------------------------------------------------------- |
+| `run` with Vitest (real runs), `--affected`, coverage              | implemented + tested                                      |
+| `run` with Jest and `node:test`                                    | implemented + tested (parsers and plan; no real Jest run) |
+| Event fixtures for eight sources with variants and response checks | implemented + tested                                      |
+| `generate cdk-assertions` and `generate handler`                   | implemented + tested                                      |
+| `coverage` summary                                                 | implemented + tested                                      |
+| `integration`, affected-tests hook, `load`, property-based cases   | not yet implemented                                       |
