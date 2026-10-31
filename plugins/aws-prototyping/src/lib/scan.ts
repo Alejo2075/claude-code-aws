@@ -18,7 +18,8 @@ const SKIP = new Set(["node_modules", ".git", "cdk.out", "dist"]);
 const SHORTCUT = /\b(TODO|FIXME|HACK|XXX|insecure|hard-?coded|disable[_-]?auth|skip[_-]?auth)\b/i;
 /** Words that mark a shortcut taken for the prototype. A local host name is checked separately. */
 const LOCAL_HOST = "local" + "host";
-const WILDCARD = /"(Action|Resource)"\s*:\s*"\*"|(Action|Resource):\s*['"]?\*['"]?\s*$/m;
+const JSON_WILDCARD = /"(?:Action|Resource)"\s*:\s*"\*"/;
+const YAML_WILDCARD = /^\s*(?:Action|Resource):\s*['"]?\*['"]?\s*$/m;
 
 export function scanDirectory(dir: string): {
   hits: ScanHit[];
@@ -65,7 +66,7 @@ export function scanDirectory(dir: string): {
           kind: "secret",
           detail: "contains a secret-like or personal value",
         });
-      if (WILDCARD.test(read.text))
+      if (JSON_WILDCARD.test(read.text) || YAML_WILDCARD.test(read.text))
         hits.push({
           file: relative,
           kind: "wildcard-permission",
