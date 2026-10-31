@@ -106,3 +106,13 @@ This file is updated by the pull request that changes a capability. The per-plug
 | `export`: Mermaid source                                     | implemented + tested                                            |
 | `export`: SVG/PNG through the Mermaid CLI                    | implemented + unverified (fake renderer; real `mmdc` never run) |
 | Live inventory reads, rendering in `aws-ui`                  | not yet implemented                                             |
+
+## aws-well-architected
+
+| Capability                                                                  | Status                                                                           |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Six pillars, 30 questions (13 evaluated from templates), evidence strengths | implemented + tested                                                             |
+| Specialist report merge by rule id                                          | implemented + tested (hand-built reports; real plugin output not run end to end) |
+| Backlog, improvement plan, compare, stale and conflicting evidence          | implemented + tested                                                             |
+| `well-architected-reviewer` agent and two evals                             | implemented + unverified (evals not run)                                         |
+| Reading evidence from the account; AWS Well-Architected Tool records        | not yet implemented                                                              |

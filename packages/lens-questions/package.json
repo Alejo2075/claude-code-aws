@@ -1,0 +1,17 @@
+{
+  "name": "@claude-code-aws/lens-questions",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Questions for a Well-Architected style review of a serverless workload, paraphrased from the pillar guidance, with the ones a synthesized template can answer evaluated in code. Pure data and functions, bundled into each plugin.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/template-analysis": "workspace:*"
+  }
+}

@@ -12,6 +12,7 @@
   "devDependencies": {
     "@claude-code-aws/architecture-graph": "workspace:*",
     "@claude-code-aws/context-contract": "workspace:*",
+    "@claude-code-aws/lens-questions": "workspace:*",
     "@claude-code-aws/report-contract": "workspace:*",
     "@claude-code-aws/safe-output": "workspace:*",
     "@claude-code-aws/template-analysis": "workspace:*",

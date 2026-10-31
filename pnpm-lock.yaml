@@ -74,6 +74,12 @@ importers:
 
   packages/context-contract: {}
 
+  packages/lens-questions:
+    devDependencies:
+      '@claude-code-aws/template-analysis':
+        specifier: workspace:*
+        version: link:../template-analysis
+
   packages/report-contract:
     devDependencies:
       '@claude-code-aws/context-contract':
@@ -109,6 +115,9 @@ importers:
       '@claude-code-aws/context-contract':
         specifier: workspace:*
         version: link:../../packages/context-contract
+      '@claude-code-aws/lens-questions':
+        specifier: workspace:*
+        version: link:../../packages/lens-questions
       '@claude-code-aws/report-contract':
         specifier: workspace:*
         version: link:../../packages/report-contract
@@ -352,6 +361,30 @@ importers:
       '@claude-code-aws/testkit':
         specifier: workspace:*
         version: link:../../packages/testkit
+
+  plugins/aws-well-architected:
+    devDependencies:
+      '@claude-code-aws/context-contract':
+        specifier: workspace:*
+        version: link:../../packages/context-contract
+      '@claude-code-aws/lens-questions':
+        specifier: workspace:*
+        version: link:../../packages/lens-questions
+      '@claude-code-aws/report-contract':
+        specifier: workspace:*
+        version: link:../../packages/report-contract
+      '@claude-code-aws/safe-output':
+        specifier: workspace:*
+        version: link:../../packages/safe-output
+      '@claude-code-aws/template-analysis':
+        specifier: workspace:*
+        version: link:../../packages/template-analysis
+      '@claude-code-aws/testkit':
+        specifier: workspace:*
+        version: link:../../packages/testkit
+      '@claude-code-aws/tool-runner':
+        specifier: workspace:*
+        version: link:../../packages/tool-runner
 
 packages:
 

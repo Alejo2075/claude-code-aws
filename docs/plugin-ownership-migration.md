@@ -32,7 +32,14 @@ Checked on `main` at commit `4dc5122`, by reading the code and not the file name
 
 ## Well-Architected: `aws-architect` to `aws-well-architected`
 
-Done in the `aws-well-architected` PR; this section is completed there.
+|                   |                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Before**        | `aws-architect` `review`: 11 template-answerable questions tagged by pillar, no six-pillar report, no evidence ledger, no backlog.                                                                                                                                                                                                                 |
+| **After**         | The question bank (30 questions, 13 evaluated from templates) lives in `packages/lens-questions`. `aws-well-architected` owns the review, evidence model, backlog, and comparison. `aws-architect review` is a **deprecated shim** over the same bank, limited to its original 11 questions; architect keeps `decisions`, `intake`, `plan`, `adr`. |
+| **Files**         | Added `packages/lens-questions/**`, `plugins/aws-well-architected/**`. Changed `plugins/aws-architect/src/lib/review.ts` (adapter), `skills/review/SKILL.md` (deprecated), `package.json`. Nothing deleted.                                                                                                                                        |
+| **Compatibility** | `/aws-architect:review` output shape is unchanged (`reviews[].answered[]`); a deprecation line is added to `needsOthers`.                                                                                                                                                                                                                          |
+| **Test evidence** | `plugins/aws-architect/test` (19, passing on the shim); `plugins/aws-well-architected/test` (20).                                                                                                                                                                                                                                                  |
+| **Known gaps**    | Specialist report mapping covers 13 rule ids (`SEC-*`, `OBS-*`); other findings are listed as unmapped, not dropped. The old `review` command is removed in the next major version.                                                                                                                                                                |
 
 ## Prototyping
 

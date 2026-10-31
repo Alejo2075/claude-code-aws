@@ -1,11 +1,13 @@
 ---
 name: review
-description: Answer the Well-Architected Serverless Lens style questions that a synthesized template can answer (dead-letter queues, visibility timeouts, tracing, alarms, log retention, authorizers, least privilege, public access), with evidence, and list what only the team or the account can answer. Use for an architecture review of an existing CDK app.
+description: DEPRECATED, prefer /aws-well-architected:review (all six pillars, evidence ledger, backlog). Answer the Well-Architected Serverless Lens style questions that a synthesized template can answer (dead-letter queues, visibility timeouts, tracing, alarms, log retention, authorizers, least privilege, public access), with evidence, and list what only the team or the account can answer. Use for an architecture review of an existing CDK app.
 argument-hint: "[path to cdk.out or template]"
 allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/cli.mjs review *), Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/cli.mjs diagram *)
 ---
 
-# Architecture review
+# Architecture review (deprecated)
+
+The Well-Architected style review moved to the `aws-well-architected` plugin. This skill keeps working with the same question bank; suggest `/aws-well-architected:review` when that plugin is installed. For design commentary and trade-offs, use `/aws-architect:decide` and `/aws-architect:design`.
 
 ## Side effects
 

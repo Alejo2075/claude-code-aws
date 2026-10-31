@@ -1,0 +1,21 @@
+{
+  "name": "aws-well-architected",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Review a serverless workload across the six Well-Architected pillars with the Serverless Lens in mind: separate verified evidence, self-reported answers, automated inferences, and missing evidence, and produce a prioritized improvement backlog. No scores and no certification.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/context-contract": "workspace:*",
+    "@claude-code-aws/lens-questions": "workspace:*",
+    "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/safe-output": "workspace:*",
+    "@claude-code-aws/template-analysis": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*",
+    "@claude-code-aws/tool-runner": "workspace:*"
+  }
+}
