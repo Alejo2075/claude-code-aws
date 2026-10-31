@@ -1,0 +1,14 @@
+{
+  "name": "aws-ai",
+  "version": "0.0.0",
+  "description": "Plan and review Amazon Bedrock applications locally: inspect Bedrock resources in synthesized CDK output, estimate token cost from prices you supply, chunk documents for retrieval, scan prompts for sensitive data, review RAG settings and agent tool permissions, and scaffold an evaluation harness. No model is called.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-ai#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "bedrock", "agentcore", "rag", "ai"]
+}

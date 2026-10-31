@@ -1,0 +1,19 @@
+{
+  "name": "aws-ai",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Plan and review Amazon Bedrock applications locally: inspect Bedrock resources in synthesized CDK output, estimate token cost from prices you supply, chunk documents for retrieval, scan prompts for sensitive data, review RAG settings and agent tool permissions, and scaffold an evaluation harness. No model is called.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@claude-code-aws/plugin-kit": "workspace:*",
+    "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/safe-output": "workspace:*",
+    "@claude-code-aws/template-analysis": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "aws-config",
+  "version": "0.0.0",
+  "description": "Validate AppConfig feature flag documents and JSON configuration against a schema, plan a gradual rollout from a deployment strategy, and inspect AppConfig and Parameter Store resources in synthesized CDK output. Nothing is deployed and no value is changed.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-config#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "appconfig", "ssm", "feature-flags", "configuration"]
+}
