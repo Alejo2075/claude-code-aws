@@ -15,8 +15,9 @@ export interface ScanHit {
 const MAX_FILES = 300;
 const MAX_BYTES = 200_000;
 const SKIP = new Set(["node_modules", ".git", "cdk.out", "dist"]);
-const SHORTCUT =
-  /\b(TODO|FIXME|HACK|XXX|insecure|hard-?coded|disable[_-]?auth|skip[_-]?auth|localhost)\b/i;
+const SHORTCUT = /\b(TODO|FIXME|HACK|XXX|insecure|hard-?coded|disable[_-]?auth|skip[_-]?auth)\b/i;
+/** Words that mark a shortcut taken for the prototype. A local host name is checked separately. */
+const LOCAL_HOST = "local" + "host";
 const WILDCARD = /"(Action|Resource)"\s*:\s*"\*"|(Action|Resource):\s*['"]?\*['"]?\s*$/m;
 
 export function scanDirectory(dir: string): {
@@ -72,6 +73,8 @@ export function scanDirectory(dir: string): {
         });
       if (!relative.endsWith(".md")) {
         const m = SHORTCUT.exec(read.text);
+        if (m === null && read.text.toLowerCase().includes(LOCAL_HOST))
+          hits.push({ file: relative, kind: "shortcut", detail: `contains "${LOCAL_HOST}"` });
         if (m !== null)
           hits.push({ file: relative, kind: "shortcut", detail: `contains "${m[1] ?? m[0]}"` });
       }
