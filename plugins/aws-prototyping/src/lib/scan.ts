@@ -18,8 +18,27 @@ const SKIP = new Set(["node_modules", ".git", "cdk.out", "dist"]);
 const SHORTCUT = /\b(TODO|FIXME|HACK|XXX|insecure|hard-?coded|disable[_-]?auth|skip[_-]?auth)\b/i;
 /** Words that mark a shortcut taken for the prototype. A local host name is checked separately. */
 const LOCAL_HOST = "local" + "host";
-const JSON_WILDCARD = /"(?:Action|Resource)"\s*:\s*"\*"/;
-const YAML_WILDCARD = /^\s*(?:Action|Resource):\s*['"]?\*['"]?\s*$/m;
+const JSON_WILDCARD = /"(?:Action|Resource)"\s*:\s*(?:"\*"|\[\s*"\*")/;
+const KEY_LINE = /^\s*(?:-\s*)?(?:Action|Resource):\s*(.*)$/;
+const STAR = /^['"]?\*['"]?$/;
+const STAR_ITEM = /^\s*-\s*['"]?\*['"]?\s*$/;
+
+/** A grant of "*" for an action or a resource, in JSON or in YAML (inline, flow list, or block list). Line based, so there is no backtracking. */
+export function hasWildcardGrant(text: string): boolean {
+  if (JSON_WILDCARD.test(text)) return true;
+  const lines = text.split("\n");
+  for (let i = 0; i < lines.length; i += 1) {
+    const m = KEY_LINE.exec(lines[i] ?? "");
+    if (m === null) continue;
+    const value = (m[1] ?? "").trim();
+    if (STAR.test(value)) return true;
+    if (value.startsWith("[") && /['"]\*['"]/.test(value)) return true;
+    if (value === "")
+      for (let j = i + 1; j < lines.length && /^\s*-/.test(lines[j] ?? ""); j += 1)
+        if (STAR_ITEM.test(lines[j] ?? "")) return true;
+  }
+  return false;
+}
 
 export function scanDirectory(dir: string): {
   hits: ScanHit[];
@@ -66,7 +85,7 @@ export function scanDirectory(dir: string): {
           kind: "secret",
           detail: "contains a secret-like or personal value",
         });
-      if (JSON_WILDCARD.test(read.text) || YAML_WILDCARD.test(read.text))
+      if (hasWildcardGrant(read.text))
         hits.push({
           file: relative,
           kind: "wildcard-permission",

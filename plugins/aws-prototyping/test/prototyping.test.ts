@@ -16,6 +16,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { PATTERNS } from "../src/lib/catalog.js";
 import { runCli } from "../src/lib/cli.js";
 import { checkManifest } from "../src/lib/manifest.js";
+import { hasWildcardGrant } from "../src/lib/scan.js";
 import { simulateQueue, validateModel, type QueueModel } from "../src/lib/sim.js";
 
 const NOW = new Date("2026-10-31T00:00:00Z");
@@ -403,6 +404,24 @@ describe("sandbox, cleanup, and promotion plans", () => {
     expect(r.stdout).toMatch(/fixtures\/sqs-event\.json: fixture data: do not copy/);
     expect(r.stdout).not.toContain("AKIAIOSFODNN7EXAMPLE");
     expect(r.stdout).toMatch(/\/aws-deploy/);
+  });
+});
+
+describe("wildcard grants", () => {
+  it("is found in JSON, inline YAML, flow lists, block lists, and list items", () => {
+    expect(hasWildcardGrant('{"Action": "*"}')).toBe(true);
+    expect(hasWildcardGrant('{"Resource": ["*"]}')).toBe(true);
+    expect(hasWildcardGrant("Action: '*'")).toBe(true);
+    expect(hasWildcardGrant("  - Action: '*'")).toBe(true);
+    expect(hasWildcardGrant("Action: ['s3:Get*', '*']")).toBe(true);
+    expect(hasWildcardGrant("Resource:\n  - arn:aws:s3:::a\n  - '*'\nEffect: Allow")).toBe(true);
+  });
+  it("is not found for specific grants or a wildcard inside a name", () => {
+    expect(hasWildcardGrant('{"Action": "s3:GetObject", "Resource": "arn:aws:s3:::b/*"}')).toBe(
+      false,
+    );
+    expect(hasWildcardGrant("Action: s3:Get*")).toBe(false);
+    expect(hasWildcardGrant("Resource:\n  - arn:aws:s3:::b/*")).toBe(false);
   });
 });
 
