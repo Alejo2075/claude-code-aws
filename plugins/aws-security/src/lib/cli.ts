@@ -1,5 +1,6 @@
-import { readFileSync, statSync } from "node:fs";
 import { isAbsolute, resolve } from "node:path";
+
+import { readTextBounded } from "@claude-code-aws/context-contract/node";
 
 import {
   buildReport,
@@ -63,13 +64,14 @@ function readPolicyFile(root: string, path: string): { text: string | null; erro
   const target = isAbsolute(path) ? path : resolve(root, path);
   if (!isInside(root, target))
     return { text: null, error: "The policy file is outside the project." };
-  try {
-    if (statSync(target).size > 1_000_000)
-      return { text: null, error: "The policy file is too large." };
-    return { text: readFileSync(target, "utf8"), error: null };
-  } catch {
-    return { text: null, error: `${path} could not be read.` };
-  }
+  // One bounded read on a single file descriptor: no gap between checking the size and reading.
+  const read = readTextBounded(target, 1_000_000);
+  if (read.kind === "ok") return { text: read.text, error: null };
+  return {
+    text: null,
+    error:
+      read.kind === "too-large" ? "The policy file is too large." : `${path} could not be read.`,
+  };
 }
 
 export function runCli(argv: readonly string[], deps: CliDeps): Promise<CliResult> {
