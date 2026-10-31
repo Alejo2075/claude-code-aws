@@ -1,0 +1,14 @@
+{
+  "name": "aws-explorer",
+  "version": "0.0.0",
+  "description": "Browse CloudFormation and CDK stacks, their resources, events, and resource properties in one AWS account and region, read-only.",
+  "author": {
+    "name": "Alejandro Santana",
+    "email": "alejsant75@gmail.com",
+    "url": "https://github.com/Alejo2075"
+  },
+  "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-explorer#readme",
+  "repository": "https://github.com/Alejo2075/claude-code-aws",
+  "license": "MIT",
+  "keywords": ["aws", "cloudformation", "cdk", "cloud-control", "inventory", "read-only"]
+}

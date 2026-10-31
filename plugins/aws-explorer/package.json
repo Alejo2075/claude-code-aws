@@ -1,0 +1,20 @@
+{
+  "name": "aws-explorer",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Browse CloudFormation and CDK stacks, their resources, events, and resource properties in one AWS account and region, read-only.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-cloudcontrol": "3.1161.0",
+    "@aws-sdk/client-cloudformation": "3.1161.0",
+    "@aws-sdk/client-sts": "3.1158.0",
+    "@claude-code-aws/aws-client": "workspace:*",
+    "@claude-code-aws/context-contract": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*"
+  }
+}

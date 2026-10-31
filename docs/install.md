@@ -2,11 +2,12 @@
 
 ## Available plugins
 
-| Plugin                                            | What it does                                                                                                                                                             |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [`aws-context`](../plugins/aws-context/README.md) | Verifies the active AWS account, principal, region, and environment with STS and stores a snapshot. Read-only.                                                           |
-| [`aws-ui`](../plugins/aws-ui/README.md)           | Shows the user, region, and environment in the prompt footer, with an opt-in status line. Never calls AWS. Works best with `aws-context`.                                |
-| [`aws-guard`](../plugins/aws-guard/README.md)     | Asks for approval before AWS-changing commands, especially in production or when the account is not verified. Never calls AWS. A guardrail, not an enforcement boundary. |
+| Plugin                                              | What it does                                                                                                                                                             |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`aws-context`](../plugins/aws-context/README.md)   | Verifies the active AWS account, principal, region, and environment with STS and stores a snapshot. Read-only.                                                           |
+| [`aws-ui`](../plugins/aws-ui/README.md)             | Shows the user, region, and environment in the prompt footer, with an opt-in status line. Never calls AWS. Works best with `aws-context`.                                |
+| [`aws-guard`](../plugins/aws-guard/README.md)       | Asks for approval before AWS-changing commands, especially in production or when the account is not verified. Never calls AWS. A guardrail, not an enforcement boundary. |
+| [`aws-explorer`](../plugins/aws-explorer/README.md) | Browses CloudFormation and CDK stacks, their resources and events, and resource properties in one account and region. Read-only, with secrets redacted.                  |
 
 Install only what you need; none requires another. `aws-guard` and `aws-ui` are stronger with `aws-context`.
 

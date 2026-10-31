@@ -143,14 +143,14 @@ No network, no AWS, no telemetry. Nothing is stored. Reasons contain no credenti
 
 For **one verified account and one explicit region** per call:
 
-| CLI verb                               | AWS calls (read only)                                   | Output                                                                                                |
-| -------------------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `stacks [--status ...] [--limit N]`    | `cloudformation:ListStacks` (paginated)                 | name, status, last updated, drift status, nested/root                                                 |
-| `stack <name>`                         | `DescribeStacks`                                        | status and reason, parameters (NoEcho stays masked), outputs (redacted), tags, termination protection |
-| `resources <stack> [--limit N]`        | `ListStackResources` (paginated)                        | logical id, type, physical id, status, drift                                                          |
-| `events <stack> [--limit N]`           | `DescribeStackEvents` (paginated, newest first)         | time, logical id, status, reason; failures highlighted                                                |
-| `resource <type> <identifier>`         | `cloudcontrol:GetResource`                              | redacted properties of any supported type                                                             |
-| `resource --stack <stack> <logicalId>` | `DescribeStackResource` then `cloudcontrol:GetResource` | same, resolving type and identifier from the stack                                                    |
+| CLI verb                               | AWS calls (read only)                                                                  | Output                                                                                                |
+| -------------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `stacks [--status ...] [--limit N]`    | `cloudformation:ListStacks` (paginated)                                                | name, status, last updated, drift status, nested/root                                                 |
+| `stack <name>`                         | `DescribeStacks`                                                                       | status and reason, parameters (NoEcho stays masked), outputs (redacted), tags, termination protection |
+| `resources <stack> [--limit N]`        | `ListStackResources` (paginated)                                                       | logical id, type, physical id, status, drift                                                          |
+| `events <stack> [--limit N]`           | `DescribeStackEvents` (paginated, newest first)                                        | time, logical id, status, reason; failures highlighted                                                |
+| `resource <type> <identifier>`         | `cloudformation:GetResource` (Cloud Control's IAM action)                              | redacted properties of any supported type                                                             |
+| `resource --stack <stack> <logicalId>` | `DescribeStackResource` then `cloudformation:GetResource` (Cloud Control's IAM action) | same, resolving type and identifier from the stack                                                    |
 
 Every report starts with the verified account (STS, this call), principal, region, and time, and ends with what was **not** covered: truncated pages, unsupported types, denied calls. An empty list is reported as "none found in this account and region", never as "none exist".
 
@@ -172,7 +172,7 @@ Every report starts with the verified account (STS, this call), principal, regio
 
 ### 3.3 Permissions
 
-A policy listing exactly the actions above, documented in the README: `cloudformation:ListStacks`, `DescribeStacks`, `ListStackResources`, `DescribeStackEvents`, `DescribeStackResource`, `cloudcontrol:GetResource`, plus the service read permission Cloud Control needs for each type (for example `lambda:GetFunction`). `ReadOnlyAccess` is enough; a denied call is reported with the missing action, not hidden.
+A policy listing exactly the actions above, documented in the README: `cloudformation:ListStacks`, `DescribeStacks`, `ListStackResources`, `DescribeStackEvents`, `DescribeStackResource`, `cloudformation:GetResource` (Cloud Control's IAM action), plus the service read permission Cloud Control needs for each type (for example `lambda:GetFunction`). `ReadOnlyAccess` is enough; a denied call is reported with the missing action, not hidden.
 
 ### 3.4 Skill
 
