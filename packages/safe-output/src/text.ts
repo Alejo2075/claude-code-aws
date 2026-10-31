@@ -46,7 +46,7 @@ export interface TextOptions {
 /** Redacts credentials (and, by default, personal data) in free text. */
 export function redactText(input: string, options: TextOptions = {}): TextRedaction {
   let redacted = 0;
-  let text = sanitizeText(input);
+  let text = sanitizeText(input, true);
   const replace = (): string => {
     redacted += 1;
     return REDACTED;

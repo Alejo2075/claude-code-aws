@@ -177,6 +177,10 @@ describe("paths", () => {
     expect(isInside(root, root)).toBe(true);
     expect(isInside(root, join(root, "..", "x"))).toBe(false);
     expect(isInside(root, join(root, "link"))).toBe(false);
+    // A file that does not exist yet is judged by where its nearest existing parent really is.
+    expect(isInside(root, join(root, "sub", "new", "file.ts"))).toBe(true);
+    expect(isInside(root, join(root, "link", "new.ts"))).toBe(false);
+    expect(isInside(root, join(root, "..", "elsewhere", "new.ts"))).toBe(false);
   });
 
   it("finds local bins by walking up, and executables on PATH", () => {

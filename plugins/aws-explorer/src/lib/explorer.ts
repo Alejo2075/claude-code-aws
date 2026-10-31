@@ -115,7 +115,7 @@ async function execute(
         description: clean(stack.description),
         terminationProtection: stack.terminationProtection,
         roleArn: clean(stack.roleArn),
-        capabilities: stack.capabilities.map(sanitizeText),
+        capabilities: stack.capabilities.map((entry) => sanitizeText(entry)),
         parameters: cleanPairs(redactor, stack.parameters),
         outputs: cleanPairs(redactor, stack.outputs),
         tags: cleanPairs(redactor, stack.tags),
