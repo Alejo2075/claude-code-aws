@@ -12,4 +12,4 @@ Only the latest released version of each plugin receives fixes. Updates reach us
 
 ## Security model
 
-Plugins run locally with the user's existing AWS credentials and permissions. They keep telemetry off and document the limits of their local policy hooks. AWS IAM, SCPs, and permission boundaries remain the enforcement controls for cloud actions. See [docs/security-model.md](docs/security-model.md).
+Plugins run locally with the user's existing AWS credentials and permissions. They keep telemetry off and document the limits of their local policy hooks. AWS IAM, SCPs, and permission boundaries remain the enforcement controls for cloud actions. See the [security model](docs/security.md).

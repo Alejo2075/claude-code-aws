@@ -3,15 +3,23 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Alejo2075/claude-code-aws/actions/workflows/ci.yml"><img src="https://github.com/Alejo2075/claude-code-aws/actions/workflows/ci.yml/badge.svg?style=flat-square&amp;labelColor=2D2B28" alt="CI"></a>
-  <a href="https://github.com/Alejo2075/claude-code-aws/actions/workflows/codeql.yml"><img src="https://github.com/Alejo2075/claude-code-aws/actions/workflows/codeql.yml/badge.svg?style=flat-square&amp;labelColor=2D2B28" alt="CodeQL"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-CC785C.svg?style=flat-square&amp;labelColor=2D2B28" alt="MIT license"></a>
-  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributions-welcome-CC785C.svg?style=flat-square&amp;labelColor=2D2B28" alt="Contributions welcome"></a>
+  <a href="https://github.com/Alejo2075/claude-code-aws/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Alejo2075/claude-code-aws/ci.yml?branch=main&amp;style=flat-square&amp;label=CI&amp;color=D97757&amp;labelColor=2B2523" alt="CI"></a>
+  <a href="https://github.com/Alejo2075/claude-code-aws/actions/workflows/codeql.yml"><img src="https://img.shields.io/github/actions/workflow/status/Alejo2075/claude-code-aws/codeql.yml?branch=main&amp;style=flat-square&amp;label=CodeQL&amp;color=D97757&amp;labelColor=2B2523" alt="CodeQL"></a>
+  <a href="#plugin-catalog"><img src="https://img.shields.io/badge/Claude_Code-plugins-D97757?style=flat-square&amp;labelColor=2B2523&amp;logo=claude&amp;logoColor=D97757" alt="Claude Code plugins"></a>
+  <a href=".claude-plugin/marketplace.json"><img src="https://img.shields.io/badge/marketplace-2_published-D97757?style=flat-square&amp;labelColor=2B2523&amp;logo=claude&amp;logoColor=D97757" alt="2 plugins published in the marketplace"></a>
+  <a href="#plugin-catalog"><img src="https://img.shields.io/badge/AWS-serverless-D97757?style=flat-square&amp;labelColor=2B2523&amp;logo=amazonaws&amp;logoColor=D97757" alt="AWS serverless"></a>
+  <a href="package.json"><img src="https://img.shields.io/badge/language-TypeScript-D97757?style=flat-square&amp;labelColor=2B2523&amp;logo=typescript&amp;logoColor=D97757" alt="TypeScript"></a>
+  <a href="docs/install.md"><img src="https://img.shields.io/badge/Node.js-22%2B-D97757?style=flat-square&amp;labelColor=2B2523&amp;logo=nodedotjs&amp;logoColor=D97757" alt="Node.js 22 or later"></a>
+  <a href="pnpm-workspace.yaml"><img src="https://img.shields.io/badge/pnpm-10.34.8-D97757?style=flat-square&amp;labelColor=2B2523&amp;logo=pnpm&amp;logoColor=D97757" alt="pnpm 10.34.8"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-D97757.svg?style=flat-square&amp;labelColor=2B2523" alt="MIT license"></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributions-welcome-D97757.svg?style=flat-square&amp;labelColor=2B2523" alt="Contributions welcome"></a>
 </p>
 
-<p align="center">Claude Code plugins for the full serverless application lifecycle on AWS.</p>
+<p align="center"><strong>Open-source Claude Code plugins for serverless development on AWS.</strong></p>
 
-Build, test, review, deploy, and operate AWS serverless applications from Claude Code with focused, independently installable plugins. The plugins cover application code and infrastructure, event integrations, data services, security, testing, delivery, and production operations.
+This project extends Claude Code with focused capabilities for designing, building, testing, deploying, and operating AWS serverless applications. Install the plugins that fit your workflow and keep using your existing AWS accounts, credentials, and tools.
+
+Infrastructure analysis currently focuses on AWS CDK with TypeScript and CloudFormation. The project is developed in the open: capabilities appear in the repository before they are necessarily ready for marketplace installation.
 
 ## Plugin catalog
 
@@ -75,26 +83,28 @@ Security, testing, delivery, cost, and production operations.
 
 ## Availability
 
-The repository contains the complete plugin catalog above. The marketplace currently publishes **[aws-context](plugins/core-experience/aws-context/) and [aws-ui](plugins/core-experience/aws-ui/)**. The other plugins are in the repository while they are developed and validated; their presence here does not mean they are available to install from the marketplace yet.
+There are 28 plugins in the repository. The marketplace currently publishes **[aws-context](plugins/core-experience/aws-context/) and [aws-ui](plugins/core-experience/aws-ui/)**. The other plugins are under development and validation; their presence in the catalog does not mean they are ready to install.
 
-When a plugin is published, add the marketplace in Claude Code and install that plugin:
+Add the marketplace and install the published plugins from a Claude Code session:
 
 ```text
 /plugin marketplace add Alejo2075/claude-code-aws
-/plugin install <plugin>@claude-code-aws
+/plugin install aws-context@claude-code-aws
+/plugin install aws-ui@claude-code-aws
 ```
 
-## Design principles
+See the [development guide](docs/development.md) for prerequisites and the [security model](docs/security.md) for credential handling and operation limits.
 
-- **Modular:** install plugins independently and keep each capability focused.
-- **Read-only by default:** inspection, planning, and review do not change AWS resources.
-- **Evidence first:** separate verified AWS state, local definitions, estimates, inferences, and unknowns.
-- **User controlled:** use your existing AWS credentials; cloud mutations require explicit authorization.
-- **AWS-side controls matter:** local checks add safeguards but do not replace IAM, permission boundaries, or organization policies.
+## Safety and privacy
+
+- Plugins use your existing AWS credentials; the project does not provide a hosted control plane or telemetry service.
+- Inspection, planning, and review are read-only by default. Cloud changes require clear plans and explicit authorization.
+- Findings distinguish verified AWS state from local definitions, estimates, inferences, and unknowns.
+- Local checks have limited coverage. Use IAM, permission boundaries, and AWS Organizations policies as enforcement controls.
 
 ## Develop locally
 
-This is a pnpm and TypeScript monorepo. Use Node.js 22 or later and pnpm 10.34.8.
+This is a pnpm and TypeScript monorepo. Use Node.js 22.12 or later and pnpm 10.34.8.
 
 ```sh
 corepack enable
@@ -102,15 +112,13 @@ pnpm install
 pnpm verify
 ```
 
-`pnpm verify` runs the repository's formatting, lint, type, test, marketplace, packaging, and release-flow checks. See [CONTRIBUTING.md](CONTRIBUTING.md) to propose or develop a plugin, [plugin authoring](docs/plugin-authoring.md) for component conventions, and the [release runbook](docs/release.md) for publication requirements.
+`pnpm verify` runs formatting, lint, type checking, plugin builds, tests, marketplace validation, packaging, and release-flow checks. To scaffold a plugin, run `pnpm new:plugin <name> "<short description>"`. See [CONTRIBUTING.md](CONTRIBUTING.md), the [development guide](docs/development.md), and the [release guide](docs/release.md).
 
 ## Project documentation
 
-- [Roadmap](docs/ROADMAP.md)
-- [Development plan](docs/DEVELOPMENT_PLAN.md)
-- [Security model](docs/security-model.md)
-- [Installation guide](docs/install.md)
-- [Plugin authoring](docs/plugin-authoring.md)
-- [Release runbook](docs/release.md)
+- [Architecture](docs/architecture.md)
+- [Development](docs/development.md)
+- [Security](docs/security.md)
+- [Releases](docs/release.md)
 
 The project is licensed under [MIT](LICENSE). Product and engineering requirements are maintained in [CLAUDE.md](CLAUDE.md).

@@ -28,7 +28,7 @@ Next steps:
   2. Replace every TEMPLATE-TODO (list them with: pnpm check:template-markers --all)
   3. pnpm build && pnpm test && pnpm validate
   4. When the plugin is ready to ship, add a changeset: pnpm changeset (minor bump -> 0.1.0)
-See docs/plugin-authoring.md.`);
+See docs/development.md.`);
 } catch (error) {
   fail(error instanceof Error ? error.message : String(error));
 }

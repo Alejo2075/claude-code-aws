@@ -2,7 +2,7 @@ name: AWS sandbox integration
 
 # Manual, approval-gated tests against the isolated sandbox AWS account. Authentication uses
 # GitHub OIDC and a READ-ONLY role; no long-lived AWS keys exist in this repository.
-# Setup: docs/security-model.md#sandbox-account-for-integration-tests
+# Setup: docs/security.md
 on:
   workflow_dispatch:
     inputs:
