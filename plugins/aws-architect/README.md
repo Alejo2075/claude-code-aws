@@ -42,17 +42,17 @@ No hook, no MCP server.
 
 ## Capability matrix
 
-| Capability                                                          | Status                                                        |
-| ------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `diagram` with declared and inferred links                          | implemented + tested (real CDK fixtures)                      |
-| `review`: eleven template-answerable questions with evidence        | implemented + tested                                          |
-| `decisions`: six tables with sources                                | implemented + unverified (summaries not checked line by line) |
-| `intake`, `plan init` / `check`                                     | implemented + tested                                          |
-| `adr` draft and `--write` without overwriting                       | implemented + tested                                          |
-| `serverless-architect` agent and two evals                          | implemented + unverified (evals not run)                      |
-| `evolve` (compare a proposed change against the current stack)      | not yet implemented                                           |
-| Diagrams of VPC, Cognito triggers, custom resources; deployed state | not yet implemented                                           |
-| Cost in the plan (use `/aws-cost` separately)                       | not yet implemented                                           |
+| Capability                                                          | Status                                                           |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `diagram` with declared and inferred links                          | implemented + tested (real CDK fixtures)                         |
+| `review`: eleven template-answerable questions with evidence        | implemented + tested                                             |
+| `decisions`: six tables with sources                                | implemented + unverified (summaries not checked line by line)    |
+| `intake`, `plan init` / `check`                                     | implemented + tested                                             |
+| `adr` draft and `--write` without overwriting                       | implemented + tested                                             |
+| `serverless-architect` agent and two evals                          | implemented + tested (evals: one run each, passed on 2026-11-01) |
+| `evolve` (compare a proposed change against the current stack)      | not yet implemented                                              |
+| Diagrams of VPC, Cognito triggers, custom resources; deployed state | not yet implemented                                              |
+| Cost in the plan (use `/aws-cost` separately)                       | not yet implemented                                              |
 
 ## Limitations
 

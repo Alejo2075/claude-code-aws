@@ -79,7 +79,7 @@ Nothing is stored. Output is redacted (credentials, bearer tokens, emails, card-
 | Function and queue status, DLQ depth, bounded redacted logs, metrics, alarms  | implemented + unverified (fake API; SDK wiring not run against AWS or loopback) |
 | Log analyzers: timeout, out-of-memory, errors by type, cold starts, throttles | implemented + tested                                                            |
 | Evidence ledger and findings that cite it                                     | implemented + tested                                                            |
-| `incident-investigator` agent and two evals                                   | implemented + unverified (evals not run)                                        |
+| `incident-investigator` agent and two evals                                   | implemented + tested (evals: one run each, passed on 2026-11-01)                |
 | X-Ray traces, Step Functions history, API Gateway and DynamoDB telemetry      | not yet implemented                                                             |
 | Powertools guidance, SLO and error-budget reports, opt-in monitor             | not yet implemented                                                             |
 
