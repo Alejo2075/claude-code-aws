@@ -45,7 +45,7 @@ export function rules(stack: string, t: Template, now: Date): Finding[] {
         out.push(
           staticFinding(PLUGIN, {
             ruleId: "LMB-RUNTIME",
-            severity: s.state === "deprecated" ? "high" : "medium",
+            severity: s.state === "deprecated" ? "high" : "low",
             title: `Runtime ${runtime} is ${s.state === "deprecated" ? "deprecated" : "nearing deprecation"}${s.deprecationDate === null ? "" : ` (${s.deprecationDate})`}`,
             explanation:
               "A deprecated runtime stops receiving security patches and eventually cannot be updated.",

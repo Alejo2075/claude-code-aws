@@ -17,12 +17,20 @@ import {
   variantNames,
 } from "./fixtures.js";
 import { cdkAssertionsTest, handlerTest, writeFiles } from "./generate.js";
+import {
+  type IntegrationDeps,
+  parseIntegration,
+  renderIntegration,
+  runIntegration,
+} from "./integration.js";
 import { changedFiles, type Framework, type Runner, runTests } from "./runner.js";
 
 export const USAGE = `Usage: aws-testing <command> [options]
 
   run [--affected] [--coverage] [--framework vitest|jest|node:test]   Run the project's tests (no AWS credentials)
   coverage                                  Read coverage/coverage-summary.json
+  integration --account <id> --region <r> --confirm-sandbox [--timeout 300] -- <command...>
+                                            Run YOUR test command with real credentials in a sandbox account you name
   contracts list                            Event kinds and their variants
   contracts show <kind> [--variant <name>]  Print an event fixture
   contracts write <kind> --dir <dir> [--all]    Write fixture files (never overwrites)
@@ -32,7 +40,7 @@ export const USAGE = `Usage: aws-testing <command> [options]
 
 Options: --json   --write (to create files; otherwise the files are only listed)
 
-Tests never deploy and never use your AWS credentials.`;
+'run' never deploys and never uses your AWS credentials. 'integration' does use them, only after the account is verified and confirmed as a sandbox.`;
 
 export interface CliResult {
   exitCode: number;
@@ -40,6 +48,7 @@ export interface CliResult {
 }
 
 export interface CliDeps {
+  integration?: Pick<IntegrationDeps, "identity" | "known">;
   root: string;
   env: Record<string, string | undefined>;
   run?: Runner;
@@ -55,6 +64,25 @@ const plain = (text: string): string =>
     .text;
 
 export async function runCli(argv: readonly string[], deps: CliDeps): Promise<CliResult> {
+  if (argv[0] === "integration") {
+    if (deps.integration === undefined)
+      return usageError("integration tests are not available in this environment");
+    const parsed = parseIntegration(argv);
+    if (!parsed.ok) return usageError(parsed.error);
+    const outcome = await runIntegration(parsed.args, {
+      root: deps.root,
+      env: deps.env,
+      ...deps.integration,
+      ...(deps.run === undefined ? {} : { run: deps.run }),
+    });
+    const failed = !outcome.ran || outcome.timedOut || outcome.exitCode !== 0;
+    return {
+      exitCode: failed ? 1 : 0,
+      stdout: argv.includes("--json")
+        ? JSON.stringify(outcome, null, 2)
+        : plain(renderIntegration(outcome)),
+    };
+  }
   const words: string[] = [];
   const options = new Map<string, string | true>();
   for (let i = 0; i < argv.length; i += 1) {

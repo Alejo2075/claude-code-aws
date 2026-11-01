@@ -33,26 +33,29 @@ This file is updated by the pull request that changes a capability. The per-plug
 
 ## aws-security
 
-| Capability                                                                                        | Status                                  |
-| ------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| Twenty template rules (IAM, resource policies, S3, Lambda, API, KMS, SNS, Cognito)                | implemented + tested                    |
-| IAM statement listing, pasted-policy analysis, trust policies                                     | implemented + tested                    |
-| `AccessDenied` message explanation                                                                | implemented + tested (fixture messages) |
-| API authorization matrix (HTTP and REST), JWT and CORS checks                                     | implemented + tested                    |
-| Exclusions with reason, expiry, and trust rules                                                   | implemented + tested                    |
-| `threat-model` (hypotheses from declared architecture) and `remediate` (proposals, never applied) | implemented + tested (template-based)   |
-| Live-account checks, reviewer agent, dependency audit                                             | not yet implemented                     |
+| Capability                                                                                                                                       | Status                                                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| Twenty template rules (IAM, resource policies, S3, Lambda, API, KMS, SNS, Cognito)                                                               | implemented + tested                                         |
+| IAM statement listing, pasted-policy analysis, trust policies                                                                                    | implemented + tested                                         |
+| `AccessDenied` message explanation                                                                                                               | implemented + tested (fixture messages)                      |
+| API authorization matrix (HTTP and REST), JWT and CORS checks                                                                                    | implemented + tested                                         |
+| Exclusions with reason, expiry, and trust rules                                                                                                  | implemented + tested                                         |
+| `threat-model` (hypotheses from declared architecture) and `remediate` (proposals, never applied)                                                | implemented + tested (template-based)                        |
+| `account`: read-only checks of root MFA and keys, password policy, S3 and account Block Public Access, CloudTrail, KMS rotation, Access Analyzer | implemented + tested (fake API) + run live on a real account |
+| `serverless-security-reviewer` agent                                                                                                             | implemented + unverified (not run)                           |
+| Dependency vulnerability audit                                                                                                                   | not yet implemented                                          |
 
 ## aws-testing
 
-| Capability                                                         | Status                                                    |
-| ------------------------------------------------------------------ | --------------------------------------------------------- |
-| `run` with Vitest (real runs), `--affected`, coverage              | implemented + tested                                      |
-| `run` with Jest and `node:test`                                    | implemented + tested (parsers and plan; no real Jest run) |
-| Event fixtures for eight sources with variants and response checks | implemented + tested                                      |
-| `generate cdk-assertions` and `generate handler`                   | implemented + tested                                      |
-| `coverage` summary                                                 | implemented + tested                                      |
-| `integration`, affected-tests hook, `load`, property-based cases   | not yet implemented                                       |
+| Capability                                                                                                                         | Status                                                             |
+| ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `run` with Vitest (real runs), `--affected`, coverage                                                                              | implemented + tested                                               |
+| `run` with Jest and `node:test`                                                                                                    | implemented + tested (parsers and plan; no real Jest run)          |
+| Event fixtures for eight sources with variants and response checks                                                                 | implemented + tested                                               |
+| `generate cdk-assertions` and `generate handler`                                                                                   | implemented + tested                                               |
+| `coverage` summary                                                                                                                 | implemented + tested                                               |
+| `integration`: the user's test command with real credentials, after identity check, non-production check, and sandbox confirmation | implemented + tested (fake runner) + one harmless command run live |
+| Affected-tests hook, `load`, property-based cases                                                                                  | not yet implemented                                                |
 
 ## aws-deploy
 
@@ -77,13 +80,14 @@ This file is updated by the pull request that changes a capability. The per-plug
 
 ## aws-cost
 
-| Capability                                                                     | Status                                                     |
-| ------------------------------------------------------------------------------ | ---------------------------------------------------------- |
-| `estimate` for seven services with tiers, assumptions, exclusions, sensitivity | implemented + tested (golden calculations checked by hand) |
-| `compare`: Lambda memory, architecture, API type                               | implemented + tested                                       |
-| Price snapshot (us-east-1, from the public Price List)                         | implemented + tested (dated snapshot)                      |
-| `analyze` (Cost Explorer), `optimize`, `budgets`, cost-analyst agent           | not yet implemented                                        |
-| Other regions, Express workflows, DynamoDB provisioned, S3, EventBridge        | not yet implemented                                        |
+| Capability                                                                              | Status                                                            |
+| --------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `estimate` for seven services with tiers, assumptions, exclusions, sensitivity          | implemented + tested (golden calculations checked by hand)        |
+| `compare`: Lambda memory, architecture, API type                                        | implemented + tested                                              |
+| Price snapshot (us-east-1, from the public Price List)                                  | implemented + tested (dated snapshot)                             |
+| `analyze` (billed, request-limited, needs approval), `optimize` (hypotheses), `budgets` | implemented + tested (fake API) + run live once on a real account |
+| Cost-analyst agent                                                                      | not yet implemented                                               |
+| Other regions, Express workflows, DynamoDB provisioned, S3, EventBridge                 | not yet implemented                                               |
 
 ## aws-architect
 

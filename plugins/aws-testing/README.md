@@ -9,7 +9,7 @@ Run, generate, and report tests for serverless apps: Lambda handlers, CDK infras
 - **`generate`**: `cdk-assertions` writes a test from a synthesized stack that asserts **policy**, not values (every queue that is not a DLQ has a redrive policy, every function has a timeout, tables have point-in-time recovery, stateful resources are retained, buckets block public access, no policy allows `*` on `*`), so it keeps holding while the app changes. `handler` writes a skeleton test for a handler with the events and assertions for its source, and marks the cases only you can write as `TODO`.
 - **`coverage`**: totals and the least-covered files.
 
-It does not deploy (`aws-deploy`), call AWS, or run integration tests (planned, with explicit approval and limits).
+It does not deploy (`aws-deploy`). `run` never uses AWS credentials; `integration` runs your own test command with real credentials only after the account is verified and you confirm it is a sandbox.
 
 ## Install
 
@@ -59,18 +59,18 @@ Reads the project, runs the test command, and prints its report. Writes only wha
 
 ## Capability matrix
 
-| Capability                                              | Status                                                                                        |
-| ------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `run` with Vitest (real runs), `--affected`, coverage   | implemented + tested                                                                          |
-| `run` with Jest and `node:test`                         | implemented + tested (report parsers and plan; no real Jest run)                              |
-| Event fixtures for eight sources with variants          | implemented + tested                                                                          |
-| SQS partial-batch and API Gateway response validators   | implemented + tested                                                                          |
-| `generate cdk-assertions` and `generate handler`        | implemented + tested (a generated SQS test passes a correct handler and fails a careless one) |
-| `coverage` summary                                      | implemented + tested                                                                          |
-| `integration` tests against an approved sandbox account | not yet implemented                                                                           |
-| Opt-in affected-tests hook                              | not yet implemented                                                                           |
-| `load` tests                                            | not yet implemented                                                                           |
-| Property-based and fuzz generators                      | not yet implemented                                                                           |
+| Capability                                                                                                                                  | Status                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `run` with Vitest (real runs), `--affected`, coverage                                                                                       | implemented + tested                                                                          |
+| `run` with Jest and `node:test`                                                                                                             | implemented + tested (report parsers and plan; no real Jest run)                              |
+| Event fixtures for eight sources with variants                                                                                              | implemented + tested                                                                          |
+| SQS partial-batch and API Gateway response validators                                                                                       | implemented + tested                                                                          |
+| `generate cdk-assertions` and `generate handler`                                                                                            | implemented + tested (a generated SQS test passes a correct handler and fails a careless one) |
+| `coverage` summary                                                                                                                          | implemented + tested                                                                          |
+| `integration` against a sandbox account you name (identity match, production refusal, explicit confirmation, scrubbed environment, timeout) | implemented + tested (fake runner); one harmless command run live                             |
+| Opt-in affected-tests hook                                                                                                                  | not yet implemented                                                                           |
+| `load` tests                                                                                                                                | not yet implemented                                                                           |
+| Property-based and fuzz generators                                                                                                          | not yet implemented                                                                           |
 
 ## Limitations
 

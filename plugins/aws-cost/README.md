@@ -1,6 +1,6 @@
 # aws-cost
 
-Estimate and compare the monthly cost of serverless workloads from **stated inputs and dated AWS list prices**. Every figure is labeled **estimated**, dated, and listed with what it leaves out. It makes no AWS calls and cannot change anything.
+Estimate and compare the monthly cost of serverless workloads from **stated inputs and dated AWS list prices**. Every figure is labeled **estimated**, dated, and listed with what it leaves out. `estimate`, `compare`, and `prices` make no AWS calls. `analyze`, `optimize`, and `budgets` read the account's billed cost (read-only; Cost Explorer bills about a cent per request and the command asks for approval first). Nothing here can change an account.
 
 ## What it does
 
@@ -54,7 +54,7 @@ An estimate is never presented as the invoice. Inputs that are guesses should be
 
 ## AWS permissions
 
-None. This plugin makes no AWS calls.
+`estimate`, `compare`, `prices`: none. `analyze` and `optimize`: `sts:GetCallerIdentity`, `ce:GetCostAndUsage`. `budgets`: `budgets:ViewBudget`.
 
 ## Data and privacy
 
@@ -62,14 +62,15 @@ Reads the workload you give it (inline, or a file inside the project) and prints
 
 ## Capability matrix
 
-| Capability                                                                     | Status                                                     |
-| ------------------------------------------------------------------------------ | ---------------------------------------------------------- |
-| `estimate` for seven services with tiers, assumptions, exclusions, sensitivity | implemented + tested (golden calculations checked by hand) |
-| `compare`: Lambda memory, architecture, API type                               | implemented + tested                                       |
-| Prices: us-east-1 snapshot from the public Price List                          | implemented + tested (dated snapshot)                      |
-| `analyze` (Cost Explorer), `optimize`, `budgets`, the cost-analyst agent       | not yet implemented (0.2)                                  |
-| Other regions, Step Functions Express, DynamoDB provisioned, S3, EventBridge   | not yet implemented                                        |
-| Fetching live prices at run time                                               | not yet implemented                                        |
+| Capability                                                                                                       | Status                                                                 |
+| ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `estimate` for seven services with tiers, assumptions, exclusions, sensitivity                                   | implemented + tested (golden calculations checked by hand)             |
+| `compare`: Lambda memory, architecture, API type                                                                 | implemented + tested                                                   |
+| Prices: us-east-1 snapshot from the public Price List                                                            | implemented + tested (dated snapshot)                                  |
+| `analyze` (Cost Explorer, billed, with a request limit and `--approve-cost`), `optimize` (hypotheses), `budgets` | implemented + tested (fake API) + run once live against a real account |
+| The cost-analyst agent                                                                                           | not yet implemented                                                    |
+| Other regions, Step Functions Express, DynamoDB provisioned, S3, EventBridge                                     | not yet implemented                                                    |
+| Fetching live prices at run time                                                                                 | not yet implemented                                                    |
 
 **Cost Explorer (planned):** AWS charges for each paginated Cost Explorer API request (the documentation puts it at $0.01 and warns specifically about agents). The 0.2 `analyze` takes an explicit query budget, shows it before running, and stops at it.
 

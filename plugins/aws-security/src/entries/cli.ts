@@ -9,6 +9,9 @@ import {
 import { readTextBounded } from "@claude-code-aws/context-contract/node";
 import { executionContext } from "@claude-code-aws/report-contract";
 
+import { resolveSdkRegion } from "@claude-code-aws/aws-client";
+
+import { createAccountApi } from "../lib/account-api.js";
 import { runCli } from "../lib/cli.js";
 import { type Exclusion, parseExclusions } from "../lib/exclusions.js";
 
@@ -38,6 +41,21 @@ try {
   const result = await runCli(process.argv.slice(2), {
     root,
     context: () => executionContext(interpretation),
+    account: {
+      api: (region) => createAccountApi(region),
+      sdkRegion: async () =>
+        (await resolveSdkRegion()) ?? process.env["AWS_DEFAULT_REGION"]?.trim() ?? null,
+      known: () => {
+        const snapshot = interpretation.snapshot;
+        return snapshot?.accountId == null
+          ? null
+          : {
+              accountId: snapshot.accountId,
+              environment: snapshot.environment,
+              profile: snapshot.profile,
+            };
+      },
+    },
     exclusions: () => ({
       exclusions: [...user.exclusions, ...project.exclusions],
       warnings: [...user.warnings, ...project.warnings],
