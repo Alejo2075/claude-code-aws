@@ -122,7 +122,7 @@ IAM, SCPs, and permission boundaries remain the enforcement boundary. This plugi
 
 ## Verify it by hand
 
-1. `claude --plugin-dir plugins/aws-context` after `pnpm build`.
+1. `claude --plugin-dir plugins/core-experience/aws-context` after `pnpm build`.
 2. `/aws-context:status` shows `not-configured` (first run) or the stored state.
 3. With valid credentials, `/aws-context:status refresh` shows `verified`; `account` matches `aws sts get-caller-identity` run in your shell.
 4. Let the SSO session expire, refresh again: `expired`, with the last known account labeled as such.

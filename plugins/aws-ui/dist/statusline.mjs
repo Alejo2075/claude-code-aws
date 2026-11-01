@@ -3,7 +3,7 @@ import { createRequire as __createRequire } from 'node:module'; const require = 
 // src/entries/statusline.ts
 import { fileURLToPath } from "node:url";
 
-// ../../packages/context-contract/src/text.ts
+// ../../../packages/context-contract/src/text.ts
 function trimTrailingSeparators(path, separators = "/") {
   let end = path.length;
   while (end > 0 && separators.includes(path.charAt(end - 1))) end -= 1;
@@ -38,7 +38,7 @@ function clipCodePoints(text, count) {
   return Array.from(text).slice(0, Math.max(0, count)).join("");
 }
 
-// ../../packages/context-contract/src/bar.ts
+// ../../../packages/context-contract/src/bar.ts
 var MAX_NAME = 40;
 function principalName(arn) {
   if (arn === null) return null;
@@ -97,7 +97,7 @@ function formatFooterLine(interpretation, width = 100, options = {}) {
   return line.length <= width ? line : `${line.slice(0, Math.max(1, width - 1))}\u2026`;
 }
 
-// ../../packages/context-contract/src/config.ts
+// ../../../packages/context-contract/src/config.ts
 var MAX_CONFIG_BYTES = 64 * 1024;
 var ACCOUNT_ID = /^\d{12}$/;
 var TOP_LEVEL_KEYS = ["version", "ttlMinutes", "autoRefresh", "accounts", "ui"];
@@ -186,7 +186,7 @@ function parseConfig(text, source) {
   return { layer, warnings };
 }
 
-// ../../packages/context-contract/src/interpret.ts
+// ../../../packages/context-contract/src/interpret.ts
 var FUTURE_SKEW_MS = 6e4;
 function interpret(snapshot, now) {
   const nowMs = typeof now === "number" ? now : now.getTime();
@@ -214,7 +214,7 @@ function interpret(snapshot, now) {
   return make("verified");
 }
 
-// ../../packages/context-contract/src/paths.ts
+// ../../../packages/context-contract/src/paths.ts
 var SNAPSHOT_VERSION_DIR = "v1";
 var stripTrailingSeparators = (path) => trimTrailingSeparators(path, "/\\");
 function nonEmpty(value) {
@@ -243,7 +243,7 @@ function userConfigPath(env2) {
   return root ? `${root}/config.json` : null;
 }
 
-// ../../packages/context-contract/src/types.ts
+// ../../../packages/context-contract/src/types.ts
 var SNAPSHOT_SCHEMA_VERSION = 1;
 var ENVIRONMENTS = ["production", "non-production", "unknown"];
 var VERIFICATIONS = ["verified", "unverified", "expired", "error"];
@@ -260,7 +260,7 @@ var DIAGNOSTIC_CODES = [
   "UNKNOWN_ERROR"
 ];
 
-// ../../packages/context-contract/src/schema.ts
+// ../../../packages/context-contract/src/schema.ts
 var MAX_SNAPSHOT_BYTES = 16 * 1024;
 var KEYS = [
   "schemaVersion",
@@ -366,7 +366,7 @@ function parseSnapshot(text) {
   return validateSnapshot(value);
 }
 
-// ../../packages/context-contract/src/workspace.ts
+// ../../../packages/context-contract/src/workspace.ts
 var WINDOWS_PATH = /^(?:[A-Za-z]:[\\/]|\\\\)/;
 function normalizeWorkspacePath(path) {
   if (WINDOWS_PATH.test(path)) {
@@ -384,7 +384,7 @@ async function workspaceId(path) {
   ).join("");
 }
 
-// ../../packages/context-contract/src/node.ts
+// ../../../packages/context-contract/src/node.ts
 import { closeSync, fstatSync, openSync, readSync } from "node:fs";
 function readTextBounded(path, maxBytes) {
   let fd;
