@@ -681,6 +681,9 @@ importers:
       '@claude-code-aws/context-contract':
         specifier: workspace:*
         version: link:../../packages/context-contract
+      '@claude-code-aws/safe-output':
+        specifier: workspace:*
+        version: link:../../packages/safe-output
       '@claude-code-aws/testkit':
         specifier: workspace:*
         version: link:../../packages/testkit
