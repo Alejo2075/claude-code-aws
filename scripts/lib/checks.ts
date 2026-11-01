@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 import {
@@ -89,10 +89,10 @@ const SKIPPED_DIRS = new Set(["node_modules", "dist", ".git"]);
 export function findTemplateMarkers(dir: string): string[] {
   const hits: string[] = [];
   const walk = (current: string): void => {
-    for (const entry of readdirSync(current)) {
-      if (SKIPPED_DIRS.has(entry)) continue;
-      const path = join(current, entry);
-      if (statSync(path).isDirectory()) {
+    for (const dirent of readdirSync(current, { withFileTypes: true })) {
+      if (SKIPPED_DIRS.has(dirent.name)) continue;
+      const path = join(current, dirent.name);
+      if (dirent.isDirectory()) {
         walk(path);
         continue;
       }

@@ -1,7 +1,7 @@
 // Fails a pull request that changes what a released plugin ships without a changeset for it.
 // Usage: tsx scripts/check-changesets.ts [base-ref]   (default: origin/main)
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 
 import { isShippedPluginPath, parseChangesetPackages } from "./lib/checks.js";
 import { fail, isReleased, listPlugins, REPO_ROOT, run } from "./lib/workspace.js";
@@ -25,13 +25,12 @@ const covered = new Set(
 
 const missing = listPlugins()
   .filter(isReleased)
-  .filter((plugin) =>
-    changed.some(
-      (file) =>
-        file.startsWith(`plugins/${plugin.name}/`) &&
-        isShippedPluginPath(file.slice(`plugins/${plugin.name}/`.length)),
-    ),
-  )
+  .filter((plugin) => {
+    const pluginPath = `${relative(REPO_ROOT, plugin.dir).replaceAll("\\", "/")}/`;
+    return changed.some(
+      (file) => file.startsWith(pluginPath) && isShippedPluginPath(file.slice(pluginPath.length)),
+    );
+  })
   .filter((plugin) => !covered.has(plugin.packageName))
   .map((plugin) => plugin.name);
 

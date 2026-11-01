@@ -11,13 +11,13 @@ pnpm install                 # links the new workspace package
 pnpm build && pnpm test && pnpm validate
 ```
 
-The new plugin is at `plugins/<name>/` with version `0.0.0`. A `0.0.0` plugin is **unreleased**: it stays out of the catalog and the release tree, and it may contain `TEMPLATE-TODO` markers. A plugin is released when a changeset bumps it, normally to `0.1.0`. After that, CI refuses template markers and requires a changeset for every shipped change.
+The scaffold command creates a new plugin under `plugins/development/services/<name>/` with version `0.0.0`. Move it into the matching category or service subcategory before opening a pull request. If the new location has a different depth, update the relative paths in `package.json` and `tsconfig.json`. A `0.0.0` plugin is **unreleased**: it stays out of the catalog and the release tree, and it may contain `TEMPLATE-TODO` markers. A plugin is released when a changeset bumps it, normally to `0.1.0`. After that, CI refuses template markers and requires a changeset for every shipped change.
 
 To try a plugin in a real session without installing it:
 
 ```sh
 pnpm build
-claude --plugin-dir plugins/<name>
+claude --plugin-dir plugins/<category>/<name>
 ```
 
 Inside the session, `/reload-plugins` picks up rebuilt files.
@@ -42,11 +42,11 @@ The release tree contains only the allowlist in [`scripts/lib/release.ts`](../sc
 
 ## Plugins with a mod
 
-A mod is a plugin whose `hooks/hooks.json` has `"modules": ["<path>"]`. It runs inside Claude Code, so the rules differ from a command hook ([mods overview](https://code.claude.com/docs/en/plugins/mods)). [`aws-ui`](../plugins/aws-ui) is the worked example.
+A mod is a plugin whose `hooks/hooks.json` has `"modules": ["<path>"]`. It runs inside Claude Code, so the rules differ from a command hook ([mods overview](https://code.claude.com/docs/en/plugins/mods)). [`aws-ui`](../plugins/core-experience/aws-ui) is the worked example.
 
 - **Source and build.** Write the module as `src/mod/register.ts`. `pnpm build` bundles it to `dist/register.js` (platform-neutral ESM, **not minified**) and `hooks/hooks.json` points to `../dist/register.js`. `claude plugin validate` reads `$.namespace.method` calls statically, so keep `$` unaliased, write event names as string literals, and pass `$` only to top-level functions of the same file.
 - **No Node APIs.** A mod has no `fs`, `process`, or network of its own; it uses `$.fs`, `$.env`, `$.http`, and so on. Bundle shared packages (the contract package is pure and works in both places).
-- **Least surface.** `claude plugin validate` prints the events a mod handles and every call it makes. Add a test that fails when a call it should never make appears (see `plugins/aws-ui/test/mod-surface.spec.ts`).
+- **Least surface.** `claude plugin validate` prints the events a mod handles and every call it makes. Add a test that fails when a call it should never make appears (see `plugins/core-experience/aws-ui/test/mod-surface.spec.ts`).
 - **Tests.** `claude plugin test` (run by `pnpm test:mods`, which calls each plugin's `test:mod` script) loads the module with a stubbed Claude Code. Put those files in `mod-tests/` as `*.test.ts`. It runs **every** `*.test.ts` in the plugin directory, so name vitest files in such a plugin `*.spec.ts` (the root vitest config picks up both).
 - **Fallbacks.** Mods do not draw in `claude -p`, the Agent SDK, cloud sessions, or WSL sessions of the Desktop app, and each render site is raised only on some surfaces. Provide a text command or an opt-in status line, and document which surfaces are verified.
 - **Never edit the user's settings.** A plugin cannot set the main status line. Print a snippet and let the user apply it.
@@ -68,7 +68,7 @@ A mod is a plugin whose `hooks/hooks.json` has `"modules": ["<path>"]`. It runs 
 
 | Layer         | Tool                                                          | Runs                                                                                                                                                                                                                                                          |
 | ------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Unit          | Vitest, `plugins/<name>/test/**/*.test.ts`                    | Every PR, all OS × Node 22/24                                                                                                                                                                                                                                 |
+| Unit          | Vitest, `plugins/**/test/**/*.test.ts`                        | Every PR, all OS × Node 22/24                                                                                                                                                                                                                                 |
 | Hook contract | `@claude-code-aws/testkit` `runPluginHooks` / `runHookScript` | Every PR. Spawns the bundled hook from `hooks.json` with documented stdin and checks exit code, JSON, timeout, and secret-like output.                                                                                                                        |
 | Packaging     | `pnpm build:release && pnpm test:packaging`                   | Every PR. Installs released plugins from a local git marketplace into an isolated `CLAUDE_CONFIG_DIR`, runs their hooks from the cache, then disables, enables, and uninstalls them.                                                                          |
 | Pipeline      | `pnpm test:pipeline`                                          | Every PR. Proves the template still produces a releasable plugin.                                                                                                                                                                                             |
@@ -76,7 +76,7 @@ A mod is a plugin whose `hooks/hooks.json` has `"modules": ["<path>"]`. It runs 
 | Behavior      | `claude plugin eval` (`evals.yml`)                            | On demand and nightly. Uses real model calls with a cost ceiling.                                                                                                                                                                                             |
 | AWS sandbox   | `aws-sandbox.yml`                                             | Manual, approval-gated, read-only OIDC role.                                                                                                                                                                                                                  |
 
-Hooks run by the testkit never see the developer's real home directory: `HOME` and `USERPROFILE` point to a fresh temporary directory, instance metadata is disabled, and AWS variables are not inherited, so a hook under test cannot read real AWS profiles or credentials. A test that needs AWS-shaped input sets it explicitly through `env`, with fixtures or a loopback fake (see `plugins/aws-context/test/integration.test.ts`).
+Hooks run by the testkit never see the developer's real home directory: `HOME` and `USERPROFILE` point to a fresh temporary directory, instance metadata is disabled, and AWS variables are not inherited, so a hook under test cannot read real AWS profiles or credentials. A test that needs AWS-shaped input sets it explicitly through `env`, with fixtures or a loopback fake (see `plugins/core-experience/aws-context/test/integration.test.ts`).
 
 Negative tests are mandatory for anything touching AWS: wrong account, wrong region, expired credentials, missing permissions, unavailable data, and attempted unsafe mutations. Use sanitized fixtures under `plugins/<name>/test/fixtures/` or `tests/fixtures/`. They must never contain real account IDs, ARNs, or credentials. `findSecretLikeStrings` from the testkit catches common credential shapes.
 

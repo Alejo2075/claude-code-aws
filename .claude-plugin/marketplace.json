@@ -1,6 +1,6 @@
 {
   "name": "claude-code-aws",
-  "description": "Independently installable Claude Code plugins for AWS development. Plugins are listed only after they pass tests and the installed-from-cache check.",
+  "description": "Independently installable Claude Code plugins for the serverless application lifecycle on AWS. Plugins are listed only after they pass tests and the installed-from-cache check.",
   "owner": {
     "name": "Alejandro Santana",
     "email": "alejsant75@gmail.com",
@@ -18,7 +18,7 @@
       },
       "keywords": ["aws", "identity", "sts", "context"],
       "license": "MIT",
-      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-context#readme"
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/core-experience/aws-context#readme"
     },
     {
       "name": "aws-ui",
@@ -31,7 +31,7 @@
       },
       "keywords": ["aws", "context", "status-line", "mod"],
       "license": "MIT",
-      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/aws-ui#readme"
+      "homepage": "https://github.com/Alejo2075/claude-code-aws/tree/main/plugins/core-experience/aws-ui#readme"
     }
   ]
 }

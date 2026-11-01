@@ -1,4 +1,4 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "__WORKSPACE_ROOT_RELATIVE__/tsconfig.base.json",
   "include": ["src/**/*.ts", "test/**/*.ts"]
 }

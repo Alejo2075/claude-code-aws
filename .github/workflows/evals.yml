@@ -42,7 +42,7 @@ jobs:
           if [ -n "$ONLY" ] && ! printf '%s' "$ONLY" | grep -Eq '^[a-z0-9]+(-[a-z0-9]+)*$'; then
             echo "invalid plugin name" >&2; exit 1
           fi
-          list=$(for d in plugins/*/evals; do [ -d "$d" ] && basename "$(dirname "$d")"; done | { [ -n "$ONLY" ] && grep -x "$ONLY" || cat; })
+          list=$(find plugins -type d -name evals -print | while IFS= read -r d; do basename "$(dirname "$d")"; done | { [ -n "$ONLY" ] && grep -x "$ONLY" || cat; })
           echo "plugins=$(printf '%s\n' $list | jq -R . | jq -cs 'map(select(length > 0))')" >> "$GITHUB_OUTPUT"
 
   eval:

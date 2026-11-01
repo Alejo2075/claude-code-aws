@@ -2,13 +2,18 @@
 import { join, relative } from "node:path";
 
 import { scaffoldPlugin } from "./lib/scaffold.js";
-import { fail, REPO_ROOT, run } from "./lib/workspace.js";
+import { fail, listPlugins, REPO_ROOT, run } from "./lib/workspace.js";
 
 const [name, description] = process.argv.slice(2);
 if (!name || !description) fail('usage: pnpm new:plugin <name> "<one-line description>"');
+if (listPlugins().some((plugin) => plugin.name === name)) fail(`plugin "${name}" already exists`);
 
 try {
-  const dir = scaffoldPlugin({ name, description });
+  const dir = scaffoldPlugin({
+    name,
+    description,
+    pluginsRoot: join(REPO_ROOT, "plugins", "development", "services"),
+  });
   // Templates are excluded from Prettier because their placeholders are not valid Markdown names.
   run(process.execPath, [
     join(REPO_ROOT, "node_modules", "prettier", "bin", "prettier.cjs"),

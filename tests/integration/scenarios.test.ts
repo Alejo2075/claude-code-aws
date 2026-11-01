@@ -3,6 +3,7 @@
 // user would. Nothing here calls AWS.
 import {
   cpSync,
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readdirSync,
@@ -15,13 +16,13 @@ import { join } from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { runCli as architect } from "../../plugins/aws-architect/src/lib/cli.js";
-import { runCli as diagrams } from "../../plugins/aws-diagrams/src/lib/cli.js";
-import { runCli as events } from "../../plugins/aws-events/src/lib/cli.js";
-import { runCli as prototyping } from "../../plugins/aws-prototyping/src/lib/cli.js";
-import { runCli as security } from "../../plugins/aws-security/src/lib/cli.js";
-import { runCli as wellArchitected } from "../../plugins/aws-well-architected/src/lib/cli.js";
-import { runCli as workflows } from "../../plugins/aws-workflows/src/lib/cli.js";
+import { runCli as architect } from "../../plugins/design/aws-architect/src/lib/cli.js";
+import { runCli as diagrams } from "../../plugins/design/aws-diagrams/src/lib/cli.js";
+import { runCli as events } from "../../plugins/development/events/aws-events/src/lib/cli.js";
+import { runCli as prototyping } from "../../plugins/design/aws-prototyping/src/lib/cli.js";
+import { runCli as security } from "../../plugins/quality-operations/aws-security/src/lib/cli.js";
+import { runCli as wellArchitected } from "../../plugins/design/aws-well-architected/src/lib/cli.js";
+import { runCli as workflows } from "../../plugins/development/orchestration/aws-workflows/src/lib/cli.js";
 
 const FIXTURES = join(import.meta.dirname, "..", "fixtures", "serverless");
 const NOW = new Date("2026-10-31T00:00:00Z");
@@ -251,6 +252,20 @@ describe("the ownership rules hold", () => {
     "aws-config",
   ];
   const sources = (plugin: string): string[] => {
+    const pluginsRoot = join(import.meta.dirname, "..", "..", "plugins");
+    const locate = (dir: string): string | undefined => {
+      const manifest = join(dir, ".claude-plugin", "plugin.json");
+      if (existsSync(manifest)) {
+        const metadata = JSON.parse(readFileSync(manifest, "utf8")) as { name?: string };
+        if (metadata.name === plugin) return dir;
+      }
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        if (!entry.isDirectory()) continue;
+        const found = locate(join(dir, entry.name));
+        if (found) return found;
+      }
+      return undefined;
+    };
     const walk = (dir: string): string[] =>
       readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
         e.isDirectory()
@@ -259,7 +274,9 @@ describe("the ownership rules hold", () => {
             ? [join(dir, e.name)]
             : [],
       );
-    return walk(join(import.meta.dirname, "..", "..", "plugins", plugin, "src"));
+    const pluginDir = locate(pluginsRoot);
+    if (!pluginDir) throw new Error(`plugin not found: ${plugin}`);
+    return walk(join(pluginDir, "src"));
   };
 
   it("none of the seventeen new plugins imports an AWS SDK client: they cannot call AWS", () => {

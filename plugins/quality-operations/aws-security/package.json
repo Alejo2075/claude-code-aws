@@ -1,0 +1,29 @@
+{
+  "name": "aws-security",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Audit CDK templates and, read-only, the account for security problems: IAM, public exposure, API authorization, secrets, with evidence. Advisory only.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsx ../../../scripts/build-plugin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-accessanalyzer": "3.1161.0",
+    "@aws-sdk/client-cloudtrail": "3.1161.0",
+    "@aws-sdk/client-iam": "3.1161.0",
+    "@aws-sdk/client-kms": "3.1161.0",
+    "@aws-sdk/client-s3": "3.1161.0",
+    "@aws-sdk/client-s3-control": "3.1161.0",
+    "@aws-sdk/client-sts": "3.1158.0",
+    "@claude-code-aws/architecture-graph": "workspace:*",
+    "@claude-code-aws/aws-client": "workspace:*",
+    "@claude-code-aws/context-contract": "workspace:*",
+    "@claude-code-aws/report-contract": "workspace:*",
+    "@claude-code-aws/safe-output": "workspace:*",
+    "@claude-code-aws/template-analysis": "workspace:*",
+    "@claude-code-aws/testkit": "workspace:*",
+    "@claude-code-aws/tool-runner": "workspace:*"
+  }
+}

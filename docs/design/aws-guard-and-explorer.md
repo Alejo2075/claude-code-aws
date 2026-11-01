@@ -22,12 +22,12 @@ User / Claude ──► /aws-explorer:explore ──► aws-explorer CLI ──�
                                                     └──► redacted, bounded report (and, later, a local cache for a panel)
 ```
 
-| Unit                        | Kind             | Responsibility                                                                                                                                                                  |
-| --------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `plugins/aws-guard`         | plugin           | `PreToolUse` hook that classifies AWS-affecting tool calls and returns `ask` or `deny`; a `check` skill that explains a decision without running anything. No AWS calls at all. |
-| `plugins/aws-explorer`      | plugin           | Read-only CLI and skill to browse stacks, stack resources, events, outputs, and resource properties, for one verified account and one explicit region.                          |
-| `packages/aws-client`       | internal library | STS verification, region resolution, error classification, safe client settings, pagination. Extracted from `aws-context`, now needed by two plugins.                           |
-| `packages/context-contract` | internal library | Unchanged contract; `aws-guard` reads the snapshot through it.                                                                                                                  |
+| Unit                                   | Kind             | Responsibility                                                                                                                                                                  |
+| -------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plugins/core-experience/aws-guard`    | plugin           | `PreToolUse` hook that classifies AWS-affecting tool calls and returns `ask` or `deny`; a `check` skill that explains a decision without running anything. No AWS calls at all. |
+| `plugins/core-experience/aws-explorer` | plugin           | Read-only CLI and skill to browse stacks, stack resources, events, outputs, and resource properties, for one verified account and one explicit region.                          |
+| `packages/aws-client`                  | internal library | STS verification, region resolution, error classification, safe client settings, pagination. Extracted from `aws-context`, now needed by two plugins.                           |
+| `packages/context-contract`            | internal library | Unchanged contract; `aws-guard` reads the snapshot through it.                                                                                                                  |
 
 Names follow the existing `aws-` prefix. Neither plugin depends on the other or on `aws-context` at runtime. `aws-guard` is stricter when `aws-context` is missing (identity unknown), not weaker.
 
@@ -184,7 +184,7 @@ A mod pane that browses stacks → resources → properties. A mod has no networ
 
 ## 4. Shared library `packages/aws-client`
 
-Moved out of `plugins/aws-context/src/lib/{sts,diagnostics}.ts`, with no behavior change for `aws-context` (its tests guard that): `verifyIdentity`, `resolveRegion`, `classifyError` and its closed codes, `clientDefaults` (timeouts, `maxAttempts`, adaptive retry), and a `paginate` helper with item and time limits. Bundled into each plugin; never loaded from `../../packages` at runtime.
+Moved out of `plugins/core-experience/aws-context/src/lib/{sts,diagnostics}.ts`, with no behavior change for `aws-context` (its tests guard that): `verifyIdentity`, `resolveRegion`, `classifyError` and its closed codes, `clientDefaults` (timeouts, `maxAttempts`, adaptive retry), and a `paginate` helper with item and time limits. Bundled into each plugin; never loaded from `../../packages` at runtime.
 
 ## 5. Tests
 

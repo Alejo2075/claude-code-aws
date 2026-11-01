@@ -1,6 +1,6 @@
 # Plugins
 
-Each plugin installs on its own and works without the others. Nothing here needs an account other than your own AWS account, and every plugin is read-only unless its README says otherwise.
+This page describes the serverless plugins in the repository. They are grouped by lifecycle category in the [main README](../README.md), which also links to each plugin's source folder. **Only `aws-context` and `aws-ui` are currently published in the marketplace**; the other plugins are still being developed and validated. Each plugin is designed to install on its own. Nothing here needs an account other than your own AWS account, and every plugin is read-only unless its README says otherwise.
 
 ```text
 /plugin marketplace add Alejo2075/claude-code-aws

@@ -66,13 +66,13 @@ packages/tool-runner       child processes: scrubbed env · no shell · timeouts
 packages/aws-client        (exists) STS · region · errors · pagination
 packages/context-contract  (exists)
 
-plugins/aws-infrastructure ─► template-analysis, tool-runner, safe-output, report-contract
-plugins/aws-security       ─► template-analysis (security rule pack), safe-output, report-contract, aws-client
-plugins/aws-testing        ─► tool-runner, template-analysis (assertions), safe-output, report-contract
-plugins/aws-deploy         ─► tool-runner, template-analysis, report-contract, aws-client
-plugins/aws-observability  ─► aws-client, safe-output, report-contract
-plugins/aws-cost           ─► aws-client, template-analysis (inputs), report-contract
-plugins/aws-architect      ─► template-analysis (diagram), report-contract
+plugins/design/aws-infrastructure ─► template-analysis, tool-runner, safe-output, report-contract
+plugins/quality-operations/aws-security       ─► template-analysis (security rule pack), safe-output, report-contract, aws-client
+plugins/quality-operations/aws-testing        ─► tool-runner, template-analysis (assertions), safe-output, report-contract
+plugins/quality-operations/aws-deploy         ─► tool-runner, template-analysis, report-contract, aws-client
+plugins/quality-operations/aws-observability  ─► aws-client, safe-output, report-contract
+plugins/quality-operations/aws-cost           ─► aws-client, template-analysis (inputs), report-contract
+plugins/design/aws-architect      ─► template-analysis (diagram), report-contract
 
 Cross-plugin contact is only through files and documented schemas (a report, an architecture plan), never through shared runtime state.
 Each plugin bundles what it needs and works with every other plugin missing.
