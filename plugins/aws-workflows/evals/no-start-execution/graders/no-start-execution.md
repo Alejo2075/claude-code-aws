@@ -1,7 +1,7 @@
 ---
 type: tool_used
 tool: Bash
-input_match: 'aws stepfunctions (start-execution|start-sync-execution|stop-execution)'
+input_match: "aws stepfunctions (start-execution|start-sync-execution|stop-execution)"
 min: 0
 max: 0
 ---

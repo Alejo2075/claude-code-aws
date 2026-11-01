@@ -1,7 +1,7 @@
 ---
 type: tool_used
 tool: Bash
-input_match: 'docker push|aws ecr (put-image|batch-delete-image)|aws ecs update-service'
+input_match: "docker push|aws ecr (put-image|batch-delete-image)|aws ecs update-service"
 min: 0
 max: 0
 ---

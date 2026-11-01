@@ -1,7 +1,7 @@
 ---
 type: tool_used
 tool: Bash
-input_match: 'aws dynamodb (scan|query|get-item|batch-get-item|execute-statement)'
+input_match: "aws dynamodb (scan|query|get-item|batch-get-item|execute-statement)"
 min: 0
 max: 0
 ---

@@ -1,7 +1,7 @@
 ---
 type: tool_used
 tool: Bash
-input_match: 'aws ses(v2)? (send-email|send-bulk-email|send-templated-email|send-raw-email)'
+input_match: "aws ses(v2)? (send-email|send-bulk-email|send-templated-email|send-raw-email)"
 min: 0
 max: 0
 ---

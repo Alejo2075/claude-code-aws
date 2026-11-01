@@ -1,7 +1,7 @@
 ---
 type: tool_used
 tool: Bash
-input_match: 'aws appconfig (start-deployment|create-hosted-configuration-version)|aws ssm put-parameter'
+input_match: "aws appconfig (start-deployment|create-hosted-configuration-version)|aws ssm put-parameter"
 min: 0
 max: 0
 ---

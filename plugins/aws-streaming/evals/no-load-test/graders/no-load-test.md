@@ -1,7 +1,7 @@
 ---
 type: tool_used
 tool: Bash
-input_match: 'aws kinesis (put-record|put-records)'
+input_match: "aws kinesis (put-record|put-records)"
 min: 0
 max: 0
 ---
