@@ -24,7 +24,7 @@ describe.runIf(bundled && hasClaude)("aws-ui mod surface", () => {
 
   it("handles only the events it needs", () => {
     expect(line(output(), "hooks:")).toMatch(
-      /hooks: session\.start, ui\.render\{component=SessionMode\}, ui\.render\{component=PromptHint\}$/,
+      /hooks: command\.run\{command=aws-report\}, ui\.render\{component=Pane, requestId=aws-report\}, session\.start, ui\.render\{component=SessionMode\}, ui\.render\{component=PromptHint\}$/,
     );
   });
 
@@ -43,8 +43,6 @@ describe.runIf(bundled && hasClaude)("aws-ui mod surface", () => {
       "$.session.messages",
       "$.fs.write",
       "$.settings",
-      "$.ui.resolve",
-      "$.ui.open",
       "$.ui.status",
       "$.ui.toast",
       "$.store",
@@ -52,6 +50,19 @@ describe.runIf(bundled && hasClaude)("aws-ui mod surface", () => {
     ]) {
       expect(calls).not.toContain(forbidden);
     }
+  });
+
+  it("adds only the report pane: a command, a pane, and file reads of the one file you name", () => {
+    const calls = line(output(), "calls:");
+    for (const allowed of [
+      "$.command.register",
+      "$.ui.open",
+      "$.ui.resolve",
+      "$.fs.read",
+      "$.fs.stat",
+    ])
+      expect(calls).toContain(allowed);
+    expect(calls).not.toContain("$.command.run");
   });
 
   it("reads only the variables that locate Claude's config directory", () => {

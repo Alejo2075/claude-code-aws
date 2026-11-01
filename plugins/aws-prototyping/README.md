@@ -41,15 +41,15 @@ No hook, agent, or MCP server. (The spec allows an optional prototype agent; it 
 
 ## Capability matrix
 
-| Capability                                                               | Status                                                      |
-| ------------------------------------------------------------------------ | ----------------------------------------------------------- |
-| `start`, `validate`, manifest bounds, secret and wildcard scan           | implemented + tested                                        |
-| Local queue model, `experiment`, `record`, `compare` (sources apart)     | implemented + tested (model hand-checked on limiting cases) |
-| `sandbox-plan`, `cleanup-plan`, `promote` (plans only)                   | implemented + tested                                        |
-| The model reflects real Lambda/SQS behavior (cold starts, scaling ramps) | no: a simple FIFO worker model; see Limitations             |
-| Running a prototype on AWS                                               | not implemented here by design; use `aws-deploy`            |
-| Models for APIs, workflows, Bedrock latency                              | not yet implemented (only the queue model)                  |
-| Evals for the skills                                                     | implemented + unverified (evals not run)                    |
+| Capability                                                               | Status                                                           |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| `start`, `validate`, manifest bounds, secret and wildcard scan           | implemented + tested                                             |
+| Local queue model, `experiment`, `record`, `compare` (sources apart)     | implemented + tested (model hand-checked on limiting cases)      |
+| `sandbox-plan`, `cleanup-plan`, `promote` (plans only)                   | implemented + tested                                             |
+| The model reflects real Lambda/SQS behavior (cold starts, scaling ramps) | no: a simple FIFO worker model; see Limitations                  |
+| Running a prototype on AWS                                               | not implemented here by design; use `aws-deploy`                 |
+| Models for APIs, workflows, Bedrock latency                              | not yet implemented (only the queue model)                       |
+| Evals for the skills                                                     | implemented + tested (evals: one run each, passed on 2026-11-01) |
 
 ## Limitations
 

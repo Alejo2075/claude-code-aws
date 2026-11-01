@@ -24,6 +24,7 @@ import {
 } from "@claude-code-aws/context-contract";
 
 import type { HintEvent, ModApi, ModeEvent } from "./api.js";
+import { type PaneApi, registerPanel, registerReportCommand } from "./panel.js";
 
 /** How often the snapshot is checked. Cheap (one stat); no AWS and no process spawn. */
 const POLL_MS = 5000;
@@ -140,8 +141,10 @@ function roomFor(e: ModeEvent): number {
 }
 
 export function register(on: (...args: unknown[]) => unknown): void {
+  registerPanel(on);
   on("session.start", async ($: ModApi, e: unknown, next: (e: unknown) => unknown) => {
     // A failure to read must never stop the session or the mod: the footer just shows nothing.
+    await registerReportCommand($ as unknown as PaneApi).catch(() => undefined);
     await refreshFromDisk($).catch(() => undefined);
     poller?.cancel();
     poller = $.clock.every(POLL_MS, () => {

@@ -13,6 +13,8 @@ import { loadStacks } from "@claude-code-aws/template-analysis/node";
 import { runRules } from "@claude-code-aws/template-analysis";
 import { isInside } from "@claude-code-aws/tool-runner";
 
+import { analyzeAccount } from "./account.js";
+import type { AccountApi } from "./account-api.js";
 import { authMatrix, renderAuth } from "./auth.js";
 import { remediation, STRIDE_NOTE, threatModel } from "./threat.js";
 import { explainDenied } from "./denied.js";
@@ -29,6 +31,7 @@ export const USAGE = `Usage: aws-security <command> [options]
   iam --policy <file> [--trust|--resource]   The same for one policy document (identity policy by default)
   iam --explain "<AccessDenied message>"     What the message says, and a starting point for a fix
   auth [path]                           Which API routes have an authorizer, JWT settings, CORS
+  account [--region <r>]                Read-only checks of what the account has switched on (root MFA, trails, public access, keys, Access Analyzer)
   threat-model [path]                   Entry points, trust boundaries, and candidate attack paths (hypotheses)
   remediate [path]                      Proposed fixes for the audit findings (nothing is applied)
 
@@ -41,7 +44,18 @@ export interface CliResult {
   stdout: string;
 }
 
+export interface AccountDeps {
+  api: (region: string) => AccountApi;
+  sdkRegion: () => Promise<string | null>;
+  known: () => {
+    accountId: string;
+    environment: ExecutionContext["environment"];
+    profile: string | null;
+  } | null;
+}
+
 export interface CliDeps {
+  account?: AccountDeps;
   root: string;
   context: () => ExecutionContext;
   /** Exclusions already read from the user and project files, and their warnings. */
@@ -77,8 +91,9 @@ function readPolicyFile(root: string, path: string): { text: string | null; erro
   };
 }
 
-export function runCli(argv: readonly string[], deps: CliDeps): Promise<CliResult> {
-  return Promise.resolve(run(argv, deps));
+export async function runCli(argv: readonly string[], deps: CliDeps): Promise<CliResult> {
+  if (argv[0] === "account") return accountCommand(argv, deps);
+  return run(argv, deps);
 }
 
 function run(argv: readonly string[], deps: CliDeps): CliResult {
@@ -92,7 +107,7 @@ function run(argv: readonly string[], deps: CliDeps): CliResult {
     }
     const name = arg.slice(2);
     if (["json", "trust", "resource"].includes(name)) options.set(name, true);
-    else if (["policy", "explain"].includes(name)) {
+    else if (["policy", "explain", "region"].includes(name)) {
       const value = argv[i + 1];
       if (value === undefined) return usageError(`--${name} needs a value`);
       options.set(name, value);
@@ -317,5 +332,82 @@ function run(argv: readonly string[], deps: CliDeps): CliResult {
 
     default:
       return { exitCode: 2, stdout: USAGE };
+  }
+}
+
+const REGION = /^[a-z]{2}(-[a-z]+)+-\d$/;
+
+async function accountCommand(argv: readonly string[], deps: CliDeps): Promise<CliResult> {
+  const json = argv.includes("--json");
+  const at = argv.indexOf("--region");
+  const wanted = at >= 0 ? argv[at + 1] : undefined;
+  if (at >= 0 && (wanted === undefined || !REGION.test(wanted)))
+    return usageError("--region needs a valid region such as us-east-1");
+  const account = deps.account;
+  if (account === undefined)
+    return usageError("account checks are not available in this environment");
+  const region = wanted ?? (await account.sdkRegion());
+  if (region === null) return usageError("no region: set AWS_REGION or pass --region");
+  const api = account.api(region);
+  const now = deps.now ?? new Date();
+  try {
+    let accountId: string;
+    let context: ExecutionContext;
+    try {
+      const identity = await api.identity();
+      accountId = identity.accountId;
+      const known = account.known();
+      context = {
+        accountId,
+        region,
+        profile: known?.accountId === accountId ? known.profile : null,
+        identityVerified: true,
+        environment: known?.accountId === accountId ? known.environment : "unknown",
+      };
+    } catch {
+      return {
+        exitCode: 1,
+        stdout:
+          "The AWS identity could not be verified with STS, so no account check was made. Check your credentials (aws-context status).",
+      };
+    }
+    const { facts, calls } = await api.facts(accountId);
+    const result = analyzeAccount(accountId, facts, now.toISOString());
+    const { kept, suppressed } = applyExclusions(
+      result.findings,
+      deps.exclusions().exclusions,
+      now,
+    );
+    const report = buildReport({
+      plugin: PLUGIN,
+      context,
+      mode: "read-only-cloud",
+      summary: `${kept.length} finding(s) from ${result.read.length} account setting(s) read in ${region}; ${result.unread.length} could not be read.`,
+      findings: kept,
+      limitations: [
+        `Read-only: ${calls} API read call(s) in one account and Region (plus STS). Nothing was changed.`,
+        ...(result.unread.length === 0
+          ? []
+          : [
+              "Could not be read, so NOT judged (a missing permission is not a pass):",
+              ...result.unread.map((u) => `  ${u}`),
+            ]),
+        "Checked: " + (result.read.join("; ") || "nothing"),
+        "Not checked: IAM users and roles in depth (use /aws-security:iam on the code), Security Hub, GuardDuty, Config, organization policies, other Regions, and resource-level settings beyond those listed.",
+        "Not an enforcement boundary: IAM policies and SCPs are.",
+        ...suppressed.map(
+          ({ finding, exclusion }) =>
+            `Hidden by your ${exclusion.source} exclusion: ${finding.ruleId} (${exclusion.reason}).`,
+        ),
+      ],
+      suppressed: suppressed.length,
+      now,
+    });
+    return {
+      exitCode: 0,
+      stdout: json ? JSON.stringify(report, null, 2) : plain(renderReport(report)),
+    };
+  } finally {
+    api.close();
   }
 }

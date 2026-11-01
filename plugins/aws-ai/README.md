@@ -49,7 +49,7 @@ Every result says whether it comes from code or templates (declared), a fixture,
 | `inspect`: 6 rule ids over declared Bedrock resources and model permissions            | implemented + tested                                                                                   |
 | `budget`: estimate from user-supplied prices (hand-checked)                            | implemented + tested                                                                                   |
 | `chunk`, `prompt-check`, `rag-review`, `agent-review`, `eval-scaffold`, `availability` | implemented + tested                                                                                   |
-| `bedrock-engineer` agent and evals                                                     | implemented + unverified (evals not run)                                                               |
+| `bedrock-engineer` agent and evals                                                     | implemented + tested (evals: one run each, passed on 2026-11-01)                                       |
 | Invoking models, reading quotas or model access, AgentCore runtime inspection          | not implemented by design / not yet implemented                                                        |
 | Live inspection through the AWS SDK                                                    | not yet implemented (first release is local-first: no real account was available to verify an adapter) |
 

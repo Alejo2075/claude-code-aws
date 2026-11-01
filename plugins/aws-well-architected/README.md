@@ -48,7 +48,7 @@ No hook, no MCP server.
 | Six pillars, 30 questions (13 evaluated from templates), evidence strengths  | implemented + tested                                                                 |
 | Specialist report merge (`aws-security`, `aws-observability`) by rule id     | implemented + tested (hand-built reports; real plugin output not exercised together) |
 | Backlog, improvement plan, compare, stale and conflicting evidence           | implemented + tested                                                                 |
-| `well-architected-reviewer` agent and two evals                              | implemented + unverified (evals not run)                                             |
+| `well-architected-reviewer` agent and two evals                              | implemented + tested (evals: one run each, passed on 2026-11-01)                     |
 | Questions are paraphrases of the pillar guidance, not the official WAFR text | by design; the official framework has many more questions                            |
 | Reading evidence from the account itself; AWS Well-Architected Tool records  | not yet implemented                                                                  |
 

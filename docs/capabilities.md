@@ -20,39 +20,42 @@ This file is updated by the pull request that changes a capability. The per-plug
 
 ## aws-infrastructure
 
-| Capability                                                        | Status                                         |
-| ----------------------------------------------------------------- | ---------------------------------------------- |
-| Inventory, graph, stateful resources from `cdk.out` or a template | implemented + tested                           |
-| Safe `synth` and failure diagnostics                              | implemented + tested (against a fake `cdk`)    |
-| Template diff, replacement and deletion risk, rename detection    | implemented + tested                           |
-| `diff --deployed`                                                 | implemented + unverified (fake endpoints only) |
-| Nine operational-quality rules                                    | implemented + tested                           |
-| Scaffolds: queue-lambda-dynamodb, http-api-cognito, s3-sqs-lambda | implemented + tested                           |
-| Change-set backed diff                                            | not yet implemented                            |
-| `refactor`, drift detection, CDK upgrade checks, multi-account    | not yet implemented                            |
+| Capability                                                        | Status                                                                   |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Inventory, graph, stateful resources from `cdk.out` or a template | implemented + tested                                                     |
+| Safe `synth` and failure diagnostics                              | implemented + tested (against a fake `cdk`)                              |
+| Template diff, replacement and deletion risk, rename detection    | implemented + tested                                                     |
+| `diff --deployed`                                                 | implemented + tested (fakes) + run live read-only against a real account |
+| Nine operational-quality rules                                    | implemented + tested                                                     |
+| Scaffolds: queue-lambda-dynamodb, http-api-cognito, s3-sqs-lambda | implemented + tested                                                     |
+| Change-set backed diff                                            | not yet implemented                                                      |
+| `refactor`, drift detection, CDK upgrade checks, multi-account    | not yet implemented                                                      |
 
 ## aws-security
 
-| Capability                                                                                        | Status                                  |
-| ------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| Twenty template rules (IAM, resource policies, S3, Lambda, API, KMS, SNS, Cognito)                | implemented + tested                    |
-| IAM statement listing, pasted-policy analysis, trust policies                                     | implemented + tested                    |
-| `AccessDenied` message explanation                                                                | implemented + tested (fixture messages) |
-| API authorization matrix (HTTP and REST), JWT and CORS checks                                     | implemented + tested                    |
-| Exclusions with reason, expiry, and trust rules                                                   | implemented + tested                    |
-| `threat-model` (hypotheses from declared architecture) and `remediate` (proposals, never applied) | implemented + tested (template-based)   |
-| Live-account checks, reviewer agent, dependency audit                                             | not yet implemented                     |
+| Capability                                                                                                                                       | Status                                                           |
+| ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| Twenty template rules (IAM, resource policies, S3, Lambda, API, KMS, SNS, Cognito)                                                               | implemented + tested                                             |
+| IAM statement listing, pasted-policy analysis, trust policies                                                                                    | implemented + tested                                             |
+| `AccessDenied` message explanation                                                                                                               | implemented + tested (fixture messages)                          |
+| API authorization matrix (HTTP and REST), JWT and CORS checks                                                                                    | implemented + tested                                             |
+| Exclusions with reason, expiry, and trust rules                                                                                                  | implemented + tested                                             |
+| `threat-model` (hypotheses from declared architecture) and `remediate` (proposals, never applied)                                                | implemented + tested (template-based)                            |
+| `account`: read-only checks of root MFA and keys, password policy, S3 and account Block Public Access, CloudTrail, KMS rotation, Access Analyzer | implemented + tested (fake API) + run live on a real account     |
+| `serverless-security-reviewer` agent                                                                                                             | implemented + tested (evals: one run each, passed on 2026-11-01) |
+| Dependency vulnerability audit                                                                                                                   | not yet implemented                                              |
 
 ## aws-testing
 
-| Capability                                                         | Status                                                    |
-| ------------------------------------------------------------------ | --------------------------------------------------------- |
-| `run` with Vitest (real runs), `--affected`, coverage              | implemented + tested                                      |
-| `run` with Jest and `node:test`                                    | implemented + tested (parsers and plan; no real Jest run) |
-| Event fixtures for eight sources with variants and response checks | implemented + tested                                      |
-| `generate cdk-assertions` and `generate handler`                   | implemented + tested                                      |
-| `coverage` summary                                                 | implemented + tested                                      |
-| `integration`, affected-tests hook, `load`, property-based cases   | not yet implemented                                       |
+| Capability                                                                                                                         | Status                                                             |
+| ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `run` with Vitest (real runs), `--affected`, coverage                                                                              | implemented + tested                                               |
+| `run` with Jest and `node:test`                                                                                                    | implemented + tested (parsers and plan; no real Jest run)          |
+| Event fixtures for eight sources with variants and response checks                                                                 | implemented + tested                                               |
+| `generate cdk-assertions` and `generate handler`                                                                                   | implemented + tested                                               |
+| `coverage` summary                                                                                                                 | implemented + tested                                               |
+| `integration`: the user's test command with real credentials, after identity check, non-production check, and sandbox confirmation | implemented + tested (fake runner) + one harmless command run live |
+| Affected-tests hook, `load`, property-based cases                                                                                  | not yet implemented                                                |
 
 ## aws-deploy
 
@@ -67,34 +70,35 @@ This file is updated by the pull request that changes a capability. The per-plug
 
 ## aws-observability
 
-| Capability                                                                   | Status                                                     |
-| ---------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Function and queue status, DLQ depth, bounded redacted logs, metrics, alarms | implemented + unverified (fake API; SDK adapter never run) |
-| Log analyzers and the evidence ledger with findings that cite it             | implemented + tested                                       |
-| `incident-investigator` agent and two evals                                  | implemented + unverified (evals not run)                   |
-| X-Ray traces, Step Functions history, API Gateway and DynamoDB telemetry     | not yet implemented                                        |
-| Powertools guidance, SLO and error-budget reports, opt-in monitor            | not yet implemented                                        |
+| Capability                                                                   | Status                                                                      |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Function and queue status, DLQ depth, bounded redacted logs, metrics, alarms | implemented + tested (fake API) + run live read-only against a real account |
+| Log analyzers and the evidence ledger with findings that cite it             | implemented + tested                                                        |
+| `incident-investigator` agent and two evals                                  | implemented + tested (evals: one run each, passed on 2026-11-01)            |
+| X-Ray traces, Step Functions history, API Gateway and DynamoDB telemetry     | not yet implemented                                                         |
+| Powertools guidance, SLO and error-budget reports, opt-in monitor            | not yet implemented                                                         |
 
 ## aws-cost
 
-| Capability                                                                     | Status                                                     |
-| ------------------------------------------------------------------------------ | ---------------------------------------------------------- |
-| `estimate` for seven services with tiers, assumptions, exclusions, sensitivity | implemented + tested (golden calculations checked by hand) |
-| `compare`: Lambda memory, architecture, API type                               | implemented + tested                                       |
-| Price snapshot (us-east-1, from the public Price List)                         | implemented + tested (dated snapshot)                      |
-| `analyze` (Cost Explorer), `optimize`, `budgets`, cost-analyst agent           | not yet implemented                                        |
-| Other regions, Express workflows, DynamoDB provisioned, S3, EventBridge        | not yet implemented                                        |
+| Capability                                                                              | Status                                                            |
+| --------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `estimate` for seven services with tiers, assumptions, exclusions, sensitivity          | implemented + tested (golden calculations checked by hand)        |
+| `compare`: Lambda memory, architecture, API type                                        | implemented + tested                                              |
+| Price snapshot (us-east-1, from the public Price List)                                  | implemented + tested (dated snapshot)                             |
+| `analyze` (billed, request-limited, needs approval), `optimize` (hypotheses), `budgets` | implemented + tested (fake API) + run live once on a real account |
+| Cost-analyst agent                                                                      | not yet implemented                                               |
+| Other regions, Express workflows, DynamoDB provisioned, S3, EventBridge                 | not yet implemented                                               |
 
 ## aws-architect
 
-| Capability                                                      | Status                                                        |
-| --------------------------------------------------------------- | ------------------------------------------------------------- |
-| `diagram` with declared and inferred links                      | implemented + tested (real CDK fixtures)                      |
-| `review`: eleven template-answerable questions with evidence    | implemented + tested                                          |
-| `decisions`: six tables with sources                            | implemented + unverified (summaries not checked line by line) |
-| `intake`, `plan init` / `check`, `adr` (write never overwrites) | implemented + tested                                          |
-| `serverless-architect` agent and two evals                      | implemented + unverified (evals not run)                      |
-| `evolve`, VPC and Cognito diagrams, deployed-state diagrams     | not yet implemented                                           |
+| Capability                                                      | Status                                                           |
+| --------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `diagram` with declared and inferred links                      | implemented + tested (real CDK fixtures)                         |
+| `review`: eleven template-answerable questions with evidence    | implemented + tested                                             |
+| `decisions`: six tables with sources                            | implemented + unverified (summaries not checked line by line)    |
+| `intake`, `plan init` / `check`, `adr` (write never overwrites) | implemented + tested                                             |
+| `serverless-architect` agent and two evals                      | implemented + tested (evals: one run each, passed on 2026-11-01) |
+| `evolve`, VPC and Cognito diagrams, deployed-state diagrams     | not yet implemented                                              |
 
 ## aws-diagrams
 
@@ -115,18 +119,18 @@ This file is updated by the pull request that changes a capability. The per-plug
 | Six pillars, 30 questions (13 evaluated from templates), evidence strengths | implemented + tested                                                             |
 | Specialist report merge by rule id                                          | implemented + tested (hand-built reports; real plugin output not run end to end) |
 | Backlog, improvement plan, compare, stale and conflicting evidence          | implemented + tested                                                             |
-| `well-architected-reviewer` agent and two evals                             | implemented + unverified (evals not run)                                         |
+| `well-architected-reviewer` agent and two evals                             | implemented + tested (evals: one run each, passed on 2026-11-01)                 |
 | Reading evidence from the account; AWS Well-Architected Tool records        | not yet implemented                                                              |
 
 ## aws-prototyping
 
-| Capability                                                     | Status                                                      |
-| -------------------------------------------------------------- | ----------------------------------------------------------- |
-| `start`, `validate`, manifest bounds, secret and wildcard scan | implemented + tested                                        |
-| Local queue model, `experiment`, `record`, `compare`           | implemented + tested (model hand-checked on limiting cases) |
-| `sandbox-plan`, `cleanup-plan`, `promote` (plans only)         | implemented + tested                                        |
-| Skill evals                                                    | implemented + unverified (evals not run)                    |
-| Running on AWS; models for APIs, workflows, Bedrock latency    | not yet implemented                                         |
+| Capability                                                     | Status                                                           |
+| -------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `start`, `validate`, manifest bounds, secret and wildcard scan | implemented + tested                                             |
+| Local queue model, `experiment`, `record`, `compare`           | implemented + tested (model hand-checked on limiting cases)      |
+| `sandbox-plan`, `cleanup-plan`, `promote` (plans only)         | implemented + tested                                             |
+| Skill evals                                                    | implemented + tested (evals: one run each, passed on 2026-11-01) |
+| Running on AWS; models for APIs, workflows, Bedrock latency    | not yet implemented                                              |
 
 ## aws-events
 
@@ -269,11 +273,11 @@ This file is updated by the pull request that changes a capability. The per-plug
 
 ## aws-ai
 
-| Capability                                                                             | Status                                          |
-| -------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| `inspect`: 6 rule ids over declared Bedrock resources and model permissions            | implemented + tested                            |
-| `budget`: estimate from user-supplied prices (hand-checked)                            | implemented + tested                            |
-| `chunk`, `prompt-check`, `rag-review`, `agent-review`, `eval-scaffold`, `availability` | implemented + tested                            |
-| `bedrock-engineer` agent and evals                                                     | implemented + unverified (evals not run)        |
-| Invoking models, reading quotas or model access, AgentCore runtime inspection          | not implemented by design / not yet implemented |
-| Live inspection through the AWS SDK                                                    | not yet implemented                             |
+| Capability                                                                             | Status                                                           |
+| -------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `inspect`: 6 rule ids over declared Bedrock resources and model permissions            | implemented + tested                                             |
+| `budget`: estimate from user-supplied prices (hand-checked)                            | implemented + tested                                             |
+| `chunk`, `prompt-check`, `rag-review`, `agent-review`, `eval-scaffold`, `availability` | implemented + tested                                             |
+| `bedrock-engineer` agent and evals                                                     | implemented + tested (evals: one run each, passed on 2026-11-01) |
+| Invoking models, reading quotas or model access, AgentCore runtime inspection          | not implemented by design / not yet implemented                  |
+| Live inspection through the AWS SDK                                                    | not yet implemented                                              |

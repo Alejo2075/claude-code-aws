@@ -198,19 +198,18 @@ export const runtimes = (t: Template, now: Date): TemplateResult => {
   const fns = resourcesOfType(t, "AWS::Lambda::Function").filter(
     (f) => typeof f.properties["Runtime"] === "string",
   );
-  const bad = fns.filter((f) => {
-    const state = runtimeStatus(String(f.properties["Runtime"]), now).state;
-    return state === "deprecated" || state === "approaching";
-  }).length;
+  const states = fns.map((f) => runtimeStatus(String(f.properties["Runtime"]), now).state);
+  const deprecated = states.filter((s) => s === "deprecated").length;
+  const approaching = states.filter((s) => s === "approaching").length;
   return {
     answer:
       fns.length === 0
         ? "not-in-template"
-        : bad === 0
+        : deprecated === 0
           ? "yes"
-          : bad === fns.length
+          : deprecated === fns.length
             ? "no"
             : "partly",
-    evidence: `${bad} of ${fns.length} functions use a runtime that is deprecated or approaching deprecation (table dated in template-analysis).`,
+    evidence: `${deprecated} of ${fns.length} functions use a deprecated runtime${approaching > 0 ? `; ${approaching} more reach their deprecation date within about six months (plan the upgrade, not an emergency)` : ""} (table dated in template-analysis).`,
   };
 };

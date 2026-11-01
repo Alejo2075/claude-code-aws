@@ -5,6 +5,7 @@ import { renderCostEstimate } from "./render.js";
 import { isInside } from "./inside.js";
 import { compareApiKind, compareArch, compareLambdaMemory } from "./compare.js";
 import { estimateWorkload, sensitivity, validateWorkload } from "./estimate.js";
+import { runActual, type ActualDeps } from "./actual.js";
 import { PRICE_NOTE, PRICE_REGION, PRICE_RETRIEVED } from "./prices.js";
 
 export const USAGE = `Usage: aws-cost <command> [options]
@@ -14,6 +15,9 @@ export const USAGE = `Usage: aws-cost <command> [options]
   compare lambda-arch --requests <n> --memory <mb> --x86-ms <ms> --arm-ms <ms>
   compare api-kind --requests <n>
   prices                                         The price snapshot: region, date, and each unit price
+  analyze [--since 30d] [--group-by service|region|account] [--max-requests 2] --approve-cost   BILLED cost from Cost Explorer (about $0.01 per request)
+  optimize [same options]                        Billed cost plus where to look first (hypotheses)
+  budgets                                        The account's AWS Budgets (not billed per request)
 
 Options: --json
 
@@ -26,6 +30,7 @@ export interface CliResult {
 
 export interface CliDeps {
   root: string;
+  actual?: ActualDeps;
   now?: Date;
 }
 
@@ -40,6 +45,14 @@ const count = (value: string | true | undefined): number | null => {
 };
 
 export function runCli(argv: readonly string[], deps: CliDeps): Promise<CliResult> {
+  if (argv[0] === "analyze" || argv[0] === "optimize" || argv[0] === "budgets") {
+    return deps.actual === undefined
+      ? Promise.resolve({
+          exitCode: 2,
+          stdout: "Billed-cost commands are not available in this environment.",
+        })
+      : runActual(argv, deps.actual);
+  }
   return Promise.resolve(run(argv, deps));
 }
 

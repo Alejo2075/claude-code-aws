@@ -7,6 +7,10 @@ Shows the AWS user, region, and environment in the prompt footer, read from the 
 … carol@example.com · us-east-1 · production & AWS session expired
 ```
 
+## Report pane
+
+`/aws-report <file>` opens a pane that shows a report the other plugins wrote as JSON: an analysis report (findings by severity, with hypotheses marked), a Well-Architected style review (disclaimer first, counts per pillar, backlog), or a diagram artifact (the Mermaid source). Produce the file with a plugin command and `--json`. The module only reads the one file you name (size-limited, through `$.fs`) and draws it; it calls nothing else, and terminal escape sequences in the file are removed. Without the pane every plugin still prints the same content as text.
+
 ## What it does
 
 The labels sit at the right of the prompt footer, where Claude Code shows its own mode labels such as `focus`. They take no extra row and use Claude Code's colors and type, because Claude Code draws them.
