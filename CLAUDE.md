@@ -295,6 +295,10 @@ tests/
   security/
   evaluations/
 docs/
+  architecture.md
+  development.md
+  security.md
+  release.md
 .github/
 AGENTS.md
 ```

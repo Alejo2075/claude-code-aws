@@ -1,6 +1,6 @@
 # Contributing
 
-Read [CLAUDE.md](CLAUDE.md), [docs/ROADMAP.md](docs/ROADMAP.md), and [docs/plugin-authoring.md](docs/plugin-authoring.md) before proposing a feature.
+Read [CLAUDE.md](CLAUDE.md), [the architecture guide](docs/architecture.md), and [the development guide](docs/development.md) before proposing a feature.
 
 ## Propose
 

@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Read [CLAUDE.md](https://github.com/Alejo2075/claude-code-aws/blob/main/CLAUDE.md) and [docs/plugin-authoring.md](https://github.com/Alejo2075/claude-code-aws/blob/main/docs/plugin-authoring.md) first. Never include credentials, account IDs, private logs, or real customer infrastructure.
+        Read [CLAUDE.md](https://github.com/Alejo2075/claude-code-aws/blob/main/CLAUDE.md) and [docs/development.md](https://github.com/Alejo2075/claude-code-aws/blob/main/docs/development.md) first. Never include credentials, account IDs, private logs, or real customer infrastructure.
   - type: textarea
     id: workflow
     attributes:
