@@ -154,9 +154,12 @@ export function run(
 
 export function runClaude(args: readonly string[], options: SpawnSyncOptions = {}): RunResult {
   const cli = claudeCli();
-  const quoted = cli.shell
-    ? args.map((arg) => (/[\s"]/.test(arg) ? `"${arg.replace(/"/g, '\\"')}"` : arg))
-    : args;
+  // A Windows command shim needs a shell, so an argument with a quote cannot be passed safely.
+  if (cli.shell && args.some((arg) => arg.includes('"')))
+    throw new Error(
+      "A claude argument contains a double quote, which cannot be passed through a shell safely.",
+    );
+  const quoted = cli.shell ? args.map((arg) => (/\s/.test(arg) ? `"${arg}"` : arg)) : args;
   return run(cli.command, quoted, { shell: cli.shell, ...options });
 }
 

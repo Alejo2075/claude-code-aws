@@ -1,4 +1,13 @@
-import { cpSync, existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import {
+  closeSync,
+  cpSync,
+  existsSync,
+  ftruncateSync,
+  openSync,
+  readdirSync,
+  readFileSync,
+  writeSync,
+} from "node:fs";
 import { dirname, join, relative, sep } from "node:path";
 
 import { checkPluginName } from "./checks.js";
@@ -12,15 +21,23 @@ export interface ScaffoldOptions {
 }
 
 function replaceInTree(dir: string, replacements: Record<string, string>): void {
-  for (const entry of readdirSync(dir)) {
-    const path = join(dir, entry);
-    if (statSync(path).isDirectory()) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) {
       replaceInTree(path, replacements);
       continue;
     }
-    let text = readFileSync(path, "utf8");
-    for (const [token, value] of Object.entries(replacements)) text = text.split(token).join(value);
-    writeFileSync(path, text);
+    // One descriptor for the read and the write: nothing can swap the file in between.
+    const fd = openSync(path, "r+");
+    try {
+      let text = readFileSync(fd, "utf8");
+      for (const [token, value] of Object.entries(replacements))
+        text = text.split(token).join(value);
+      ftruncateSync(fd, 0);
+      writeSync(fd, text, 0);
+    } finally {
+      closeSync(fd);
+    }
   }
 }
 
