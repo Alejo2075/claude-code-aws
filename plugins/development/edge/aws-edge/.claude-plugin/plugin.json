@@ -1,6 +1,6 @@
 {
   "name": "aws-edge",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Inspect CloudFront distributions in synthesized CDK output, lint CloudFront Function code against the runtime's restrictions, check Lambda@Edge constraints, review cache policies, and map HTTP status codes to likely causes. No distribution is changed and no invalidation is created.",
   "author": {
     "name": "Alejandro Santana",

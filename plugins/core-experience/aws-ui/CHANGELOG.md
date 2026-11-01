@@ -1,5 +1,15 @@
 # aws-ui
 
+## 0.4.0
+
+### Minor Changes
+
+- [#35](https://github.com/Alejo2075/claude-code-aws/pull/35) [`2266e92`](https://github.com/Alejo2075/claude-code-aws/commit/2266e92655f7885cae0f54ef557cde7862c2d879) Thanks [@Alejo2075](https://github.com/Alejo2075)! - `/aws-report <file>` opens a pane that shows a JSON report written by another plugin: an analysis report, a Well-Architected style review, or a diagram artifact. The module reads only the file you name and draws it; nothing else changes, and every plugin still prints the same content as text.
+
+### Patch Changes
+
+- [#36](https://github.com/Alejo2075/claude-code-aws/pull/36) [`636b0fb`](https://github.com/Alejo2075/claude-code-aws/commit/636b0fb9be74d404e8804332120cb5cc0381c9cb) Thanks [@Alejo2075](https://github.com/Alejo2075)! - Organize plugin source directories by lifecycle category while keeping the published release tree compatible.
+
 ## 0.3.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "aws-testing",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Run, generate, and report tests for serverless apps: Lambda handlers, CDK assertions, and event fixtures for API Gateway, SQS, SNS, EventBridge, DynamoDB Streams, S3 and Step Functions. Never deploys.",
   "license": "MIT",

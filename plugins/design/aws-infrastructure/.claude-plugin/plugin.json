@@ -1,6 +1,6 @@
 {
   "name": "aws-infrastructure",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Inspect, synthesize, diff, review, and scaffold CDK TypeScript serverless infrastructure from synthesized CloudFormation templates, without deploying anything.",
   "author": {
     "name": "Alejandro Santana",
