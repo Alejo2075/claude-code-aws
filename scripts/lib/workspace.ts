@@ -62,14 +62,21 @@ export function catalogPath(root: string = REPO_ROOT): string {
 
 export function listPlugins(pluginsRoot: string = join(REPO_ROOT, "plugins")): PluginInfo[] {
   if (!existsSync(pluginsRoot)) return [];
-  return readdirSync(pluginsRoot, { withFileTypes: true })
-    .filter(
-      (entry) =>
-        entry.isDirectory() &&
-        existsSync(join(pluginsRoot, entry.name, ".claude-plugin", "plugin.json")),
-    )
-    .map((entry) => {
-      const dir = join(pluginsRoot, entry.name);
+  const pluginDirs: string[] = [];
+  const findPlugins = (directory: string): void => {
+    if (existsSync(join(directory, ".claude-plugin", "plugin.json"))) {
+      pluginDirs.push(directory);
+      return;
+    }
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      if (entry.isDirectory() && !entry.name.startsWith("."))
+        findPlugins(join(directory, entry.name));
+    }
+  };
+  findPlugins(pluginsRoot);
+
+  return pluginDirs
+    .map((dir) => {
       const manifest = readJson<PluginManifest>(join(dir, ".claude-plugin", "plugin.json"));
       // Release trees ship without package.json; plugin.json then carries the version.
       const pkgPath = join(dir, "package.json");
@@ -77,7 +84,7 @@ export function listPlugins(pluginsRoot: string = join(REPO_ROOT, "plugins")): P
         ? readJson<{ name: string; version: string }>(pkgPath)
         : { name: manifest.name, version: manifest.version ?? UNRELEASED_VERSION };
       return {
-        name: entry.name,
+        name: manifest.name,
         dir,
         manifest,
         packageVersion: pkg.version,

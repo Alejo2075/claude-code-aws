@@ -13,11 +13,11 @@ AWS SDK / STS ──► aws-context ──► snapshot file (versioned JSON, per
                                      └──► aws-ui status-line script (opt-in)
 ```
 
-| Unit                        | Kind             | Responsibility                                                                                                                                                 |
-| --------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/context-contract` | internal library | Snapshot schema and validator, snapshot location, workspace id, config schema, environment classification, bar formatting. Pure, no AWS and no Node-only APIs. |
-| `plugins/aws-context`       | plugin           | Resolves identity with STS, writes the snapshot, exposes the CLI, a `status` skill, and a `SessionStart` hook.                                                 |
-| `plugins/aws-ui`            | plugin (mod)     | Renders the snapshot. Never calls AWS. Works with no `aws-context` installed (shows `Not configured`).                                                         |
+| Unit                                  | Kind             | Responsibility                                                                                                                                                 |
+| ------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/context-contract`           | internal library | Snapshot schema and validator, snapshot location, workspace id, config schema, environment classification, bar formatting. Pure, no AWS and no Node-only APIs. |
+| `plugins/core-experience/aws-context` | plugin           | Resolves identity with STS, writes the snapshot, exposes the CLI, a `status` skill, and a `SessionStart` hook.                                                 |
+| `plugins/core-experience/aws-ui`      | plugin (mod)     | Renders the snapshot. Never calls AWS. Works with no `aws-context` installed (shows `Not configured`).                                                         |
 
 The two plugins share nothing at runtime except the snapshot file format. Each bundles its own copy of `context-contract` at build time. Neither declares a dependency on the other.
 
@@ -25,7 +25,7 @@ The two plugins share nothing at runtime except the snapshot file format. Each b
 
 | #   | Spec says                                         | This design                                                                                                                                                                                                                                                      | Reason                                                                                                                                                                                                                                               |
 | --- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D1  | Packages `context-contract` and `context-runtime` | One package, `context-contract`. AWS resolution lives inside `plugins/aws-context`.                                                                                                                                                                              | Only the contract is used by two plugins. CLAUDE.md: add shared packages only when more than one plugin needs the code.                                                                                                                              |
+| D1  | Packages `context-contract` and `context-runtime` | One package, `context-contract`. AWS resolution lives inside `plugins/core-experience/aws-context`.                                                                                                                                                              | Only the contract is used by two plugins. CLAUDE.md: add shared packages only when more than one plugin needs the code.                                                                                                                              |
 | D2  | OS-appropriate cache directory                    | `<claude config dir>/aws-context/v1/` where the config dir is `$CLAUDE_CONFIG_DIR`, else `~/.claude`.                                                                                                                                                            | A mod's hooks module has no Node APIs (no `os`, no `process.platform`); it only has `$.fs` and `$.env`. Both plugins must compute the same path from environment variables alone. The directory is private to the user and outside every repository. |
 | D3  | YAML config                                       | JSON, in two layers: project `.aws-context.json` and user `<claude config dir>/aws-context/config.json`.                                                                                                                                                         | No parser dependency. Chosen by the maintainer.                                                                                                                                                                                                      |
 | D4  | Config maps account to environment                | Trust rule in §5: a **project** file may only raise an account to `production`. `non-production` is honored only from the **user** file.                                                                                                                         | The project file is repository content, which CLAUDE.md treats as untrusted. A cloned repo must not be able to relabel a production account as safe.                                                                                                 |
@@ -50,7 +50,7 @@ The two plugins share nothing at runtime except the snapshot file format. Each b
 ### 4.1 Components
 
 ```text
-plugins/aws-context/
+plugins/core-experience/aws-context/
   .claude-plugin/plugin.json
   hooks/hooks.json            SessionStart (startup|resume), exec form, timeout 10 s
   skills/status/SKILL.md      side effects: local-write (cache) + read-only STS call
@@ -173,7 +173,7 @@ Rules:
 ### 6.1 Components
 
 ```text
-plugins/aws-ui/
+plugins/core-experience/aws-ui/
   .claude-plugin/plugin.json
   hooks/hooks.json            { "modules": ["../dist/register.js"] }   (see D5)
   src/mod/register.ts         bundled to dist/register.js (ESM, platform-neutral, not minified)
@@ -241,8 +241,8 @@ CI uses no AWS account and no network.
 ## 9. Delivery order
 
 1. `packages/context-contract` with tests.
-2. `plugins/aws-context`: resolution, store, CLI, skill, hook, tests, validate, packaging.
-3. `plugins/aws-ui`: status-line script first (simplest consumer), then the mod.
+2. `plugins/core-experience/aws-context`: resolution, store, CLI, skill, hook, tests, validate, packaging.
+3. `plugins/core-experience/aws-ui`: status-line script first (simplest consumer), then the mod.
 4. READMEs, changesets (`minor`, first release `0.1.0` for both), `pnpm verify`.
 5. Real-session check on 2.1.309 using `--plugin-dir`, with mocked and, only if the maintainer provides credentials in the shell, a real identity.
 
@@ -259,4 +259,4 @@ Not done in this milestone: a `switch` command, a details pane, the future panel
 | Min supported Claude Code (2.1.295)                                                 | Validate and all 10 mod tests pass on 2.1.295.                                                                        |
 | `AbovePrompt` rendering in the Desktop app and the VS Code extension                | The types list the terminal only. Treated as unverified; README says so.                                              |
 | Status-line path discovery and quoting on Windows                                   | Unverified; forward-slash paths documented.                                                                           |
-| Real-session behavior of the band (draw, collapse, hot reload, `/plugin` mod count) | Manual checklist in `plugins/aws-ui/README.md`; not yet executed in an interactive session.                           |
+| Real-session behavior of the band (draw, collapse, hot reload, `/plugin` mod count) | Manual checklist in `plugins/core-experience/aws-ui/README.md`; not yet executed in an interactive session.           |

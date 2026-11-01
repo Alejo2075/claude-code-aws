@@ -1,5 +1,7 @@
 # Plugin ownership migration
 
+Plugin paths in this report are the flat `plugins/<name>/` layout used when it was written; plugins now live under `plugins/<category>/<name>/` (the plugin names did not change).
+
 Companion to [design-development-plan.md](design-development-plan.md). It records, per capability, what existed **before**, who owns it **after**, the files changed, how old commands keep working, the test evidence, and the known gaps. A capability that did not exist is marked **not present**; no migration is invented for it.
 
 Every plugin referenced here is unreleased (`0.0.0` until the first Version PR is merged), so no user has installed the old commands. The shims below exist so that the repository, the tests, and any local `--plugin-dir` use keep working, and so that the first release does not ship two competing owners without a pointer.

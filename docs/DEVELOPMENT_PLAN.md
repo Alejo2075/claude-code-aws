@@ -1,10 +1,12 @@
 # Development plan: platform foundation and release pipeline
 
-This plan prepares the repository so that plugins can be developed, tested, released, installed, and used in Claude Code. It complements [ROADMAP.md](ROADMAP.md), which orders product milestones, and [CLAUDE.md](../CLAUDE.md), which defines requirements.
+This plan records how the repository foundation was prepared for plugins to be developed, tested, released, installed, and used in Claude Code. The plugin catalog has since expanded; its current scope and category folders are described in the [README](../README.md). This plan complements [ROADMAP.md](ROADMAP.md) and [CLAUDE.md](../CLAUDE.md).
 
-**Scope.** This plan builds the toolchain, conventions, test harnesses, CI, and distribution pipeline. It deliberately does **not** select, name, or implement any plugin. The first plugin is chosen afterwards and enters through the [plugin development loop](#7-plugin-development-loop).
+**Scope.** This plan covers the toolchain, conventions, test harnesses, CI, and distribution pipeline. Plugin-specific work follows the [plugin development loop](#7-plugin-development-loop).
 
-**Status (2026-10-26): steps 1–8 are implemented and verified.** See [Implementation status](#10-implementation-status) for what was built, deviations from this plan, and the remaining manual steps. Next: choose the first plugins with [choosing-first-plugins.md](choosing-first-plugins.md).
+**Foundation status (2026-10-26): steps 1–8 were implemented and verified.** See [Implementation status](#10-implementation-status) for what was built and the remaining manual steps. The current published plugin list is in the [README](../README.md).
+
+**Current repository layout:** the plugin catalog now covers the serverless development lifecycle and source packages live in category folders under `plugins/`. This plan's early examples describe the original foundation stage. The generated `release` branch intentionally keeps the flat `plugins/<name>/` layout used by marketplace sources.
 
 ## 1. Decisions
 

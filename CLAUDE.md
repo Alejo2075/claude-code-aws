@@ -2,9 +2,9 @@
 
 ## Purpose
 
-Build an open-source, modular extension ecosystem that turns a clean installation of Claude Code into a capable development environment for Amazon Web Services (AWS).
+Build an open-source, modular extension ecosystem that turns a clean installation of Claude Code into a capable development environment for **serverless applications on Amazon Web Services (AWS)**.
 
-The product must improve the full AWS development lifecycle: understanding an existing application, designing architecture, writing infrastructure and application code, testing, reviewing changes, deploying safely, diagnosing failures, and operating and optimizing deployed resources.
+The product must improve the full serverless application lifecycle on AWS (Lambda, API Gateway, EventBridge, SQS/SNS, Step Functions, DynamoDB, S3, Cognito, and the services around them): understanding an existing application, designing architecture, writing infrastructure and application code, testing, reviewing changes, deploying safely, diagnosing failures, and operating and optimizing deployed resources.
 
 The project is **not** a fork of Claude Code, a new AI assistant, an AWS console replacement, or a hosted cloud platform. It extends Claude Code through officially supported extension points and reuses existing AWS tools wherever possible.
 
@@ -27,6 +27,8 @@ A user starting with a clean Claude Code installation should be able to:
 
 ## Non-goals
 
+- Do not build a general-purpose AWS toolkit. The scope is serverless application development. Server-based compute (EC2, EKS), general networking (VPC design, routing, DNS, transit), and non-serverless databases are out of scope unless a serverless workload needs them (for example a VPC for a Lambda function, or Aurora Serverless).
+- CDK (TypeScript) and CloudFormation are the supported infrastructure sources. SAM, Serverless Framework, and Terraform projects are detected and reported as unsupported; supporting them is a future decision, not an assumption.
 - Do not create or train a new model.
 - Do not fork, patch, or redistribute the Claude Code runtime.
 - Do not create a cloud hosting service, remote control plane, or mandatory account registration.
@@ -93,7 +95,7 @@ Organize the product by capability. Each functional area may be an independent p
 | `security` | Review IAM, secrets, encryption, public exposure, logging, and cloud security posture. |
 | `cost` | Evaluate cost drivers, present qualified estimates, and analyze actual billing data only when authorized and available. |
 | `observability` | Investigate CloudWatch logs and metrics, distributed traces, alarms, failures, throttling, and timeouts. |
-| `network` | Diagnose VPC, subnet, routing, DNS, CloudFront, security groups, and connectivity issues. |
+| `network` | Deferred. Only the connectivity a serverless workload needs (Lambda in a VPC, CloudFront, API custom domains, security groups for Fargate tasks); general network diagnosis is out of scope. |
 | `data` | Review DynamoDB, RDS/Aurora, S3, access patterns, storage configuration, and data migration safety. |
 | `testing` | Provide local and integration testing workflows and infrastructure validation. |
 | `delivery` | Perform preflight checks, plan rollouts, inspect pipelines, guide deployment, and prepare rollback/recovery procedures. |
@@ -114,7 +116,7 @@ Introduce specialist agents when isolation of context or tools adds value. Begin
 | IAM specialist | Explain denied permissions and propose least-privilege policies. | Read-only |
 | Cost analyst | Identify cost drivers and report estimates versus measured costs. | Read-only |
 | Observability investigator | Diagnose failures using authorized telemetry. | Read-only |
-| Network investigator | Diagnose routing, DNS, and connectivity issues. | Read-only |
+| Network investigator | Deferred (see the `network` module). | Read-only |
 | Data specialist | Review access patterns, durability, and migration risks. | Read-only by default |
 | Release reviewer | Gather test, diff, and risk evidence and propose a release decision. | No deployment without explicit authorization |
 
@@ -248,24 +250,34 @@ Security-sensitive paths must be implemented and tested before enabling mutating
 
 ## Suggested implementation structure
 
-Use a TypeScript monorepo with pnpm workspaces. Start simple; add internal packages only when more than one plugin genuinely needs the code.
+Use a TypeScript monorepo with pnpm workspaces. Group plugin directories by lifecycle capability. The main branch keeps categorized source paths; the generated release branch flattens each plugin to `plugins/<name>` to preserve published marketplace URLs. Start simple; add internal packages only when more than one plugin genuinely needs the code.
 
 ```text
 .claude-plugin/
   marketplace.json
 plugins/
-  context/
-  guard/
-  cdk/
-  serverless/
-  security/
-  cost/
-  observability/
-  network/
-  data/
-  testing/
-  delivery/
-  interface/
+  core-experience/
+    aws-context/
+    aws-ui/
+    aws-guard/
+    aws-explorer/
+  design/
+    aws-architect/
+    aws-infrastructure/
+    aws-diagrams/
+    aws-prototyping/
+    aws-well-architected/
+  development/
+    compute/aws-lambda/
+    apis/aws-api/
+    events/aws-events/
+    ...
+  quality-operations/
+    aws-security/
+    aws-testing/
+    aws-deploy/
+    aws-cost/
+    aws-observability/
 packages/
   core/
   aws-client/
@@ -290,7 +302,7 @@ AGENTS.md
 Example plugin:
 
 ```text
-plugins/cdk/
+plugins/design/aws-infrastructure/
   .claude-plugin/plugin.json
   agents/
     engineer.md
@@ -365,7 +377,7 @@ Deliver one real end-to-end slice:
 - At least one narrowly scoped specialist agent integrated into an actual skill.
 - A report format with evidence and clear unknowns.
 
-### Phase 3 — Wider AWS development lifecycle
+### Phase 3 — Wider serverless development lifecycle
 
 - Serverless implementation/debugging workflows.
 - IAM and security reviews.
@@ -400,7 +412,7 @@ Do not introduce network-connected or AWS-mutating automated tests by default. T
 
 A feature is complete only when:
 
-1. It provides a demonstrable improvement to the AWS development workflow.
+1. It provides a demonstrable improvement to the serverless development workflow on AWS.
 2. Its configuration and plugin manifest pass Claude Code validation.
 3. It works when installed from the marketplace, not only from the monorepo source tree.
 4. It uses appropriate permissions and does not leak secrets.

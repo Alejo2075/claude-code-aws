@@ -34,32 +34,32 @@ Build a complete but understandable AWS serverless developer experience for Clau
 
 ### 1.1 Design — five independent plugins
 
-| Plugin | State | Sole core responsibility | Primary extension types |
-|---|---|---|---|
-| `aws-architect` | Existing; refactor | Requirements, architectural options, service selection, ADRs and implementation planning | Specialist agent + skills |
-| `aws-infrastructure` | Existing; refactor | CDK v2 TypeScript apps, constructs, stacks, synth/diff, resource graph data and safe refactoring | Skills + CLI analyzers + optional typed MCP |
-| `aws-diagrams` | **NEW** | Generate, validate, maintain and export architecture, infrastructure and event/workflow diagrams | Skills + TypeScript graph transforms + optional MCP |
-| `aws-prototyping` | **NEW** | Produce bounded functional PoCs, experiment plans and evidence before production engineering | Skills + CLI + optional focused agent |
-| `aws-well-architected` | **NEW** | Workload assessment and improvement backlog across all six pillars with serverless lens | Review agent + skills + assessment engine |
+| Plugin                 | State              | Sole core responsibility                                                                         | Primary extension types                             |
+| ---------------------- | ------------------ | ------------------------------------------------------------------------------------------------ | --------------------------------------------------- |
+| `aws-architect`        | Existing; refactor | Requirements, architectural options, service selection, ADRs and implementation planning         | Specialist agent + skills                           |
+| `aws-infrastructure`   | Existing; refactor | CDK v2 TypeScript apps, constructs, stacks, synth/diff, resource graph data and safe refactoring | Skills + CLI analyzers + optional typed MCP         |
+| `aws-diagrams`         | **NEW**            | Generate, validate, maintain and export architecture, infrastructure and event/workflow diagrams | Skills + TypeScript graph transforms + optional MCP |
+| `aws-prototyping`      | **NEW**            | Produce bounded functional PoCs, experiment plans and evidence before production engineering     | Skills + CLI + optional focused agent               |
+| `aws-well-architected` | **NEW**            | Workload assessment and improvement backlog across all six pillars with serverless lens          | Review agent + skills + assessment engine           |
 
 ### 1.2 Development — fourteen independent plugins
 
-| Plugin | AWS focus | Sole core responsibility | Primary extension types |
-|---|---|---|---|
-| `aws-lambda` | Lambda | Function code, runtime configuration and invocations | Skills + SDK/CLI + optional MCP |
-| `aws-api` | API Gateway; AppSync GraphQL | Client-facing APIs, protocols and contracts | Skills + schema tooling + optional MCP |
-| `aws-auth` | Cognito | User identity, sign-in, tokens, federation and application auth flows | Skills + SDK tooling |
-| `aws-events` | EventBridge; Scheduler | Event routing, buses, rules and scheduling | Skills + SDK/MCP |
-| `aws-messaging` | SQS; SNS | Queues, topics, subscriptions and reliable delivery | Skills + SDK/MCP |
-| `aws-workflows` | Step Functions | State-machine orchestration and execution lifecycle | Skills + ASL tooling + SDK/MCP |
-| `aws-database` | DynamoDB; Aurora Serverless | Database modeling, indexes, queries and data operations | Skills + SDK/MCP |
-| `aws-storage` | S3; EFS | Object/file storage, transfers and storage access | Skills + SDK/MCP |
-| `aws-streaming` | Kinesis; Amazon Data Firehose | Continuous ingest, stream consumers and delivery | Skills + SDK/MCP |
-| `aws-edge` | CloudFront; CloudFront Functions; Lambda@Edge | CDN configuration, cache semantics and edge logic | Skills + test utilities + SDK |
-| `aws-ai` | Bedrock; AgentCore | Generative AI applications, RAG and agent integrations | Focused agent + skills + SDK/MCP |
-| `aws-containers` | ECS Fargate; ECR | Container applications and image/task lifecycle | Skills + Docker/SDK/CLI |
-| `aws-email` | SES | Application email delivery, receiving and reputation | Skills + SDK/MCP |
-| `aws-config` | AppConfig; SSM Parameter Store | Runtime settings, feature flags and non-secret parameters | Skills + SDK/MCP + optional hooks |
+| Plugin           | AWS focus                                     | Sole core responsibility                                              | Primary extension types                |
+| ---------------- | --------------------------------------------- | --------------------------------------------------------------------- | -------------------------------------- |
+| `aws-lambda`     | Lambda                                        | Function code, runtime configuration and invocations                  | Skills + SDK/CLI + optional MCP        |
+| `aws-api`        | API Gateway; AppSync GraphQL                  | Client-facing APIs, protocols and contracts                           | Skills + schema tooling + optional MCP |
+| `aws-auth`       | Cognito                                       | User identity, sign-in, tokens, federation and application auth flows | Skills + SDK tooling                   |
+| `aws-events`     | EventBridge; Scheduler                        | Event routing, buses, rules and scheduling                            | Skills + SDK/MCP                       |
+| `aws-messaging`  | SQS; SNS                                      | Queues, topics, subscriptions and reliable delivery                   | Skills + SDK/MCP                       |
+| `aws-workflows`  | Step Functions                                | State-machine orchestration and execution lifecycle                   | Skills + ASL tooling + SDK/MCP         |
+| `aws-database`   | DynamoDB; Aurora Serverless                   | Database modeling, indexes, queries and data operations               | Skills + SDK/MCP                       |
+| `aws-storage`    | S3; EFS                                       | Object/file storage, transfers and storage access                     | Skills + SDK/MCP                       |
+| `aws-streaming`  | Kinesis; Amazon Data Firehose                 | Continuous ingest, stream consumers and delivery                      | Skills + SDK/MCP                       |
+| `aws-edge`       | CloudFront; CloudFront Functions; Lambda@Edge | CDN configuration, cache semantics and edge logic                     | Skills + test utilities + SDK          |
+| `aws-ai`         | Bedrock; AgentCore                            | Generative AI applications, RAG and agent integrations                | Focused agent + skills + SDK/MCP       |
+| `aws-containers` | ECS Fargate; ECR                              | Container applications and image/task lifecycle                       | Skills + Docker/SDK/CLI                |
+| `aws-email`      | SES                                           | Application email delivery, receiving and reputation                  | Skills + SDK/MCP                       |
+| `aws-config`     | AppConfig; SSM Parameter Store                | Runtime settings, feature flags and non-secret parameters             | Skills + SDK/MCP + optional hooks      |
 
 **Service naming:** Amazon Data Firehose is the current branding; support AWS SDK and CLI identifiers that still use `firehose`.
 
@@ -67,30 +67,30 @@ Build a complete but understandable AWS serverless developer experience for Clau
 
 Each plugin may **consume** data from adjacent plugins but may not duplicate their authoritative behavior. Plugins are installable separately and must degrade gracefully if optional siblings are absent.
 
-| Capability | Sole owner | Explicitly excluded from neighboring plugins |
-|---|---|---|
-| Requirements, architecture selection, ADRs, target-state plan | `aws-architect` | No final diagram rendering, multi-pillar audit, PoC runner or CDK lifecycle |
-| CDK stacks, constructs, synth, diff, drift and IaC refactors | `aws-infrastructure` | No prototype orchestration, image export, official workload-level Well-Architected assessment or deploy execution |
-| Diagrams, layout, export, graph transformation and diagram source files | `aws-diagrams` | Architect and Infrastructure produce structured facts, not a competing diagram engine |
-| PoCs, experiments, comparison of approaches, prototype acceptance and promotion plan | `aws-prototyping` | Doesn't take ownership of ordinary CDK scaffolding, test suites, deployment approvals or feature-specific SDK tools |
-| Six-pillar workload review, gap scoring and prioritized improvement plan | `aws-well-architected` | Security/Cost/Observability remain owners of in-depth domain investigations |
-| Verified AWS identity and account/region | `aws-context` | No plugin guesses identity from a profile name |
-| UI mods, status line, interactive panels and diagram presentation | `aws-ui` | `aws-diagrams` supplies source and structured graph; UI renders through supported interfaces only |
-| General AWS inventory/discovery | `aws-explorer` | Development plugins inspect only their domain's deeper semantics |
-| Preventive operation policies | `aws-guard` + actual AWS IAM/SCP | No plugin bypasses guards; hooks are not the sole security perimeter |
-| Security posture, IAM audit, authz threat analysis | `aws-security` | Well-Architected consumes findings without cloning the entire audit engine |
-| Tests, assertions, suites, integration runs | `aws-testing` | Prototyping creates bounded experiments/fixtures, not its own complete test framework |
-| Authorized deploy, CI/CD, rollback | `aws-deploy` | Prototyping may request a sandbox deploy through Deploy, but never runs an independent prod rollout |
-| Prices, cost history, budget, detailed optimization | `aws-cost` | Well-Architected reviews cost pillar and reuses Cost evidence |
-| Metrics/logs/traces, incidents and alarms | `aws-observability` | Well-Architected reviews operational evidence without taking ownership of telemetry queries |
-| APIs/routes/contracts | `aws-api` | Auth plugin owns identity flows; Lambda plugin owns handler behavior |
-| App sign-in, user pools, tokens | `aws-auth` | API only attaches authorizers or checks integration |
-| EventBridge routing | `aws-events` | Queues/topics belong to Messaging; state machines belong to Workflows |
-| SQS/SNS delivery and fan-out | `aws-messaging` | Not bus routing nor Step Functions orchestration |
-| Step Functions ASL and execution | `aws-workflows` | Not SQS/SNS/EventBridge provisioning semantics |
-| DynamoDB/Aurora records and indexes | `aws-database` | S3/EFS are Storage |
-| Secrets Manager/KMS/security policy | `aws-security` | Config owns runtime non-secret parameters and flag behavior |
-| SES message delivery and reputation | `aws-email` | SNS transport remains Messaging when used by SES events |
+| Capability                                                                           | Sole owner                       | Explicitly excluded from neighboring plugins                                                                        |
+| ------------------------------------------------------------------------------------ | -------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Requirements, architecture selection, ADRs, target-state plan                        | `aws-architect`                  | No final diagram rendering, multi-pillar audit, PoC runner or CDK lifecycle                                         |
+| CDK stacks, constructs, synth, diff, drift and IaC refactors                         | `aws-infrastructure`             | No prototype orchestration, image export, official workload-level Well-Architected assessment or deploy execution   |
+| Diagrams, layout, export, graph transformation and diagram source files              | `aws-diagrams`                   | Architect and Infrastructure produce structured facts, not a competing diagram engine                               |
+| PoCs, experiments, comparison of approaches, prototype acceptance and promotion plan | `aws-prototyping`                | Doesn't take ownership of ordinary CDK scaffolding, test suites, deployment approvals or feature-specific SDK tools |
+| Six-pillar workload review, gap scoring and prioritized improvement plan             | `aws-well-architected`           | Security/Cost/Observability remain owners of in-depth domain investigations                                         |
+| Verified AWS identity and account/region                                             | `aws-context`                    | No plugin guesses identity from a profile name                                                                      |
+| UI mods, status line, interactive panels and diagram presentation                    | `aws-ui`                         | `aws-diagrams` supplies source and structured graph; UI renders through supported interfaces only                   |
+| General AWS inventory/discovery                                                      | `aws-explorer`                   | Development plugins inspect only their domain's deeper semantics                                                    |
+| Preventive operation policies                                                        | `aws-guard` + actual AWS IAM/SCP | No plugin bypasses guards; hooks are not the sole security perimeter                                                |
+| Security posture, IAM audit, authz threat analysis                                   | `aws-security`                   | Well-Architected consumes findings without cloning the entire audit engine                                          |
+| Tests, assertions, suites, integration runs                                          | `aws-testing`                    | Prototyping creates bounded experiments/fixtures, not its own complete test framework                               |
+| Authorized deploy, CI/CD, rollback                                                   | `aws-deploy`                     | Prototyping may request a sandbox deploy through Deploy, but never runs an independent prod rollout                 |
+| Prices, cost history, budget, detailed optimization                                  | `aws-cost`                       | Well-Architected reviews cost pillar and reuses Cost evidence                                                       |
+| Metrics/logs/traces, incidents and alarms                                            | `aws-observability`              | Well-Architected reviews operational evidence without taking ownership of telemetry queries                         |
+| APIs/routes/contracts                                                                | `aws-api`                        | Auth plugin owns identity flows; Lambda plugin owns handler behavior                                                |
+| App sign-in, user pools, tokens                                                      | `aws-auth`                       | API only attaches authorizers or checks integration                                                                 |
+| EventBridge routing                                                                  | `aws-events`                     | Queues/topics belong to Messaging; state machines belong to Workflows                                               |
+| SQS/SNS delivery and fan-out                                                         | `aws-messaging`                  | Not bus routing nor Step Functions orchestration                                                                    |
+| Step Functions ASL and execution                                                     | `aws-workflows`                  | Not SQS/SNS/EventBridge provisioning semantics                                                                      |
+| DynamoDB/Aurora records and indexes                                                  | `aws-database`                   | S3/EFS are Storage                                                                                                  |
+| Secrets Manager/KMS/security policy                                                  | `aws-security`                   | Config owns runtime non-secret parameters and flag behavior                                                         |
+| SES message delivery and reputation                                                  | `aws-email`                      | SNS transport remains Messaging when used by SES events                                                             |
 
 ### Cross-plugin portability
 
@@ -104,16 +104,16 @@ Each plugin may **consume** data from adjacent plugins but may not duplicate the
 
 This is an **implementation requirement**, not an instruction to delete files based on filenames. Inspect real code first and prepare an inventory of functions, commands, imports, tests and consumers. Define an extraction map and migration tests before editing.
 
-| Existing plugin / legacy capability | New canonical owner | What stays in the original plugin | Migration requirement |
-|---|---|---|---|
-| `aws-architect`: `diagram` skill, Mermaid generation, architecture visualization | `aws-diagrams` | Service selection, architecture descriptions, requirements, ADRs, compare/evolve | Move diagram-generation code, templates and fixtures; deprecate/forward old command when possible |
-| `aws-architect`: Well-Architected six-pillar review, scoring and assessment reports | `aws-well-architected` | General architectural review, tradeoffs and design risk commentary | Move formal assessment rubrics, evidence logic, reports and tests; architecture review becomes a design review, not official pillar certification |
-| `aws-architect`: prototype generation, proof-of-concept orchestration (if present) | `aws-prototyping` | Implementation plan and architecture recommendations | Move PoC orchestration and samples; keep references to expected prototype interfaces |
-| `aws-infrastructure`: diagrams and diagram exporting (if present) | `aws-diagrams` | CDK synthesis, logical resource relationships/typed graph, stack inventory, synth/diff, refactor | Retain graph extraction as source data; extract final diagram layout, file exporters and rendering |
-| `aws-infrastructure`: multi-service PoC workflow, experiment comparisons (if present) | `aws-prototyping` | Ordinary `cdk init`, stack/construct scaffolding and analysis | Transfer experiment lifecycle; retain general IaC scaffolding and reusable build utilities |
-| `aws-ui`: diagram-generation internals, if present | `aws-diagrams` | Pure visual presentation, supported mod panels and fallback render | Keep UI consumer; separate graph/layout/diagram export from presentation while preserving existing panels |
-| `aws-security`, `aws-cost`, `aws-observability`: generic six-pillar coordinator, if present | `aws-well-architected` | All specialist audits, costs, traces and their original reports | Extract only umbrella workflow; retain and expose existing domain evidence producers |
-| `aws-testing`/`aws-deploy`: ad-hoc PoC runner, if present | `aws-prototyping` | Generic test execution, sandbox safety approvals, official deployment execution | Transfer experiment state machine and promotion report, keep trusted test/deploy engines |
+| Existing plugin / legacy capability                                                         | New canonical owner    | What stays in the original plugin                                                                | Migration requirement                                                                                                                             |
+| ------------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `aws-architect`: `diagram` skill, Mermaid generation, architecture visualization            | `aws-diagrams`         | Service selection, architecture descriptions, requirements, ADRs, compare/evolve                 | Move diagram-generation code, templates and fixtures; deprecate/forward old command when possible                                                 |
+| `aws-architect`: Well-Architected six-pillar review, scoring and assessment reports         | `aws-well-architected` | General architectural review, tradeoffs and design risk commentary                               | Move formal assessment rubrics, evidence logic, reports and tests; architecture review becomes a design review, not official pillar certification |
+| `aws-architect`: prototype generation, proof-of-concept orchestration (if present)          | `aws-prototyping`      | Implementation plan and architecture recommendations                                             | Move PoC orchestration and samples; keep references to expected prototype interfaces                                                              |
+| `aws-infrastructure`: diagrams and diagram exporting (if present)                           | `aws-diagrams`         | CDK synthesis, logical resource relationships/typed graph, stack inventory, synth/diff, refactor | Retain graph extraction as source data; extract final diagram layout, file exporters and rendering                                                |
+| `aws-infrastructure`: multi-service PoC workflow, experiment comparisons (if present)       | `aws-prototyping`      | Ordinary `cdk init`, stack/construct scaffolding and analysis                                    | Transfer experiment lifecycle; retain general IaC scaffolding and reusable build utilities                                                        |
+| `aws-ui`: diagram-generation internals, if present                                          | `aws-diagrams`         | Pure visual presentation, supported mod panels and fallback render                               | Keep UI consumer; separate graph/layout/diagram export from presentation while preserving existing panels                                         |
+| `aws-security`, `aws-cost`, `aws-observability`: generic six-pillar coordinator, if present | `aws-well-architected` | All specialist audits, costs, traces and their original reports                                  | Extract only umbrella workflow; retain and expose existing domain evidence producers                                                              |
+| `aws-testing`/`aws-deploy`: ad-hoc PoC runner, if present                                   | `aws-prototyping`      | Generic test execution, sandbox safety approvals, official deployment execution                  | Transfer experiment state machine and promotion report, keep trusted test/deploy engines                                                          |
 
 **Safety rule for existing users:**
 
@@ -122,14 +122,14 @@ This is an **implementation requirement**, not an instruction to delete files ba
 3. Only remove duplicate internals after new tests pass, all references are updated, and fallbacks are verified.
 4. Do not force installing a new plugin just to keep an old plugin's unrelated functionality working. A deprecated command may show a migration instruction if delegation is not technically supported.
 5. Preserve saved user data and output files. Never destructively rewrite user architecture documents without an explicit request.
-6. Produce `docs/plugin-ownership-migration.md` with *before / after / files changed / compatibility / test evidence / known gaps*.
+6. Produce `docs/plugin-ownership-migration.md` with _before / after / files changed / compatibility / test evidence / known gaps_.
 7. If a feature is not present in the existing code, mark **not present**; don't invent a migration.
 
 ## 4. Simple, consistent developer experience
 
 - Maximum of **3–6 primary namespaced commands/skills** per plugin. Advanced controls are flags, optional skills or documented arguments, not dozens of one-off commands.
 - An installable plugin should work after minimal setup; inspect credentials via the default credential chain and `aws-context` when available.
-- Always show account, region, environment, resource scope, time of observation and whether result came from *code*, *live AWS*, *fixture*, *simulation* or *estimate*.
+- Always show account, region, environment, resource scope, time of observation and whether result came from _code_, _live AWS_, _fixture_, _simulation_ or _estimate_.
 - For write/expensive operations: present the exact plan, AWS account/region/resources, expected costs/side effects and rollback limits **before** requesting explicit approval.
 - Simple textual summary first; optional evidence-rich files and structured JSON for tools and `aws-ui`.
 - Read-only default for real AWS. No live mutations or artificial cost-incurring actions from an auto-invoked agent, skill or hook.
@@ -144,14 +144,14 @@ type PluginResult<T> = {
   schemaVersion: 1;
   plugin: string;
   operation: string;
-  source: 'local-code' | 'aws-api' | 'fixture' | 'simulation' | 'estimate';
+  source: "local-code" | "aws-api" | "fixture" | "simulation" | "estimate";
   observedAt: string;
   accountId?: string;
   region?: string;
-  status: 'success' | 'partial' | 'blocked' | 'failed';
+  status: "success" | "partial" | "blocked" | "failed";
   data?: T;
   findings?: Array<{
-    severity: 'info' | 'low' | 'medium' | 'high' | 'critical';
+    severity: "info" | "low" | "medium" | "high" | "critical";
     title: string;
     evidence?: string[];
     recommendation?: string;
@@ -232,7 +232,7 @@ No hard-coded shared memory or fabricated IPC. Detect and use only interfaces th
 - Diagram types: high-level solution architecture, service dependency graph, data flow, trust boundaries, event bus/queue processing, Step Functions state graph, deployment topology and before/after architecture delta.
 - Export Mermaid source as the default, with optional SVG/PNG using verified local rendering tools. Preserve source even when raster export is unavailable.
 - Validate node/edge referential integrity, DAG when required, cycles where legal, direction, completeness and sensitive-label redaction.
-- Distinguish *intended*, *declared*, *deployed* and *observed* topology; annotate partial/inferred edges and confidence. Never hallucinate exact deployed resources.
+- Distinguish _intended_, _declared_, _deployed_ and _observed_ topology; annotate partial/inferred edges and confidence. Never hallucinate exact deployed resources.
 - Update a diagram incrementally from structured changes with stable IDs; avoid regenerated layouts that needlessly shuffle everything.
 - Offer text-only summaries and paths when `aws-ui` is not installed.
 
@@ -250,7 +250,7 @@ No hard-coded shared memory or fabricated IPC. Detect and use only interfaces th
 
 **Core capabilities:**
 
-- Start from an idea, architecture plan, source repo or selected serverless pattern; generate a *minimal* PoC manifest and files designed to answer a specific engineering question.
+- Start from an idea, architecture plan, source repo or selected serverless pattern; generate a _minimal_ PoC manifest and files designed to answer a specific engineering question.
 - Catalog compact examples: API Gateway + Lambda + DynamoDB; EventBridge + SQS + Lambda; S3 ingestion; Step Functions workflow; Cognito-authenticated API; Bedrock request/response; optional SES event flow.
 - Record hypothesis, success metric, estimated usage, permissions, assumptions, decision deadline, cleanup needs and blast radius **before** experimentation.
 - Provide local/mock-first experiments and deterministic example fixtures; record observed vs simulated results separately.
@@ -297,6 +297,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** Lambda handler development, function configuration and invocation workflows. It does not own API endpoints, messaging destinations, deployment pipelines or CloudWatch incident management.
 
 **Core experiences**
+
 - Inspect functions, runtimes, architectures, memory, timeout, environment key names (not secret values), versions, aliases, concurrency and event-source mappings.
 - Scaffold or improve TypeScript handlers with validated input, clean business-logic separation, dependency injection when useful, structured logging and idempotency guidance.
 - Generate representative event fixtures and safe local invocation harnesses; distinguish local execution from a real Lambda invoke.
@@ -314,6 +315,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** API Gateway HTTP/REST/WebSocket APIs and AppSync GraphQL API contracts, resolver behavior, API routing and request/response protocols.
 
 **Core experiences**
+
 - Design/validate OpenAPI or GraphQL schema, request and response models, error conventions, pagination, quotas and versioning.
 - Scaffold routes, integrations and typed client-facing contracts without duplicating the Lambda handler implementation.
 - Inspect deployed API routes, stages, integrations, CORS, throttling and authorizer attachments.
@@ -331,6 +333,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** Amazon Cognito user pools/identity patterns, sign-in, federation, tokens, sessions and app authorization integration advice.
 
 **Core experiences**
+
 - Inspect user pools, app clients, domains, identity-provider configuration, security settings and sign-in requirements without retrieving credentials or user PII by default.
 - Guide OAuth2/OIDC, hosted sign-in, PKCE, refresh-token rotation, MFA and session lifecycle design.
 - Validate JWT verification examples, audience/issuer checks, token lifetime and role/group/scope authorization patterns.
@@ -348,6 +351,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** Amazon EventBridge event buses, rules, targets, schemas and EventBridge Scheduler schedules.
 
 **Core experiences**
+
 - Inspect buses, rules, schedules, target configurations, event patterns and resource policies.
 - Design event envelopes and versioning conventions; validate matching using test-event-pattern-style workflows when available.
 - Explain delivery semantics, retries, failure destinations, permissions and cross-account routing.
@@ -365,6 +369,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** Amazon SQS queues and Amazon SNS topics, subscriptions, delivery and fan-out.
 
 **Core experiences**
+
 - Inspect queue/topic attributes, resource policies, SNS subscriptions, message filtering and DLQ/redrive configurations.
 - Analyze standard vs FIFO semantics, visibility timeout, retention, throughput, ordering, deduplication and partial-batch failure patterns.
 - Provide message payload fixtures and safe message publishing tests, with explicit opt-in for sending.
@@ -382,6 +387,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** AWS Step Functions Standard and Express state machines, Amazon States Language, execution history and orchestration semantics.
 
 **Core experiences**
+
 - Generate or review state machines with Choice, Map, Parallel, Wait, Task, Retry, Catch and integration patterns.
 - Validate ASL structure, supported query-language features such as JSONata where applicable, and state input/output handling.
 - Inspect execution status and available execution history; account for differences in Standard and Express visibility.
@@ -399,6 +405,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** DynamoDB and Aurora Serverless database design, queries, indexing, conditional writes and transaction patterns.
 
 **Core experiences**
+
 - Design DynamoDB primary keys, GSIs, access patterns, item collections and query shapes based on explicit workload requirements.
 - Inspect tables, indexes, TTL, streams, PITR, encryption and capacity modes without reading actual customer rows by default.
 - Inspect Aurora Serverless compatibility, connection patterns, transaction considerations and the supported Data API where relevant.
@@ -416,6 +423,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** S3 objects/buckets and EFS file systems as application storage primitives.
 
 **Core experiences**
+
 - Inspect buckets, prefixes, object metadata, versioning, lifecycle, encryption, public-access settings and EFS access points and mount targets.
 - Design uploads/downloads using presigned URLs, multipart upload, checksum verification and content type validation.
 - Evaluate S3 event notifications, eventual downstream consumers, storage-class lifecycle and data-retention implications.
@@ -433,6 +441,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** Kinesis Data Streams and Amazon Data Firehose ingestion, stream consumers, batching and managed delivery.
 
 **Core experiences**
+
 - Inspect shard/stream state, retention, consumers, throughput modes, delivery streams, buffers and destinations.
 - Explain records/partition keys, ordering boundaries, retries, backpressure, checkpointing and consumer failure modes.
 - Provide controlled producer/consumer test fixtures and transformations; never start an unbounded load test.
@@ -450,6 +459,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** CloudFront distributions, CloudFront Functions, Lambda@Edge and cache behaviors.
 
 **Core experiences**
+
 - Inspect origins, behaviors, viewer/origin policies, headers, signed URLs/cookies, invalidation rules and domain/TLS association.
 - Scaffold and test small CloudFront Functions with the service's runtime and restrictions in mind.
 - Review Lambda@Edge deployment constraints and region/version requirements before proposing changes.
@@ -467,6 +477,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** Amazon Bedrock model usage, RAG with Knowledge Bases, and Bedrock AgentCore application/agent integrations.
 
 **Core experiences**
+
 - Guide model selection with explicit availability, quotas, latency, data-handling and cost considerations; never assume a model is enabled in a region.
 - Scaffold inference calls, request validation, streaming responses and resilient retries with configurable budgets.
 - Design retrieval workflows with chunking, embeddings, indexing, grounding and evaluation datasets.
@@ -484,6 +495,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** ECS workloads using Fargate and ECR image lifecycle; not self-managed servers or a generalized Kubernetes platform.
 
 **Core experiences**
+
 - Inspect ECS clusters, services, tasks, task definitions, networking, capacity configuration and ECR images.
 - Scaffold container-ready service code, Dockerfiles, health checks and appropriate local builds.
 - Validate image architecture, tag/digest usage, health checks, secrets injection, resource limits and task execution roles.
@@ -501,6 +513,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** Amazon SES sending/receiving, email identities, domain verification, sender reputation, templates and email-delivery events.
 
 **Core experiences**
+
 - Inspect verified domains/addresses, sender identities, DKIM, SPF/DMARC guidance, configuration sets and the SES sandbox/sending quotas.
 - Scaffold transactional messages and templates, validation, unsubscribe requirements where applicable, and safe sending integrations.
 - Develop receiving flows using supported SES receipt rules/actions, S3 and Lambda, without duplicating their lower-level service tools.
@@ -518,6 +531,7 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Owns:** AWS AppConfig (including feature flags) and Systems Manager Parameter Store for non-secret application runtime configuration.
 
 **Core experiences**
+
 - Inspect AppConfig applications, environments, configuration profiles, validators, deployment strategies and current deployment status.
 - Model typed application settings and feature flags with local schemas, defaults and environment overrides.
 - Explain safe rollout and rollback strategies and supported validators/alarms.
@@ -529,7 +543,6 @@ The fourteen plugins below remain unchanged in identity and scope from the previ
 **Implementations:** SDK tools + skills; optional validation hook for config files. `aws-deploy` manages generalized release pipeline and `aws-security` manages Secrets Manager/secret policy.
 
 **Acceptance:** tests for malformed JSON/schema, missing parameter, environment mismatch, invalid flag rule, rollout alarms, stale cache and no deployment/change of live flag without approval.
-
 
 ## 7. Implementation structure and file layout
 
@@ -580,7 +593,7 @@ claude-code-for-aws/
 Example of one **new** plugin; component folders are optional, not mandatory:
 
 ```text
-plugins/aws-diagrams/
+plugins/design/aws-diagrams/
 ├── .claude-plugin/plugin.json
 ├── skills/
 │   ├── generate/SKILL.md
@@ -597,20 +610,20 @@ plugins/aws-diagrams/
 
 ## 8. Integration scenarios — required end to end
 
-| User goal | Owning plugins and handoff | Must demonstrate |
-|---|---|---|
-| Design authenticated REST API | Architect -> Diagrams -> Infrastructure -> API/Auth/Lambda/Database | ADR + editable diagram + CDK proposal + safe test plan |
-| Prototype async order processing | Prototyping -> Events/Messaging/Lambda/Database -> Testing -> optional Deploy | Experiment hypothesis, bounded fixtures, evidence, promotion plan |
-| Assess existing serverless project | Well-Architected + Architect + Security/Cost/Observability | Six pillars, verified vs missing evidence, improvement backlog |
-| Visualize CDK stacks | Infrastructure -> Diagrams -> optional UI | Declared resources vs deployed inventory labeled correctly |
-| Diagram a live event flow | Explorer/Events/Messaging/Workflows -> Diagrams -> optional UI | Provenance, partial evidence, redaction and text fallback |
-| Improve AWS workload | Well-Architected -> Architect/Infrastructure/Development | Prioritized recommendations; no cloud mutation without approval |
-| Compare two PoC alternatives | Prototyping + Testing/Cost -> Architect | Same input, budgets, results and documented tradeoffs |
-| Deploy a validated prototype to sandbox | Prototyping -> Guard/Context -> Deploy | Specific account/region, cost awareness, user approval, cleanup plan |
-| SES-based notification flow | Email + Events/Messaging + Lambda/Storage | No actual email send without recipient approval |
-| Design AI/RAG prototype | Architect + AI + Prototyping + Data/Storage | Model availability checked, token/cost limits, evidence-based eval |
-| CloudFront web app | Edge + Storage + API/Auth + Diagrams | Separation of CDN and origin responsibilities, no unapproved invalidation |
-| Debug failed workflow | Workflows + Observability + Diagrams | Execution history vs inferred flow, no invented trace |
+| User goal                               | Owning plugins and handoff                                                    | Must demonstrate                                                          |
+| --------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Design authenticated REST API           | Architect -> Diagrams -> Infrastructure -> API/Auth/Lambda/Database           | ADR + editable diagram + CDK proposal + safe test plan                    |
+| Prototype async order processing        | Prototyping -> Events/Messaging/Lambda/Database -> Testing -> optional Deploy | Experiment hypothesis, bounded fixtures, evidence, promotion plan         |
+| Assess existing serverless project      | Well-Architected + Architect + Security/Cost/Observability                    | Six pillars, verified vs missing evidence, improvement backlog            |
+| Visualize CDK stacks                    | Infrastructure -> Diagrams -> optional UI                                     | Declared resources vs deployed inventory labeled correctly                |
+| Diagram a live event flow               | Explorer/Events/Messaging/Workflows -> Diagrams -> optional UI                | Provenance, partial evidence, redaction and text fallback                 |
+| Improve AWS workload                    | Well-Architected -> Architect/Infrastructure/Development                      | Prioritized recommendations; no cloud mutation without approval           |
+| Compare two PoC alternatives            | Prototyping + Testing/Cost -> Architect                                       | Same input, budgets, results and documented tradeoffs                     |
+| Deploy a validated prototype to sandbox | Prototyping -> Guard/Context -> Deploy                                        | Specific account/region, cost awareness, user approval, cleanup plan      |
+| SES-based notification flow             | Email + Events/Messaging + Lambda/Storage                                     | No actual email send without recipient approval                           |
+| Design AI/RAG prototype                 | Architect + AI + Prototyping + Data/Storage                                   | Model availability checked, token/cost limits, evidence-based eval        |
+| CloudFront web app                      | Edge + Storage + API/Auth + Diagrams                                          | Separation of CDN and origin responsibilities, no unapproved invalidation |
+| Debug failed workflow                   | Workflows + Observability + Diagrams                                          | Execution history vs inferred flow, no invented trace                     |
 
 Plugins do not need to magically install one another. A missing optional plugin results in a useful local/text output plus accurate guidance on additional capabilities.
 
@@ -723,12 +736,14 @@ Plugins do not need to magically install one another. A missing optional plugin 
 ## 13. Official documentation and verification references
 
 **Claude Code:**
+
 - https://code.claude.com/docs/en/plugins
 - https://code.claude.com/docs/en/plugins/components
 - https://code.claude.com/docs/en/plugin-marketplaces
 - https://code.claude.com/docs/en/plugins/mods
 
 **AWS architecture and patterns:**
+
 - https://docs.aws.amazon.com/wellarchitected/latest/framework/
 - https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/the-pillars-of-the-well-architected-framework.html
 - https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/general-design-principles.html
@@ -736,6 +751,7 @@ Plugins do not need to magically install one another. A missing optional plugin 
 - https://docs.aws.amazon.com/cdk/v2/guide/home.html
 
 **Development services:**
+
 - https://docs.aws.amazon.com/lambda/latest/dg/welcome.html
 - https://docs.aws.amazon.com/ses/latest/dg/Welcome.html
 - https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html

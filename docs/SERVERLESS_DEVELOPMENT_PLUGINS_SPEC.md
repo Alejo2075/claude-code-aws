@@ -31,22 +31,22 @@ These are development plugins. They complement, rather than replace, the marketp
 
 ## 2. The 14 plugins
 
-| Plugin | AWS services | Exclusive responsibility | Primary extension types |
-|---|---|---|---|
-| `aws-lambda` | Lambda | Function code, invocation, runtime behavior and function lifecycle | Skills, SDK/CLI, optional MCP |
-| `aws-api` | API Gateway, AppSync | HTTP/REST/GraphQL/WebSocket APIs and API contracts | Skills, contract tooling, optional MCP |
-| `aws-auth` | Cognito | User authentication, identity flows, tokens and application authorization patterns | Skills, optional agent, SDK tooling |
-| `aws-events` | EventBridge, EventBridge Scheduler | Event buses, routing rules, schemas and scheduled triggers | Skills, SDK/MCP, optional diagrams |
-| `aws-messaging` | SQS, SNS | Queues, topics, subscriptions and reliable message delivery | Skills, SDK/MCP |
-| `aws-workflows` | Step Functions | Stateful orchestration, state machines and executions | Skills, ASL validation, SDK/MCP |
-| `aws-database` | DynamoDB, Aurora Serverless | Database modeling, access patterns, query inspection and data operations | Skills, SDK/MCP |
-| `aws-storage` | S3, EFS | Object/file storage, transfer and access patterns | Skills, SDK/MCP |
-| `aws-streaming` | Kinesis Data Streams, Amazon Data Firehose | Stream ingestion, consumers, delivery and record-processing patterns | Skills, SDK/MCP |
-| `aws-edge` | CloudFront, CloudFront Functions, Lambda@Edge | CDN behavior, caching, edge execution and content delivery | Skills, test utilities, SDK |
-| `aws-ai` | Bedrock, Bedrock AgentCore | Generative AI applications, RAG and deployed agent integrations | Specialized agent, skills, SDK/MCP |
-| `aws-containers` | ECS, Fargate, ECR | Serverless container workloads and image lifecycle | Skills, CLI/SDK, optional MCP |
-| `aws-email` | Amazon SES | Sending, receiving and deliverability of application email | Skills, SDK/MCP |
-| `aws-config` | AWS AppConfig, SSM Parameter Store | Runtime configuration, feature flags and environment parameters | Skills, SDK/MCP, optional hooks |
+| Plugin           | AWS services                                  | Exclusive responsibility                                                           | Primary extension types                |
+| ---------------- | --------------------------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------- |
+| `aws-lambda`     | Lambda                                        | Function code, invocation, runtime behavior and function lifecycle                 | Skills, SDK/CLI, optional MCP          |
+| `aws-api`        | API Gateway, AppSync                          | HTTP/REST/GraphQL/WebSocket APIs and API contracts                                 | Skills, contract tooling, optional MCP |
+| `aws-auth`       | Cognito                                       | User authentication, identity flows, tokens and application authorization patterns | Skills, optional agent, SDK tooling    |
+| `aws-events`     | EventBridge, EventBridge Scheduler            | Event buses, routing rules, schemas and scheduled triggers                         | Skills, SDK/MCP, optional diagrams     |
+| `aws-messaging`  | SQS, SNS                                      | Queues, topics, subscriptions and reliable message delivery                        | Skills, SDK/MCP                        |
+| `aws-workflows`  | Step Functions                                | Stateful orchestration, state machines and executions                              | Skills, ASL validation, SDK/MCP        |
+| `aws-database`   | DynamoDB, Aurora Serverless                   | Database modeling, access patterns, query inspection and data operations           | Skills, SDK/MCP                        |
+| `aws-storage`    | S3, EFS                                       | Object/file storage, transfer and access patterns                                  | Skills, SDK/MCP                        |
+| `aws-streaming`  | Kinesis Data Streams, Amazon Data Firehose    | Stream ingestion, consumers, delivery and record-processing patterns               | Skills, SDK/MCP                        |
+| `aws-edge`       | CloudFront, CloudFront Functions, Lambda@Edge | CDN behavior, caching, edge execution and content delivery                         | Skills, test utilities, SDK            |
+| `aws-ai`         | Bedrock, Bedrock AgentCore                    | Generative AI applications, RAG and deployed agent integrations                    | Specialized agent, skills, SDK/MCP     |
+| `aws-containers` | ECS, Fargate, ECR                             | Serverless container workloads and image lifecycle                                 | Skills, CLI/SDK, optional MCP          |
+| `aws-email`      | Amazon SES                                    | Sending, receiving and deliverability of application email                         | Skills, SDK/MCP                        |
+| `aws-config`     | AWS AppConfig, SSM Parameter Store            | Runtime configuration, feature flags and environment parameters                    | Skills, SDK/MCP, optional hooks        |
 
 **Service naming:** Use the current name **Amazon Data Firehose** (formerly Kinesis Data Firehose), while retaining compatibility with AWS SDK/CLI identifiers such as `firehose`.
 
@@ -54,27 +54,27 @@ These are development plugins. They complement, rather than replace, the marketp
 
 A development plugin must **own its service's application behavior**, not absorb a neighboring plugin's responsibility.
 
-| Concern | Owner | Boundary for the 14 new plugins |
-|---|---|---|
-| Solution design and service selection | `aws-architect` | New plugins may explain service-specific tradeoffs, but not replace architecture reviews. |
-| CDK stacks, constructs, synth, diff, drift | `aws-infrastructure` | New plugins may generate examples/construct proposals; hand off IaC lifecycle to Infrastructure. |
-| Credentials, selected account/region | `aws-context` | Consume verified context if available; never invent account identity. |
-| Visual panels and graph presentation | `aws-ui` | Publish structured results; do not embed competing UI implementations. |
-| General resource inventory | `aws-explorer` | Offer deeper, domain-specific inspection only. |
-| Security audit and IAM governance | `aws-security` | Enforce safe service behavior locally and request specialist review when relevant. |
-| Blocking risky operations | `aws-guard` plus AWS IAM/SCP | Respect operation policies; hooks alone are not a security boundary. |
-| Full test suite and test orchestration | `aws-testing` | Provide service-specific fixtures, validators and tests; integrate with existing runner. |
-| Deployment, pipeline, rollback | `aws-deploy` | New plugins must not invent their own general deployment manager. |
-| Cost reports and budgets | `aws-cost` | Surface service cost implications and send detailed analysis to Cost. |
-| General diagnostics, alarms and traces | `aws-observability` | Own only service-native insights; correlate through Observability. |
-| API contract/routes | `aws-api` | `aws-auth` owns identity flows; `aws-lambda` owns handler behavior. |
-| Identity, sign-in and user pools | `aws-auth` | `aws-api` attaches authorizers but does not duplicate identity management. |
-| Event routing | `aws-events` | `aws-messaging` handles queue/topic semantics; `aws-workflows` owns orchestration. |
-| Durable queues and fan-out delivery | `aws-messaging` | Do not rebuild bus rules or state machines. |
-| State-machine orchestration | `aws-workflows` | Do not move Step Functions into `aws-events`. |
-| Database records/indexes | `aws-database` | S3/EFS file/object workflows belong to `aws-storage`. |
-| Secrets | `aws-security` | `aws-config` references secret identifiers but never logs their contents. |
-| Transactional email | `aws-email` | `aws-messaging` owns SNS transports; email plugin owns SES identities, templates and delivery. |
+| Concern                                    | Owner                        | Boundary for the 14 new plugins                                                                  |
+| ------------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------ |
+| Solution design and service selection      | `aws-architect`              | New plugins may explain service-specific tradeoffs, but not replace architecture reviews.        |
+| CDK stacks, constructs, synth, diff, drift | `aws-infrastructure`         | New plugins may generate examples/construct proposals; hand off IaC lifecycle to Infrastructure. |
+| Credentials, selected account/region       | `aws-context`                | Consume verified context if available; never invent account identity.                            |
+| Visual panels and graph presentation       | `aws-ui`                     | Publish structured results; do not embed competing UI implementations.                           |
+| General resource inventory                 | `aws-explorer`               | Offer deeper, domain-specific inspection only.                                                   |
+| Security audit and IAM governance          | `aws-security`               | Enforce safe service behavior locally and request specialist review when relevant.               |
+| Blocking risky operations                  | `aws-guard` plus AWS IAM/SCP | Respect operation policies; hooks alone are not a security boundary.                             |
+| Full test suite and test orchestration     | `aws-testing`                | Provide service-specific fixtures, validators and tests; integrate with existing runner.         |
+| Deployment, pipeline, rollback             | `aws-deploy`                 | New plugins must not invent their own general deployment manager.                                |
+| Cost reports and budgets                   | `aws-cost`                   | Surface service cost implications and send detailed analysis to Cost.                            |
+| General diagnostics, alarms and traces     | `aws-observability`          | Own only service-native insights; correlate through Observability.                               |
+| API contract/routes                        | `aws-api`                    | `aws-auth` owns identity flows; `aws-lambda` owns handler behavior.                              |
+| Identity, sign-in and user pools           | `aws-auth`                   | `aws-api` attaches authorizers but does not duplicate identity management.                       |
+| Event routing                              | `aws-events`                 | `aws-messaging` handles queue/topic semantics; `aws-workflows` owns orchestration.               |
+| Durable queues and fan-out delivery        | `aws-messaging`              | Do not rebuild bus rules or state machines.                                                      |
+| State-machine orchestration                | `aws-workflows`              | Do not move Step Functions into `aws-events`.                                                    |
+| Database records/indexes                   | `aws-database`               | S3/EFS file/object workflows belong to `aws-storage`.                                            |
+| Secrets                                    | `aws-security`               | `aws-config` references secret identifiers but never logs their contents.                        |
+| Transactional email                        | `aws-email`                  | `aws-messaging` owns SNS transports; email plugin owns SES identities, templates and delivery.   |
 
 Cross-plugin collaboration must be **optional, explicit, documented, and versioned**. Do not rely on another plugin's private files, require users to install every plugin, or assume automatic shared in-memory state.
 
@@ -145,6 +145,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** Lambda handler development, function configuration and invocation workflows. It does not own API endpoints, messaging destinations, deployment pipelines or CloudWatch incident management.
 
 **Core experiences**
+
 - Inspect functions, runtimes, architectures, memory, timeout, environment key names (not secret values), versions, aliases, concurrency and event-source mappings.
 - Scaffold or improve TypeScript handlers with validated input, clean business-logic separation, dependency injection when useful, structured logging and idempotency guidance.
 - Generate representative event fixtures and safe local invocation harnesses; distinguish local execution from a real Lambda invoke.
@@ -162,6 +163,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** API Gateway HTTP/REST/WebSocket APIs and AppSync GraphQL API contracts, resolver behavior, API routing and request/response protocols.
 
 **Core experiences**
+
 - Design/validate OpenAPI or GraphQL schema, request and response models, error conventions, pagination, quotas and versioning.
 - Scaffold routes, integrations and typed client-facing contracts without duplicating the Lambda handler implementation.
 - Inspect deployed API routes, stages, integrations, CORS, throttling and authorizer attachments.
@@ -179,6 +181,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** Amazon Cognito user pools/identity patterns, sign-in, federation, tokens, sessions and app authorization integration advice.
 
 **Core experiences**
+
 - Inspect user pools, app clients, domains, identity-provider configuration, security settings and sign-in requirements without retrieving credentials or user PII by default.
 - Guide OAuth2/OIDC, hosted sign-in, PKCE, refresh-token rotation, MFA and session lifecycle design.
 - Validate JWT verification examples, audience/issuer checks, token lifetime and role/group/scope authorization patterns.
@@ -196,6 +199,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** Amazon EventBridge event buses, rules, targets, schemas and EventBridge Scheduler schedules.
 
 **Core experiences**
+
 - Inspect buses, rules, schedules, target configurations, event patterns and resource policies.
 - Design event envelopes and versioning conventions; validate matching using test-event-pattern-style workflows when available.
 - Explain delivery semantics, retries, failure destinations, permissions and cross-account routing.
@@ -213,6 +217,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** Amazon SQS queues and Amazon SNS topics, subscriptions, delivery and fan-out.
 
 **Core experiences**
+
 - Inspect queue/topic attributes, resource policies, SNS subscriptions, message filtering and DLQ/redrive configurations.
 - Analyze standard vs FIFO semantics, visibility timeout, retention, throughput, ordering, deduplication and partial-batch failure patterns.
 - Provide message payload fixtures and safe message publishing tests, with explicit opt-in for sending.
@@ -230,6 +235,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** AWS Step Functions Standard and Express state machines, Amazon States Language, execution history and orchestration semantics.
 
 **Core experiences**
+
 - Generate or review state machines with Choice, Map, Parallel, Wait, Task, Retry, Catch and integration patterns.
 - Validate ASL structure, supported query-language features such as JSONata where applicable, and state input/output handling.
 - Inspect execution status and available execution history; account for differences in Standard and Express visibility.
@@ -247,6 +253,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** DynamoDB and Aurora Serverless database design, queries, indexing, conditional writes and transaction patterns.
 
 **Core experiences**
+
 - Design DynamoDB primary keys, GSIs, access patterns, item collections and query shapes based on explicit workload requirements.
 - Inspect tables, indexes, TTL, streams, PITR, encryption and capacity modes without reading actual customer rows by default.
 - Inspect Aurora Serverless compatibility, connection patterns, transaction considerations and the supported Data API where relevant.
@@ -264,6 +271,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** S3 objects/buckets and EFS file systems as application storage primitives.
 
 **Core experiences**
+
 - Inspect buckets, prefixes, object metadata, versioning, lifecycle, encryption, public-access settings and EFS access points and mount targets.
 - Design uploads/downloads using presigned URLs, multipart upload, checksum verification and content type validation.
 - Evaluate S3 event notifications, eventual downstream consumers, storage-class lifecycle and data-retention implications.
@@ -281,6 +289,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** Kinesis Data Streams and Amazon Data Firehose ingestion, stream consumers, batching and managed delivery.
 
 **Core experiences**
+
 - Inspect shard/stream state, retention, consumers, throughput modes, delivery streams, buffers and destinations.
 - Explain records/partition keys, ordering boundaries, retries, backpressure, checkpointing and consumer failure modes.
 - Provide controlled producer/consumer test fixtures and transformations; never start an unbounded load test.
@@ -298,6 +307,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** CloudFront distributions, CloudFront Functions, Lambda@Edge and cache behaviors.
 
 **Core experiences**
+
 - Inspect origins, behaviors, viewer/origin policies, headers, signed URLs/cookies, invalidation rules and domain/TLS association.
 - Scaffold and test small CloudFront Functions with the service's runtime and restrictions in mind.
 - Review Lambda@Edge deployment constraints and region/version requirements before proposing changes.
@@ -315,6 +325,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** Amazon Bedrock model usage, RAG with Knowledge Bases, and Bedrock AgentCore application/agent integrations.
 
 **Core experiences**
+
 - Guide model selection with explicit availability, quotas, latency, data-handling and cost considerations; never assume a model is enabled in a region.
 - Scaffold inference calls, request validation, streaming responses and resilient retries with configurable budgets.
 - Design retrieval workflows with chunking, embeddings, indexing, grounding and evaluation datasets.
@@ -332,6 +343,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** ECS workloads using Fargate and ECR image lifecycle; not self-managed servers or a generalized Kubernetes platform.
 
 **Core experiences**
+
 - Inspect ECS clusters, services, tasks, task definitions, networking, capacity configuration and ECR images.
 - Scaffold container-ready service code, Dockerfiles, health checks and appropriate local builds.
 - Validate image architecture, tag/digest usage, health checks, secrets injection, resource limits and task execution roles.
@@ -349,6 +361,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** Amazon SES sending/receiving, email identities, domain verification, sender reputation, templates and email-delivery events.
 
 **Core experiences**
+
 - Inspect verified domains/addresses, sender identities, DKIM, SPF/DMARC guidance, configuration sets and the SES sandbox/sending quotas.
 - Scaffold transactional messages and templates, validation, unsubscribe requirements where applicable, and safe sending integrations.
 - Develop receiving flows using supported SES receipt rules/actions, S3 and Lambda, without duplicating their lower-level service tools.
@@ -366,6 +379,7 @@ This is a design proposal, not an existing Claude Code API. Adopt or adapt to th
 **Owns:** AWS AppConfig (including feature flags) and Systems Manager Parameter Store for non-secret application runtime configuration.
 
 **Core experiences**
+
 - Inspect AppConfig applications, environments, configuration profiles, validators, deployment strategies and current deployment status.
 - Model typed application settings and feature flags with local schemas, defaults and environment overrides.
 - Explain safe rollout and rollback strategies and supported validators/alarms.

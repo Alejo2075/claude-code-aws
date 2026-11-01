@@ -6,7 +6,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "tsx ../../scripts/build-plugin.ts",
+    "build": "tsx __WORKSPACE_ROOT_RELATIVE__/scripts/build-plugin.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {

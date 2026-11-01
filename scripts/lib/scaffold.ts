@@ -1,5 +1,5 @@
 import { cpSync, existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join, relative, sep } from "node:path";
 
 import { checkPluginName } from "./checks.js";
 import { REPO_ROOT } from "./workspace.js";
@@ -36,9 +36,19 @@ export function scaffoldPlugin(options: ScaffoldOptions): string {
   cpSync(options.templateDir ?? join(REPO_ROOT, "templates", "plugin"), target, {
     recursive: true,
   });
+  let workspaceRoot = dirname(pluginsRoot);
+  while (!existsSync(join(workspaceRoot, "tsconfig.base.json"))) {
+    const parent = dirname(workspaceRoot);
+    if (parent === workspaceRoot) {
+      workspaceRoot = REPO_ROOT;
+      break;
+    }
+    workspaceRoot = parent;
+  }
   replaceInTree(target, {
     __PLUGIN_NAME__: options.name,
     __PLUGIN_DESCRIPTION__: options.description,
+    __WORKSPACE_ROOT_RELATIVE__: relative(target, workspaceRoot).split(sep).join("/"),
   });
   return target;
 }

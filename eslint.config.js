@@ -14,7 +14,7 @@ export default tseslint.config(
       "templates/**",
       "tests/fixtures/**",
       // Run by `claude plugin test`, which supplies the `claude-code/testing` module.
-      "plugins/*/mod-tests/**",
+      "plugins/**/mod-tests/**",
     ],
   },
   js.configs.recommended,
