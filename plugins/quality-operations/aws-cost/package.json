@@ -12,7 +12,7 @@
   "devDependencies": {
     "@aws-sdk/client-budgets": "3.1161.0",
     "@aws-sdk/client-cost-explorer": "3.1161.0",
-    "@aws-sdk/client-sts": "3.1158.0",
+    "@aws-sdk/client-sts": "3.1161.0",
     "@claude-code-aws/aws-client": "workspace:*",
     "@claude-code-aws/context-contract": "workspace:*",
     "@claude-code-aws/report-contract": "workspace:*",

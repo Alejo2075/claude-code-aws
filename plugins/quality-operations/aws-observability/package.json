@@ -14,7 +14,7 @@
     "@aws-sdk/client-cloudwatch-logs": "3.1161.0",
     "@aws-sdk/client-lambda": "3.1161.0",
     "@aws-sdk/client-sqs": "3.1161.0",
-    "@aws-sdk/client-sts": "3.1158.0",
+    "@aws-sdk/client-sts": "3.1161.0",
     "@claude-code-aws/aws-client": "workspace:*",
     "@claude-code-aws/context-contract": "workspace:*",
     "@claude-code-aws/report-contract": "workspace:*",
